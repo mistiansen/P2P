@@ -20,7 +20,7 @@ public class peerProcess {
     private int numConnecting;
     private int numConnectTo;
 
-    private BlockingQueue<byte[]> inbox; //one inbox for this process
+    private BlockingQueue<Message> inbox; //one inbox for this process
     private HashMap<String, BlockingQueue> outboxes; //maps a peerID to its outbox
 
     private HashSet<IncomingHandler> inHandlers;
@@ -32,8 +32,9 @@ public class peerProcess {
     private HashSet<String> choked;
     private HashSet<String> unchoked;
     private HashSet<String> interested;
-    private ConcurrentHashMap<String, BitSet> peerPieces; //maps from peerID to the bitfield for that peer (which pieces that peer has)
-
+    private HashSet<String> chokingMe;
+//    private ConcurrentHashMap<String, BitSet> peerPieces; //maps from peerID to the bitfield for that peer (which pieces that peer has)
+    private HashMap<String, BitSet> peerPieces; //don't actually see a need for concurrency here, because processing inbox serially in 1 thread.
     /* Do we need to know bitfields for each peer? I guess so to be able to make requests. Updated on receipt of "have" message. */
 
     private AtomicIntegerArray pieces; //create a new class with this underneath? Then use it like a bitset? No no no...don't need concurrency here. Just update as get pieces.
@@ -73,38 +74,98 @@ public class peerProcess {
 
     }
 
+    /* could potentially move all of this functionality into IncomingHandler, and pass in self so each Handler has access to data structures
+    * Would need to make the data structures concurrent, but then would be multithreaded processing of messages */
     public void dispatch() {
-        byte[] message = new byte[Constants.MESSAGE_SIZE];
         try {
-            message = inbox.take();
+            Message message = inbox.take();
+            processMessage(message);
         } catch(InterruptedException e) {
             e.printStackTrace();
             System.out.println("Interruped exception in peer process dispatch method");
         }
-        processMessage(message);
+    }
+
+
+    /* could potentially move all of this functionality into IncomingHandler, and pass in self so each Handler has access to data structures
+    * Would need to make the data structures concurrent, but then would be multithreaded processing of messages */
+    public void processMessage(Message message) {
+
+        switch (message.getType()) {
+            case -1: //unfinished
+                break;
+            case Constants.CHOKE:
+                processChoke(message);
+                break;
+            case Constants.UNCHOKE:
+                processUnchoke(message);
+                break;
+            case Constants.INTERESTED:
+                processInterested(message);
+                break;
+            case Constants.NOT_INTERESTED:
+                processNotInterested(message);
+                break;
+            case Constants.HAVE:
+                try {
+                    processHave(message);
+                } catch (InterruptedException e) {
+                    System.out.println("Interrupted exception in processMessage's processHave section");
+                }
+                break;
+            case Constants.BITFIELD:
+                processBitField(message);
+                break;
+            case Constants.REQUEST:
+                processRequest(message);
+                break;
+            case Constants.PIECE:
+                processPiece(message);
+                break;
+
+        }
+    }
+
+    private void processChoke(Message message) {
+        chokingMe.add(message.getFrom());
+    }
+
+    private void processUnchoke(Message message) {
+        chokingMe.remove(message.getFrom());
+    }
+
+    private void processInterested(Message message) { //Does an "interested" only apply to a single piece index? Or every piece? Looks like every piece.
+        interested.add(message.getFrom());
+    }
+
+    private void processNotInterested(Message message) {
+        interested.remove(message.getFrom());
+    }
+
+    private void processHave(Message message) throws InterruptedException {
+        int pieceIndex = Util.bytesToInt(message.getPayload());
+        int responseType;
+        int responseLength = 1; // 1 byte for message type. No payload for 'interested' and not_interested' messages.
+        if(bitfield.get(pieceIndex)) {
+            responseType = Constants.NOT_INTERESTED;
+        } else {
+            responseType = Constants.INTERESTED;
+        }
+        Message response = new Message(this.peerID, responseLength, responseType);
+        outboxes.get(message.getFrom()).put(response); //get the outbox for the peerID associated with the received message and put in a response.
+        // put throws InterruptedException. add(response) should also work, but I guess this is preferred.
+    }
+
+    private void processBitField(Message message) {
+        BitSet peerBitfield = BitSet.valueOf(message.getPayload());
+        peerPieces.putIfAbsent(message.getFrom(), peerBitfield);
+    }
+
+    private void processRequest(Message message) {
 
     }
 
-    public void processMessage(byte[] message) {
-        byte[] length = new byte[4];
-
-        int messageType = -1;
-        InputStream is = new ByteArrayInputStream(message);
-        try {
-            is.read(length, 0, 4);
-            messageType = is.read();
-            int msgLength = Util.bytesToInt(length);
-//            byte[] payload = ByteBuffer.allocate(msgLength).array(); //does this work?
-            byte[] payload = new byte[msgLength];
-            is.read(payload, 0, msgLength); //or payload = is.readAllBytes()? Or does that only work with Java 9?
-        } catch(IOException e) {
-            e.printStackTrace();
-        }
-        switch (messageType) {
-            case -1: //unfinished
-
-        }
-
+    private void processPiece(Message message) {
 
     }
 

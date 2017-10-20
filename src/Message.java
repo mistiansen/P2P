@@ -1,13 +1,25 @@
 public class Message {
 
+    private String from; //peerID of sender
     private int length;
     private int type;
     private byte[] payload;
 
-    public Message(int length, int type, byte[] payload) {
+    public Message(String from, int length, int type, byte[] payload) {
+        this.from = from; // peerID of sender
         this.length = length;
         this.type = type;
         this.payload = payload;
+    }
+
+    public Message(String from, int length, int type) { //not all messages have a payload
+        this.from = from;
+        this.length = length;
+        this.type = type;
+    }
+
+    public String getFrom() {
+        return from;
     }
 
     public int getLength() {
