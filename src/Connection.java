@@ -1,5 +1,6 @@
 import java.io.*;
 import java.net.Socket;
+import java.nio.ByteBuffer;
 
 public class Connection {
 
@@ -33,6 +34,7 @@ public class Connection {
         //probably want to readAllBytes then use a ByteInputStreamReader to parse the length field and message type
 //        byte[] message = new byte[Constants.MESSAGE_SIZE]; //better idea might be to read first 4 bytes to get size, then allocate based on that
         byte[] lengthField = new byte[4];
+//        byte [] lengthField = ByteBuffer.allocate(4);
         try {
             this.in.read(lengthField, 0, 4);
         } catch (IOException e) {

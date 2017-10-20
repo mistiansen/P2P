@@ -2,6 +2,7 @@
 
 
 import java.math.BigInteger;
+import java.nio.ByteBuffer;
 import java.util.BitSet;
 import java.util.HashSet;
 
@@ -15,6 +16,12 @@ public class Main {
         System.out.println(hs);
         System.out.println(hs.contains("1002"));
         System.out.println(hs.contains(1002));
+
+        byte [] bytes = ByteBuffer.allocate(4).putInt(1900729).array();
+        System.out.println(bytes);
+        System.out.println(Util.bytesToInt(bytes));
+
+
 //        String val = "1111000011110001";
 //        byte[] bval = new BigInteger(val,2).toByteArray();
 //        System.out.println(bval);
