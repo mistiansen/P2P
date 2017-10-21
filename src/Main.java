@@ -3,6 +3,7 @@
 
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.BitSet;
 import java.util.HashSet;
 
@@ -37,6 +38,10 @@ public class Main {
         byte[] b = bs.toByteArray();
         BitSet received = BitSet.valueOf(b);
         System.out.println(received);
+        byte[] zeroes = new byte[10];
+        Arrays.fill(zeroes, (byte) 0);
+        System.out.println(zeroes.length);
+        System.out.println(Util.bytesToInt(zeroes));
 ////        System.out.println(received.get(45));
 //        received.set(11, 22);
 //        BitSet news;

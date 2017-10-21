@@ -15,6 +15,7 @@ public class Client {
 	{
 		try{
 			requestSocket = new Socket("localhost", 8001);
+//			Connection connection = new Connection("ME", requestSocket);
 			System.out.println("Connected to localhost in port 8000");
 			out = requestSocket.getOutputStream();
 			out.flush();

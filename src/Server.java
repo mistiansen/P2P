@@ -52,7 +52,9 @@ public class Server {
 
                         in.read(b, 0, 4);
                         int type = in.read();
+//                        String len = new String(b);
                         int length = Util.bytesToInt(b);
+                        String len = Integer.toString(length);
                         byte[] message = new byte[length]; //need to consider the
 //                        byte[] message = ByteBuffer.allocate(length).array();
                         String mess = new String();
@@ -63,7 +65,7 @@ public class Server {
                         } catch(IOException e) {
                             e.printStackTrace();
                         }
-                        System.out.println("message " + i + " length: " + length + " type: " + type);
+                        System.out.println("message " + i + " length: " + len + " type: " + type);
                         System.out.println("Rest of message " + i + " : " + mess);
                         System.out.println(" ");
 
