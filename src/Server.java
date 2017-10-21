@@ -28,22 +28,50 @@ public class Server {
      * loop and are responsible for dealing with a single client's requests.
      */
     private static class Handler extends Thread {
-        private Socket connection;
+        private Socket socket;
+        private Connection connection;
         private InputStream in;    //stream read from the socket
         private OutputStream out;    //stream write to the socket
         private int no;        //The index number of the client
 
-        public Handler(Socket connection, int no) {
-            this.connection = connection;
+        public Handler(Socket socket, int no) {
+            this.socket = socket;
             this.no = no;
-
+            this.connection = new Connection("CLIE", socket); //added this
         }
 
         public void run() {
             try {
-                out = connection.getOutputStream();
+                out = socket.getOutputStream();
                 out.flush();
-                in = connection.getInputStream();
+                in = socket.getInputStream();
+
+                if (this.connection.reciprocateHandshake("SERV")) {
+                    System.out.println("Successfully shook hands with client");
+                } else {
+                    System.out.println("Handshake with client failed");
+                }
+
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                //Close connections
+                try {
+                    in.close();
+                    out.close();
+                    socket.close();
+                } catch (IOException ioException) {
+                    System.out.println("Disconnect with Client " + no);
+                }
+            }
+        }
+
+        public void runOld() {
+            try {
+                out = socket.getOutputStream();
+                out.flush();
+                in = socket.getInputStream();
 //                byte[] b = new byte[4]; // looks like anything declared outside of the loop keeps the message in the byte array
 //                byte[] message = new byte[16]; // looks like anything declared outside of the loop keeps the message in the byte array
 //                    while (true) {
@@ -59,7 +87,6 @@ public class Server {
 //                        byte[] message = ByteBuffer.allocate(length).array();
                         String mess = new String();
                         try {
-//                            message = this.in.readAllBytes(); //will this also read in the message length field again?
                             in.read(message, 0, 16);
                             mess = new String(message);
                         } catch(IOException e) {

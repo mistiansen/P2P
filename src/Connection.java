@@ -1,4 +1,3 @@
-import jdk.vm.ci.meta.Constant;
 
 import java.io.*;
 import java.net.Socket;
@@ -7,7 +6,7 @@ import java.util.Arrays;
 
 public class Connection {
 
-    private String peerID;
+    private String peerID; //peerID of the peer you are connected to (not your (peerProcess') peerID)
     private Socket socket;
     private OutputStream out;
     private InputStream in;
@@ -55,22 +54,19 @@ public class Connection {
 //    }
 
 
-    public boolean reciprocateHandshake(String myID, String handshakePeer) throws IOException {
-        byte[] header = new byte[18];
-        byte[] zeroes = new byte[10];
-        byte[] ID = new byte[4];
-        in.read(header, 0, 18);
-        in.read(zeroes, 0, 10);
-        in.read(ID, 0, 4);
-        String headerString = new String(header);
-        String peer = Integer.toString(Util.bytesToInt(ID));
-        if (headerString.equals(Constants.HANDSHAKE) && peer.equals(handshakePeer)) {
-            zeroes = new byte[10];
+    public boolean reciprocateHandshake(String myID) throws IOException { //myID is the peerID of the peer calling this function (peerProcess) ("Hi, I'm...")
+        if (checkHandshake()) {
+            System.out.println("Entered reciprocate handshake");
+            byte[] header = ByteBuffer.allocate(18).put(Constants.HANDSHAKE.getBytes()).array();;
+            byte[] zeroes = new byte[10];
+            byte[] peerID = ByteBuffer.allocate(4).put(myID.getBytes()).array();
             Arrays.fill(zeroes, (byte) 0);
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             out.write(header);
             out.write(zeroes);
-            out.write(myID.getBytes());
+            out.write(peerID);
+//            out.write(myID.getBytes());
+            System.out.println("Attempting to send " + out.toString());
             this.send(out.toByteArray());
             return true; //NOT FINISHED
         } else {
@@ -78,7 +74,7 @@ public class Connection {
         }
     }
 
-    public boolean initiateHandshake(String myID, String handshakePeer) throws IOException {
+    public boolean initiateHandshake(String myID) throws IOException { //myID is the peerID of the peer calling this function (peerProcess)
         byte[] header = ByteBuffer.allocate(18).put(Constants.HANDSHAKE.getBytes()).array();
         byte[] zeroes = new byte[10];
         byte[] peerID = ByteBuffer.allocate(4).put(myID.getBytes()).array();
@@ -88,7 +84,30 @@ public class Connection {
         out.write(zeroes);
         out.write(peerID);
         this.send(out.toByteArray());
-        return true; //not finished
+        if (checkHandshake()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+
+    public boolean checkHandshake() throws IOException {
+        byte[] header = new byte[18];
+        byte[] zeroes = new byte[10];
+        byte[] ID = new byte[4];
+        in.read(header, 0, 18);
+        in.read(zeroes, 0, 10);
+        in.read(ID, 0, 4);
+        String headerString = new String(header);
+//        String peer = Integer.toString(Util.bytesToInt(ID));
+        String peer = new String(ID);
+        System.out.println("In checkHandshake(). Received " + headerString + " from peer " + peer);
+        if (headerString.equals(Constants.HANDSHAKE) && peer.equals(this.peerID)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public Message receive() throws IOException {
@@ -105,6 +124,10 @@ public class Connection {
             in.read(payload, 0, msgLength); //Read remaining bytes into payload. (or payload = is.readAllBytes()? Or does that only work with Java 9?)
             return new Message(this.peerID, msgLength, messageType, payload); //create and return a new message
         }
+    }
+
+    public void close() throws IOException {
+        this.socket.close();
     }
 
 

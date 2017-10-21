@@ -11,15 +11,70 @@ public class Client {
 
 	public void Client() {}
 
-	void run()
+
+	void run() {
+        try{
+            requestSocket = new Socket("localhost", 8001);
+            Connection connection = new Connection("SERV", requestSocket); //added this
+            System.out.println("Connected to localhost in port 8000");
+            out = requestSocket.getOutputStream();
+            out.flush();
+            in = requestSocket.getInputStream();
+
+            try {
+                Thread.sleep(3000);
+            } catch(InterruptedException e) {
+                System.out.println("PROBLEM WITH SLEEP IN CLIENT");
+            }
+
+            if(connection.initiateHandshake("CLIE")){
+                System.out.println("HandShake successful");
+            } else {
+                System.out.println("HandShake failure");
+            }
+
+
+        }
+        catch (ConnectException e) {
+            System.err.println("Connection refused. You need to initiate a server first.");
+        }
+        catch(UnknownHostException unknownHost){
+            System.err.println("You are trying to connect to an unknown host!");
+        }
+        catch(IOException ioException){
+            ioException.printStackTrace();
+        }
+        finally{
+            //Close connections
+            try{
+                in.close();
+                out.close();
+                requestSocket.close();
+            }
+            catch(IOException ioException){
+                ioException.printStackTrace();
+            }
+        }
+
+
+    }
+
+
+	void runOld()
 	{
 		try{
 			requestSocket = new Socket("localhost", 8001);
-//			Connection connection = new Connection("ME", requestSocket);
+			Connection connection = new Connection("SERV", requestSocket); //added this
 			System.out.println("Connected to localhost in port 8000");
 			out = requestSocket.getOutputStream();
 			out.flush();
 			in = requestSocket.getInputStream();
+
+			if(connection.initiateHandshake("CLIE")){
+			    System.out.println("HandShake successful");
+            } else {
+                System.out.println("HandShake failure");
+            }
 
 			for (int i = 0; i < 4; i++) {
 				byte[] length = ByteBuffer.allocate(4).putInt(16).array();
