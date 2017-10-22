@@ -1,19 +1,21 @@
-
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.HashSet;
 
-public abstract class ConnectionHandler {
+public class OutConnectHandler implements Runnable {
 
     private Socket socket;
-    private HashSet<String> expectedPeers;
     private OutputStream out;
     private InputStream in;
+    private String peerID;
 
-    public ConnectionHandler(HashSet<String> peers, Socket socket) {
-        this.expectedPeers = peers;
+    public OutConnectHandler(String peerID, Socket socket) {
+        this.peerID = peerID;
         this.socket = socket;
         try {
             this.out = this.socket.getOutputStream();
@@ -34,12 +36,34 @@ public abstract class ConnectionHandler {
         String headerString = new String(header);
         String peer = new String(ID);
         System.out.println("In checkHandshake(). Received " + headerString + " from peer " + peer);
-        if (headerString.equals(Constants.HANDSHAKE) && expectedPeers.contains(peer)) {
+        if (headerString.equals(Constants.HANDSHAKE) && peer.equals(this.peerID)) {
             return true; //will check whether this is a valid peer in peerProcess
         } else {
             return false;
         }
     }
 
+    public void initiateHandshake(String myID) throws IOException { //myID is the peerID of the peer calling this function (peerProcess)
+        byte[] header = ByteBuffer.allocate(18).put(Constants.HANDSHAKE.getBytes()).array();
+        byte[] zeroes = new byte[10];
+        byte[] peerID = ByteBuffer.allocate(4).put(myID.getBytes()).array();
+        Arrays.fill(zeroes, (byte) 0);
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        out.write(header);
+        out.write(zeroes);
+        out.write(peerID);
+//        this.send(out.toByteArray());
+        this.out.write(out.toByteArray());
+//        if (checkHandshake()) {
+//            return true;
+//        } else {
+//            return false;
+//        }
+    }
 
+
+    @Override
+    public void run() {
+
+    }
 }

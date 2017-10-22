@@ -20,12 +20,12 @@ public class Client {
             out = requestSocket.getOutputStream();
             out.flush();
             in = requestSocket.getInputStream();
-
-            try {
-                Thread.sleep(3000);
-            } catch(InterruptedException e) {
-                System.out.println("PROBLEM WITH SLEEP IN CLIENT");
-            }
+//
+//            try {
+//                Thread.sleep(3000);
+//            } catch(InterruptedException e) {
+//                System.out.println("PROBLEM WITH SLEEP IN CLIENT");
+//            }
 
             if(connection.initiateHandshake("CLIE")){
                 System.out.println("HandShake successful");

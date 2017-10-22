@@ -23,6 +23,17 @@ public class Connection {
         }
     }
 
+    public Connection(Socket socket) {
+        this.socket = socket;
+        try {
+            this.out = this.socket.getOutputStream();
+            this.in = this.socket.getInputStream();
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("Unable to establish IO stream in Connection");
+        }
+    }
+
     public void send(byte[] out) {
         try {
             this.out.write(out);
@@ -32,41 +43,34 @@ public class Connection {
         }
     }
 
-//    public byte[] receive() { //need to double check on what multiple reads do
-//        //probably want to readAllBytes then use a ByteInputStreamReader to parse the length field and message type
-////        byte[] message = new byte[Constants.MESSAGE_SIZE]; //better idea might be to read first 4 bytes to get size, then allocate based on that
-//        byte[] lengthField = new byte[4];
-////        byte [] lengthField = ByteBuffer.allocate(4);
-//        try {
-//            this.in.read(lengthField, 0, 4);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//            System.out.println("Unable to read length in Connection.receive");
-//        }
-//        int msgLength = Util.bytesToInt(lengthField);
-//        byte[] message = new byte[msgLength + 1]; //need to consider the
-//        try {
-//            message = this.in.readAllBytes(); //will this also read in the message length field again?
-//        } catch(IOException e) {
-//            e.printStackTrace();
-//        }
-//        return message;
-//    }
 
+    public boolean checkHandshake() throws IOException {
+        byte[] header = new byte[18];
+        byte[] zeroes = new byte[10];
+        byte[] ID = new byte[4];
+        in.read(header, 0, 18);
+        in.read(zeroes, 0, 10);
+        in.read(ID, 0, 4);
+        String headerString = new String(header);
+        String peer = new String(ID);
+        System.out.println("In checkHandshake(). Received " + headerString + " from peer " + peer);
+//        if (headerString.equals(Constants.HANDSHAKE) && peer.equals(this.peerID)) {
+        if (headerString.equals(Constants.HANDSHAKE)) {
+            return true; //will check whether this is a valid peer in peerProcess
+        } else {
+            return false;
+        }
+    }
 
     public boolean reciprocateHandshake(String myID) throws IOException { //myID is the peerID of the peer calling this function (peerProcess) ("Hi, I'm...")
         if (checkHandshake()) {
             System.out.println("Entered reciprocate handshake");
-            byte[] header = ByteBuffer.allocate(18).put(Constants.HANDSHAKE.getBytes()).array();;
             byte[] zeroes = new byte[10];
-            byte[] peerID = ByteBuffer.allocate(4).put(myID.getBytes()).array();
             Arrays.fill(zeroes, (byte) 0);
             ByteArrayOutputStream out = new ByteArrayOutputStream();
-            out.write(header);
+            out.write(Constants.HANDSHAKE.getBytes());
             out.write(zeroes);
-            out.write(peerID);
-//            out.write(myID.getBytes());
-            System.out.println("Attempting to send " + out.toString());
+            out.write(myID.getBytes());
             this.send(out.toByteArray());
             return true; //NOT FINISHED
         } else {
@@ -85,25 +89,6 @@ public class Connection {
         out.write(peerID);
         this.send(out.toByteArray());
         if (checkHandshake()) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-
-    public boolean checkHandshake() throws IOException {
-        byte[] header = new byte[18];
-        byte[] zeroes = new byte[10];
-        byte[] ID = new byte[4];
-        in.read(header, 0, 18);
-        in.read(zeroes, 0, 10);
-        in.read(ID, 0, 4);
-        String headerString = new String(header);
-//        String peer = Integer.toString(Util.bytesToInt(ID));
-        String peer = new String(ID);
-        System.out.println("In checkHandshake(). Received " + headerString + " from peer " + peer);
-        if (headerString.equals(Constants.HANDSHAKE) && peer.equals(this.peerID)) {
             return true;
         } else {
             return false;

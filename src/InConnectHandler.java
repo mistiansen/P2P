@@ -1,18 +1,20 @@
-
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.util.Arrays;
 import java.util.HashSet;
 
-public abstract class ConnectionHandler {
+public class InConnectHandler implements Runnable {
+
 
     private Socket socket;
     private HashSet<String> expectedPeers;
     private OutputStream out;
     private InputStream in;
 
-    public ConnectionHandler(HashSet<String> peers, Socket socket) {
+    public InConnectHandler(HashSet<String> peers, Socket socket) {
         this.expectedPeers = peers;
         this.socket = socket;
         try {
@@ -42,4 +44,26 @@ public abstract class ConnectionHandler {
     }
 
 
+    public void reciprocateHandshake(String myID) throws IOException { //myID is the peerID of the peer calling this function (peerProcess) ("Hi, I'm...")
+//        if (checkHandshake()) {
+        System.out.println("Entered reciprocate handshake");
+        byte[] zeroes = new byte[10];
+        Arrays.fill(zeroes, (byte) 0);
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        out.write(Constants.HANDSHAKE.getBytes());
+        out.write(zeroes);
+        out.write(myID.getBytes());
+
+        this.out.write(out.toByteArray());
+//            return true; //NOT FINISHED
+//        } else {
+//            return false;
+//        }
+    }
+
+
+    @Override
+    public void run() {
+
+    }
 }
