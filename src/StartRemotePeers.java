@@ -27,7 +27,8 @@ public class StartRemotePeers implements Runnable {
             BufferedReader in = new BufferedReader(new FileReader("PeerInfo.cfg"));
             while ((st = in.readLine()) != null) {
                 String[] tokens = st.split("\\s+");
-                this.peerInfoVector.addElement(new RemotePeerInfo(tokens[0], tokens[1], tokens[2]));
+                int port = Integer.parseInt(tokens[2]);
+                this.peerInfoVector.addElement(new RemotePeerInfo(tokens[0], tokens[1], port));
             }
             in.close();
         } catch (Exception ex) {
@@ -46,10 +47,10 @@ public class StartRemotePeers implements Runnable {
             // start clients at remote hosts
             for (int i = 0; i < peerInfoVector.size(); i++) {
                 RemotePeerInfo pInfo = (RemotePeerInfo) peerInfoVector.elementAt(i);
-                System.out.println("Start remote peer " + pInfo.peerId + " at " + pInfo.peerAddress);
+                System.out.println("Start remote peer " + pInfo.getPeerId() + " at " + pInfo.getPeerHost());
                 // *********************** IMPORTANT *************************** //
                 // If your program is JAVA, use this line.
-                Runtime.getRuntime().exec("ssh " + pInfo.peerAddress + " cd " + path + "; java peerProcess " + pInfo.peerId);
+                Runtime.getRuntime().exec("ssh " + pInfo.getPeerHost() + " cd " + path + "; java peerProcess " + pInfo.getPeerId());
             }
             System.out.println("Starting all remote peers has done.");
         } catch (Exception ex) {

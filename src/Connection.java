@@ -105,7 +105,7 @@ public class Connection {
             return new Message(this.peerID, msgLength, messageType);
         } else {
             //byte[] payload = ByteBuffer.allocate(msgLength).array(); //does this work?
-            byte[] payload = new byte[msgLength]; //allocate a byte array for the message payload
+            byte[] payload = new byte[msgLength]; //allocate a byte array for the message payload. OR is it msgLength - 1 because of msgType field?
             in.read(payload, 0, msgLength); //Read remaining bytes into payload. (or payload = is.readAllBytes()? Or does that only work with Java 9?)
             return new Message(this.peerID, msgLength, messageType, payload); //create and return a new message
         }

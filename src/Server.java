@@ -1,6 +1,7 @@
 import java.net.*;
 import java.io.*;
 import java.nio.ByteBuffer;
+import java.util.BitSet;
 
 
 public class Server {
@@ -51,6 +52,11 @@ public class Server {
                 } else {
                     System.out.println("Handshake with client failed");
                 }
+                byte[] bitset = new byte[200];
+                in.read(bitset);
+                BitSet bs = BitSet.valueOf(bitset);
+                System.out.println(bs);
+                System.out.println(bs.get(45));
 
 
             } catch (IOException e) {

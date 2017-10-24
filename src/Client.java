@@ -32,6 +32,12 @@ public class Client {
             } else {
                 System.out.println("HandShake failure");
             }
+            BitSet bs = new BitSet();
+            bs.set(0, 10);
+            bs.set(40,50);
+            bs.set(1000,1009);
+            byte[] b = bs.toByteArray();
+            out.write(b);
 
 
         }
