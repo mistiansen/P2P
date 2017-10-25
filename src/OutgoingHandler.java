@@ -26,7 +26,7 @@ public class OutgoingHandler implements Runnable {
 
     private byte[] createOutgoing(Message message) throws IOException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        out.write(ByteBuffer.allocate(4).putInt(message.getLength()).array());
+        out.write(ByteBuffer.allocate(4).putInt(message.getPayloadLength() + 1).array()); //have to add 1 for the type field
         out.write((byte) message.getType());
         out.write(message.getPayload());
         return out.toByteArray();

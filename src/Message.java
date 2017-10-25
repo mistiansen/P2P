@@ -1,20 +1,20 @@
 public class Message {
 
     private String from; //peerID of sender
-    private int length;
+    private int payloadLength;
     private int type;
     private byte[] payload;
 
-    public Message(String from, int length, int type, byte[] payload) {
+    public Message(String from, int payloadLength, int type, byte[] payload) {
         this.from = from; // peerID of sender
-        this.length = length;
+        this.payloadLength = payloadLength;
         this.type = type;
         this.payload = payload;
     }
 
-    public Message(String from, int length, int type) { //not all messages have a payload
+    public Message(String from, int payloadLength, int type) { //not all messages have a payload
         this.from = from;
-        this.length = length;
+        this.payloadLength = payloadLength;
         this.type = type;
     }
 
@@ -22,12 +22,12 @@ public class Message {
         return from;
     }
 
-    public int getLength() {
-        return length;
+    public int getPayloadLength() {
+        return payloadLength;
     }
 
-    public void setLength(int length) {
-        this.length = length;
+    public void setPayloadLength(int payloadLength) {
+        this.payloadLength = payloadLength;
     }
 
     public int getType() {

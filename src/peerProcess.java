@@ -1,5 +1,4 @@
 
-
 import java.io.*;
 import java.net.*;
 import java.nio.ByteBuffer;
@@ -20,8 +19,6 @@ public class peerProcess {
 
     private HashSet<IncomingHandler> inHandlers;
     private HashSet<OutgoingHandler> outHandlers;
-//    private HashMap<String, IncomingHandler> peerInHandlers; //maps from peerID to IncomingHandler for that peer (unnecessary because just need a peer's outbox)
-//    private HashMap<String, OutgoingHandler> peerOutHandlers; //maps from peerID to OutgoingHandler for that peer (unnecessary because just need a peer's outbox)
 
     private HashSet<String> toAccept; // peers to accept incoming connections from
     private HashSet<RemotePeerInfo> toInitiate; //peers to initiate connections to
@@ -189,15 +186,32 @@ public class peerProcess {
             out.write(indexHolder);
             out.write(content);
             byte[] payload = out.toByteArray();
-            Message response = new Message(this.myPeerID, Constants.PIECE_SIZE + 5, Constants.PIECE, payload); // message len is the size of the piece + 1 byte msg type + 4 bytes piece index field
+            Message response = new Message(this.myPeerID, Constants.PIECE_SIZE + 4, Constants.PIECE, payload); // message len is the size of the piece + 4 bytes piece index field
             outboxes.get(message.getFrom()).put(response);
         } else {
             return;
         }
     }
 
+    /* Do we just store the pieces in a data structure then write to file when all present? */
     private void processPiece(Message message) {
+        int pieceLength = message.getPayloadLength() - 4; //the length of the piece should be the messageLength - type portion - index portion
+        InputStream is = new ByteArrayInputStream(message.getPayload());
+        byte[] indexField = new byte[4]; //grab the first 4 bytes, which hold the message length
+        byte[] piece = new byte[pieceLength];
 
+        try {
+            is.read(indexField, 0, 4); //read the first 4 bytes into byte array
+            is.read(piece, 0, pieceLength);
+            int pieceIndex = Util.bytesToInt(indexField);
+            FileOutputStream fileOutputStream = new FileOutputStream(Constants.FILE_NAME);
+            fileOutputStream.write(piece, pieceIndex, pieceLength); //guess can write before have all pieces with this offset method
+            bitfield.set(pieceIndex); //think pieceIndex is index of first bit of a piece
+        } catch (FileNotFoundException e) {
+            System.out.println("Trying to process a piece but file not found.");
+        } catch (IOException e) {
+            System.out.println("IOException in peerProcess processPiece() method");
+        }
     }
 
     private void timeout() {
@@ -228,25 +242,11 @@ public class peerProcess {
     }
 
 
-
-
-
     private class InConnectHandler {
 
-        private OutputStream out;
+        private OutputStream out; //set in the accept connections method
         private InputStream in;
         private Socket socket;
-
-        /* So this isn't necessary because these are set in the acceptConnections method */
-//        private void setSocket(Socket socket) {
-//            this.socket = socket;
-//            try {
-//                this.in = this.socket.getInputStream();
-//                this.out = this.socket.getOutputStream();
-//            } catch (IOException e) {
-//                System.out.println("Unable to get IO stream in InConnectHandler for socket");
-//            }
-//        }
 
 
         private boolean checkHandshake() throws IOException {
@@ -284,7 +284,7 @@ public class peerProcess {
         private void sendBitfield() throws IOException {
             byte type = (byte) Constants.BITFIELD;
             byte[] bits = bitfield.toByteArray();
-            int msgLength = bits.length + 1; // add 1 because of the message type byte. Problem: bits.length returns index of highest set bit
+            int msgLength = bits.length + 1; // add 1 because of the message type byte.
             byte[] length = ByteBuffer.allocate(4).putInt(msgLength).array();
 
             ByteArrayOutputStream outStream = new ByteArrayOutputStream();

@@ -95,19 +95,20 @@ public class Connection {
         }
     }
 
+    /* Our message length field does NOT include the message type field */
     public Message receive() throws IOException {
 //        InputStream is = new ByteArrayInputStream(msg);
         byte[] length = new byte[4]; //grab the first 4 bytes, which hold the message length
         in.read(length, 0, 4); //read the first 4 bytes into byte array
-        int msgLength = Util.bytesToInt(length); //convert the first 4 bytes to an int
+        int payloadLength = Util.bytesToInt(length) - 1; //convert the first 4 bytes to an int; subtract 1 for the message type
         int messageType = in.read(); //read the next byte, which holds the message type
         if (messageType == 0 || messageType == 1 || messageType == 2 || messageType == 3) { //choke, unchoke, interested, not_interested don't have payloads
-            return new Message(this.peerID, msgLength, messageType);
+            return new Message(this.peerID, payloadLength, messageType);
         } else {
             //byte[] payload = ByteBuffer.allocate(msgLength).array(); //does this work?
-            byte[] payload = new byte[msgLength]; //allocate a byte array for the message payload. OR is it msgLength - 1 because of msgType field?
-            in.read(payload, 0, msgLength); //Read remaining bytes into payload. (or payload = is.readAllBytes()? Or does that only work with Java 9?)
-            return new Message(this.peerID, msgLength, messageType, payload); //create and return a new message
+            byte[] payload = new byte[payloadLength]; //allocate a byte array for the message payload. OR is it msgLength - 1 because of msgType field?
+            in.read(payload, 0, payloadLength); //Read remaining bytes into payload. (or payload = is.readAllBytes()? Or does that only work with Java 9?)
+            return new Message(this.peerID, payloadLength, messageType, payload); //create and return a new message
         }
     }
 

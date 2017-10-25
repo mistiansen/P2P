@@ -57,7 +57,12 @@ public class Server {
                 BitSet bs = BitSet.valueOf(bitset);
                 System.out.println(bs);
                 System.out.println(bs.get(45));
-
+                System.out.println(bs.length());
+                System.out.println(bitset.length);
+                byte[] bitset2 = bs.toByteArray();
+                System.out.println(bitset2.length);
+                BitSet bs2 = BitSet.valueOf(bitset2);
+                System.out.println(bs2);
 
             } catch (IOException e) {
                 e.printStackTrace();
