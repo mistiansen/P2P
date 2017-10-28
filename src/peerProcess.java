@@ -36,8 +36,8 @@ public class peerProcess {
     // so when a piece is received this bitfield is adjusted. If get multiple pieces? I guess doesn't matter. Or can safely overwrite? Not an issue I think
     // remember, this is for just 1 peer. so we choose who gets requested and whether to send multiple requests. Have a requested BitSet?
     private boolean haveFile;
-    private BitSet bitfield;
-    private BitSet requested; // So maybe only send 1 request for a piece per round. Then when receive or at timeout, unset the bit.
+    private BitSet bitfield = new BitSet();
+    private BitSet requested = new BitSet(); // So maybe only send 1 request for a piece per round. Then when receive or at timeout, unset the bit.
 
 
     public peerProcess(String myPeerID) {
@@ -67,7 +67,13 @@ public class peerProcess {
                     peerInfo.put(tokens[0], peer);
                     peers.add(tokens[0]);
                 } else if(remotePeerID == Integer.parseInt(this.myPeerID)) {
-                    haveFile = Boolean.parseBoolean(tokens[3]);
+                    haveFile = Util.strToBool(tokens[3]);
+                    int numPieces = Constants.FILE_SIZE/Constants.PIECE_SIZE;
+                    if(haveFile) {
+                        this.bitfield.set(0, numPieces); //sets bits from 0 to numPieces exclusive (so a total of numPieces bits)
+                    } else {
+                        this.bitfield.clear(0, numPieces); //don't actually need to do this because the default is 0/false
+                    } //but then what does a receiver of this bitfield get? Nothing? Yeah...because don't actually need to send a bitfield if don't have the file
                 } else { //should never happen
                     System.out.println("Either parsed the wrong peerID when starting or the peerID for this process is not in the Config");
                     return; //how to fail gracefully?
@@ -144,6 +150,7 @@ public class peerProcess {
 
     private void processUnchoke(Message message) {
         chokingMe.remove(message.getFrom());
+        requestPiece(message.getFrom());
     }
 
     private void processInterested(Message message) { //Does an "interested" only apply to a single piece index? Or every piece? Looks like every piece.
@@ -214,9 +221,32 @@ public class peerProcess {
         }
     }
 
+    /* This is sent in response to an unchoke */
+    /* craft a message and put it in the outbox of the peer sending the unchoke */
+    private void requestPiece(String peer) {
+        BitSet toRequest = (BitSet) this.bitfield.clone();
+        toRequest.andNot(this.requested); //bits set in the bitfield that are not set in requested (bits needed but not requested)
+        int requestIndex = toRequest.nextSetBit(0); //get the next needed but not yet requested bit (piece that don't have)
+        try {
+            ByteArrayOutputStream payloadOut = new ByteArrayOutputStream();
+            payloadOut.write(ByteBuffer.allocate(4).putInt(requestIndex).array()); //have to add 1 for the type field
+            byte[] payload = payloadOut.toByteArray();
+            Message request = new Message(this.myPeerID, 5, Constants.REQUEST, payload); //payload length for requests is 1 byte type + 4 bytes piece index
+            outboxes.get(peer).put(request); //throws InterruptedException
+        } catch (IOException e) {
+            System.out.println("IOException in peerProcess' requestPiece method");
+        } catch (InterruptedException e) {
+            System.out.println("InterruptedException in peerProcess' requestPiece method");
+        }
+
+
+//        Message request = new Message(this.myPeerID, )
+
+    }
+
     private void timeout() {
 
-        requested.clear();
+        this.requested.clear();
 
     }
     
@@ -372,7 +402,6 @@ public class peerProcess {
             out.write(header);
             out.write(zeroes);
             out.write(peerID);
-//        this.send(out.toByteArray());
             this.out.write(out.toByteArray());
         }
 

@@ -34,10 +34,17 @@ public class Main {
 ////        System.out.println(bs.get(3345));
 //        bs.set(3345);
 //        bs.set(5);
-        bs.set(0, 10);
-        bs.set(40,50);
-        bs.set(1000,1009);
+        bs.set(0, 100);
+//        bs.set(40,50);
+//        bs.set(1000,1009);
 //        System.out.println(bs);
+        BitSet requested = new BitSet();
+        requested.set(0,20);
+        BitSet toRequest = (BitSet) bs.clone();
+        toRequest.andNot(requested);
+        System.out.println("this is toRequest bitset " + toRequest);
+        System.out.println(toRequest.nextSetBit(0));
+
         System.out.println(bs.get(45));
         System.out.println(bs.length());
         System.out.println(bs.size());
