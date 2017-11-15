@@ -39,7 +39,9 @@ public class peerProcess {
     private BitSet bitfield = new BitSet();
     private BitSet requested = new BitSet(); // So maybe only send 1 request for a piece per round. Then when receive or at timeout, unset the bit.
 
-
+    private Logger logger;
+    private int totalPieces = 0;
+    
     public peerProcess(String myPeerID) {
         this.myPeerID = myPeerID;
     }
@@ -50,7 +52,12 @@ public class peerProcess {
         peers = new HashSet<>();
         toInitiate = new HashSet<>(); // peers we will initiate connection to
         toAccept = new HashSet<>(); // peers we will accepts connections from
-
+        try {
+			logger = new Logger(myPeerID);
+		} catch (IOException e) {
+			 System.out.println(e.toString());
+		}
+        
         try {
             BufferedReader in = new BufferedReader(new FileReader("PeerInfo.cfg"));
             while ((st = in.readLine()) != null) {
@@ -146,23 +153,48 @@ public class peerProcess {
 
     private void processChoke(Message message) {
         chokingMe.add(message.getFrom());
+        try {
+			logger.logChokedByNeighbor(message.getFrom());
+		} catch (IOException e) { 
+			 System.out.println(e.toString());
+		}
     }
 
     private void processUnchoke(Message message) {
         chokingMe.remove(message.getFrom());
         requestPiece(message.getFrom());
+        try {
+			logger.logUnchokedByNeighbor(message.getFrom());
+		} catch (IOException e) { 
+			 System.out.println(e.toString());
+		}
     }
 
     private void processInterested(Message message) { //Does an "interested" only apply to a single piece index? Or every piece? Looks like every piece.
         interested.add(message.getFrom());
+        try {
+			logger.logRecievedInterested(message.getFrom());
+		} catch (IOException e) { 
+			 System.out.println(e.toString());
+		}
     }
 
     private void processNotInterested(Message message) {
         interested.remove(message.getFrom());
+        try {
+			logger.logRecievedNotInterested(message.getFrom());
+		} catch (IOException e) { 
+			 System.out.println(e.toString());
+		}
     }
 
     private void processHave(Message message) throws InterruptedException {
         int pieceIndex = Util.bytesToInt(message.getPayload());
+        try {
+			logger.logRecievedHave(message.getFrom(), Integer.toString(pieceIndex));
+		} catch (IOException e) { 
+			 System.out.println(e.toString());
+		}
         int responseType;
         int responseLength = 1; // 1 byte for message type. No payload for 'interested' and not_interested' messages.
         if(bitfield.get(pieceIndex)) {
@@ -214,6 +246,11 @@ public class peerProcess {
             FileOutputStream fileOutputStream = new FileOutputStream(Constants.FILE_NAME);
             fileOutputStream.write(piece, pieceIndex, pieceLength); //guess can write before have all pieces with this offset method
             bitfield.set(pieceIndex); //think pieceIndex is index of first bit of a piece
+            try {
+    			logger.logDoneDownloadingPiece(message.getFrom(), Integer.toString(pieceIndex), ++totalPieces);
+    		} catch (IOException e) { 
+    			 System.out.println(e.toString());
+    		}
         } catch (FileNotFoundException e) {
             System.out.println("Trying to process a piece but file not found.");
         } catch (IOException e) {
@@ -290,7 +327,12 @@ public class peerProcess {
             String peer = new String(ID);
             System.out.println("In checkHandshake(). Received " + headerString + " from peer " + peer);
             if (headerString.equals(Constants.HANDSHAKE) && toAccept.contains(peer)) { //toAccept is a HashSet in peerProcess specifying expected incoming connections
-                return true; //will check whether this is a valid peer in peerProcess
+            	try {
+        			logger.logAcceptedTCPConnection(peer);
+        		} catch (IOException e) { 
+        			 System.out.println(e.toString());
+        		}
+            	return true; //will check whether this is a valid peer in peerProcess
             } else {
                 return false;
             }
@@ -387,6 +429,11 @@ public class peerProcess {
             String peer = new String(ID);
             System.out.println("In checkHandshake(). Received " + headerString + " from peer " + peer);
             if (headerString.equals(Constants.HANDSHAKE) && peer.equals(ConnectToPeerID)) {
+            	try {
+        			logger.logMadeTCPConnection(ConnectToPeerID);
+        		} catch (IOException e) { 
+        			 System.out.println(e.toString());
+        		}
                 return true; //will check whether this is a valid peer in peerProcess
             } else {
                 return false;
