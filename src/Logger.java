@@ -20,7 +20,7 @@ public class Logger {
     public void logMadeTCPConnection(String connectedPeerID) throws IOException{
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime());
         logFile.append(timeStamp + "Peer " + peerID +
-                " makes a connection to Peer " + connectedPeerID + "\n");
+                " makes a connection to Peer " + connectedPeerID + "\n"-);
     }
 
     // when the peer accepted the connection from another peer
