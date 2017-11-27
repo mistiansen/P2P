@@ -13,16 +13,39 @@ import java.util.Calendar;
  * done
  */
 
-public class Logger {
+class Logger {
+	
+	private static Logger singleton = null;
 
-    private String peerID;
-    private BufferedWriter logFile;
-
-    public Logger(String peerID) throws IOException{
+    private Logger(String peerID) throws IOException {
         this.peerID = peerID;
         String fileName = "project/log_peer_" + peerID + ".log";
         logFile = new BufferedWriter(new FileWriter(fileName));
     }
+
+    public static Logger getInstance() {
+        if(singleton == null) {
+            throw new AssertionError("You have to call init first");
+        }
+
+        return singleton;
+    }
+    
+    // must call init before getInstance()
+    public synchronized static Logger init(String peerID) throws IOException {
+        if (singleton != null)
+        {
+            // in my opinion this is optional, but for the purists it ensures
+            // that you only ever get the same instance when you call getInstance
+            throw new AssertionError("You already initialized me");
+        }
+
+        singleton = new Logger(peerID);
+        return singleton;
+    }
+
+    private String peerID;
+    private BufferedWriter logFile;
 
     // when the peer initiated the connection to another peer
     public void logMadeTCPConnection(String connectedPeerID) throws IOException{
@@ -130,6 +153,6 @@ public class Logger {
     	logger.logFileDownloadComplete();
     	logger.done();
     }
-    */
-
+	*/
+    
 }
