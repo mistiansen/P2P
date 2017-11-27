@@ -56,10 +56,11 @@ public class peerProcess implements Runnable {
         toInitiate = new HashSet<>(); // peers we will initiate connection to
         toAccept = new HashSet<>(); // peers we will accepts connections from
         try {
-			logger = new Logger(myPeerID);
+        	Logger.init(myPeerID);
+			logger = Logger.getInstance();
 		} catch (IOException e) {
 			 System.out.println(e.toString());
-		}
+	}
         
         try {
             BufferedReader in = new BufferedReader(new FileReader(configFile));
