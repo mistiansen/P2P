@@ -2,15 +2,21 @@
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 public class OutgoingHandler implements Runnable {
 
     private Connection connection;
-    private BlockingQueue<Message> outbox;
+    private BlockingQueue<Message> outbox = new LinkedBlockingQueue<>();
 
     public OutgoingHandler(BlockingQueue<Message> outbox, Connection connection) {
         this.outbox = outbox;
+        this.connection = connection;
+    }
+
+    public OutgoingHandler(Connection connection) {
         this.connection = connection;
     }
 

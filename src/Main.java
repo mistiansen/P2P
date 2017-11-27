@@ -1,29 +1,16 @@
 
 
 
-import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.net.UnknownHostException;
-import java.nio.ByteBuffer;
-import java.util.Arrays;
 import java.util.BitSet;
-import java.util.HashSet;
+
 
 public class Main {
 
-    public static void main(String[] args) {
-//        HashSet hs = new HashSet();
-//        hs.add("1001");
-//        hs.add("1002");
-//        hs.add(1);
-//        System.out.println(hs);
-//        System.out.println(hs.contains("1002"));
-//        System.out.println(hs.contains(1002));
-//
-//        byte [] bytes = ByteBuffer.allocate(4).putInt(17291729).array();
-
+    public void BitSetTests() {
 
 //        int piecesize = 32768;
 //        int numPieces = (int) Math.ceil((filesize / piecesize) * 1.0);
@@ -59,6 +46,42 @@ public class Main {
 //        Arrays.fill(zeroes, (byte) 0);
 //        System.out.println(zeroes.length);
 //        System.out.println(Util.bytesToInt(zeroes));
+
+        ////        System.out.println(received.get(45));
+//        received.set(11, 22);
+//        BitSet news;
+//        news = (BitSet) bs.clone();
+//        bs.or(received);
+////        System.out.println(b);
+//        System.out.println(bs.toString());
+//        System.out.println(news.toString());
+//        bs.andNot(news);
+//        System.out.println(bs.toString());
+//
+//
+////        System.out.println(bs.size());
+////        System.out.println(bs.get(3345));
+
+
+    }
+
+    public void StartPeers() {
+
+
+    }
+
+    public static void main(String[] args) {
+//        HashSet hs = new HashSet();
+//        hs.add("1001");
+//        hs.add("1002");
+//        hs.add(1);
+//        System.out.println(hs);
+//        System.out.println(hs.contains("1002"));
+//        System.out.println(hs.contains(1002));
+//
+//        byte [] bytes = ByteBuffer.allocate(4).putInt(17291729).array();
+
+
         String boolStr = "1";
         System.out.println(Util.strToBool(boolStr));
         System.out.println(Constants.MESSAGE_SIZE);
@@ -75,25 +98,6 @@ public class Main {
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
-
-
-
-
-////        System.out.println(received.get(45));
-//        received.set(11, 22);
-//        BitSet news;
-//        news = (BitSet) bs.clone();
-//        bs.or(received);
-////        System.out.println(b);
-//        System.out.println(bs.toString());
-//        System.out.println(news.toString());
-//        bs.andNot(news);
-//        System.out.println(bs.toString());
-//
-//
-////        System.out.println(bs.size());
-////        System.out.println(bs.get(3345));
-
 
     }
 

@@ -15,12 +15,12 @@ public final class Constants {
     public static final String HANDSHAKE = "P2PFILESHARINGPROJ";
     public static final int CONNECT_TIMEOUT = 10000; // wait for 10 secs (10,000 ms)
 
-    public static int NUM_PREF_NEIGHBORS;
-    public static int UNCHOKE_INTERVAL;
-    public static int OPT_UNCHOKE_INTERVAL;
-    public static String FILE_NAME;
-    public static int FILE_SIZE;
-    public static int PIECE_SIZE;
+    public static int NUM_PREF_NEIGHBORS = 2;
+    public static int UNCHOKE_INTERVAL = 50;
+    public static int OPT_UNCHOKE_INTERVAL = 15;
+    public static String FILE_NAME = "TheFile.dat";
+    public static int FILE_SIZE = 1000232;
+    public static int PIECE_SIZE = 32768;
 
     public static void setMessageSize(int messageSize) {
         MESSAGE_SIZE = messageSize;

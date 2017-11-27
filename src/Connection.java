@@ -3,6 +3,7 @@ import java.io.*;
 import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
+import java.util.BitSet;
 
 public class Connection {
 
@@ -94,6 +95,21 @@ public class Connection {
             return false;
         }
     }
+
+    private void sendBitfield(BitSet bitfield) throws IOException {
+        byte type = (byte) Constants.BITFIELD;
+        byte[] bits = bitfield.toByteArray();
+        int msgLength = bits.length + 1; // add 1 because of the message type byte.
+        byte[] length = ByteBuffer.allocate(4).putInt(msgLength).array();
+
+        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+        outStream.write(length);
+        outStream.write(type);
+        outStream.write(bits);
+        this.out.write(outStream.toByteArray());
+
+    }
+
 
     /* Our message length field does NOT include the message type field */
     public Message receive() throws IOException {

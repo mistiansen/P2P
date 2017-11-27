@@ -1,36 +1,39 @@
 
+
 import java.io.*;
 import java.net.*;
 import java.nio.ByteBuffer;
 import java.util.*;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicIntegerArray;
 
-public class peerProcess {
+public class peerProcess implements Runnable {
 
     private String myPeerID;
-    private int port;
+    private int myPort;
     private int numConnecting;
     private int numConnectTo;
 
-    private BlockingQueue<Message> inbox; //one inbox for this process
-    private HashMap<String, BlockingQueue> outboxes; //maps a peerID to its outbox
+    private BlockingQueue<Message> inbox = new LinkedBlockingQueue<>(); //one inbox for this process. Look into timed BlockingQueue "offer" method for timeout?
+    private HashMap<String, BlockingQueue> outboxes = new HashMap<>(); //maps a peerID to its outbox. Look into timed BlockingQueue "offer" method for timeout?
 
-    private HashSet<IncomingHandler> inHandlers;
-    private HashSet<OutgoingHandler> outHandlers;
+    private HashSet<IncomingHandler> inHandlers = new HashSet<>(); //one IncomingHandler for each connection to another peer
+    private HashSet<OutgoingHandler> outHandlers = new HashSet<>(); //one OutgoinggHandler for each connection to another peer
 
     private HashSet<String> toAccept; // peers to accept incoming connections from
     private HashSet<RemotePeerInfo> toInitiate; //peers to initiate connections to
-    private HashSet<String> peers;
-    private HashSet<String> choked;
-    private HashSet<String> unchoked;
-    private HashSet<String> interested;
-    private HashSet<String> chokingMe;
-//    private ConcurrentHashMap<String, BitSet> peerPieces; //maps from peerID to the bitfield for that peer (which pieces that peer has)
-    private HashMap<String, BitSet> peerPieces; //don't actually see a need for concurrency here, because processing inbox serially in 1 thread.
-    /* Do we need to know bitfields for each peer? I guess so to be able to make requests. Updated on receipt of "have" message. */
+    private HashSet<String> peers; //hashSet of PeerID strings
     private HashMap<String, RemotePeerInfo> peerInfo;
+    private HashSet<String> choked = new HashSet<>();
+    private HashSet<String> unchoked = new HashSet<>();
+    private HashSet<String> interested = new HashSet<>();
+    private HashSet<String> chokingMe = new HashSet<>();
+//    private ConcurrentHashMap<String, BitSet> peerPieces; //maps from peerID to the bitfield for that peer (which pieces that peer has)
+    private HashMap<String, BitSet> peerPieces = new HashMap<>(); //don't actually see a need for concurrency here, because processing inbox serially in 1 thread.
+    /* Do we need to know bitfields for each peer? I guess so to be able to make requests. Updated on receipt of "have" message. */
 
     private AtomicIntegerArray pieces; //create a new class with this underneath? Then use it like a bitset? No no no...don't need concurrency here. Just update as get pieces.
     // so when a piece is received this bitfield is adjusted. If get multiple pieces? I guess doesn't matter. Or can safely overwrite? Not an issue I think
@@ -46,7 +49,7 @@ public class peerProcess {
         this.myPeerID = myPeerID;
     }
 
-    public void processConfig() {
+    public void processPeerConfig(String configFile) { //have to do this here so know what connections to initiate/wait for
         String st;
         peerInfo = new HashMap<>();
         peers = new HashSet<>();
@@ -59,7 +62,7 @@ public class peerProcess {
 		}
         
         try {
-            BufferedReader in = new BufferedReader(new FileReader("PeerInfo.cfg"));
+            BufferedReader in = new BufferedReader(new FileReader(configFile));
             while ((st = in.readLine()) != null) {
                 String[] tokens = st.split("\\s+");
                 int remotePeerID = Integer.parseInt(tokens[0]);
@@ -69,12 +72,16 @@ public class peerProcess {
                     toInitiate.add(peer);
                     peerInfo.put(tokens[0], peer);
                     peers.add(tokens[0]);
+                    numConnectTo++;
                 } else if(remotePeerID > Integer.parseInt(this.myPeerID)) { //if the peerID in the config is greater than my peerID, expect incoming connection
                     toAccept.add(tokens[0]);
                     peerInfo.put(tokens[0], peer);
                     peers.add(tokens[0]);
+                    numConnecting++;
                 } else if(remotePeerID == Integer.parseInt(this.myPeerID)) {
                     haveFile = Util.strToBool(tokens[3]);
+                    myPort = Integer.parseInt(tokens[2]);
+                    System.out.println("my peerID is: " + this.myPeerID + ". My port is : " + myPort);
                     int numPieces = Constants.FILE_SIZE/Constants.PIECE_SIZE;
                     if(haveFile) {
                         this.bitfield.set(0, numPieces); //sets bits from 0 to numPieces exclusive (so a total of numPieces bits)
@@ -287,13 +294,18 @@ public class peerProcess {
 
     }
     
-    private void run() {
-        processConfig();
+    public void run() {
+        try {
+            ConfigParser.parseConfig(("config.cfg"));
+        } catch (FileNotFoundException e) {
+            System.out.println("Couldn't find the config file specified. Using defaults.");
+        }
+        processPeerConfig("PeerInfo.cfg");
         new InConnectHandler().acceptConnections();
         new OutConnectHandler().requestConnections();
         Iterator peerIterator = peers.iterator();
-        while(peerIterator.hasNext()) {
-
+        while (peerIterator.hasNext()) {
+            System.out.println("In peerProcess for peer " + myPeerID + " here are peers: " + peerIterator.next());
         }
     }
 
@@ -304,6 +316,54 @@ public class peerProcess {
         String peerID = args[0];
         peerProcess me = new peerProcess(peerID);
         me.run();
+
+
+    }
+
+    private class ConnectHandler {
+        private OutputStream out;
+        private InputStream in;
+        private Socket socket;
+
+
+
+        private boolean checkHandshake(String ConnectToPeerID) throws IOException {
+            byte[] header = new byte[18];
+            byte[] zeroes = new byte[10];
+            byte[] ID = new byte[4];
+            in.read(header, 0, 18);
+            in.read(zeroes, 0, 10);
+            in.read(ID, 0, 4);
+            String headerString = new String(header);
+            String peer = new String(ID);
+            System.out.println("In checkHandshake(). Received " + headerString + " from peer " + peer);
+            if (headerString.equals(Constants.HANDSHAKE) && peer.equals(ConnectToPeerID)) {
+                try {
+                    logger.logMadeTCPConnection(ConnectToPeerID);
+                } catch (IOException e) {
+                    System.out.println(e.toString());
+                }
+                return true; //will check whether this is a valid peer in peerProcess
+            } else {
+                return false;
+            }
+        }
+
+        /* Because peers don't have to send bitfields, don't add logic for handling their incoming bitfields here.
+    * Instead, have that as a method in peerProcess so that peerProcess can process an incoming bitfield at any time */
+        private void sendBitfield() throws IOException {
+            byte type = (byte) Constants.BITFIELD;
+            byte[] bits = bitfield.toByteArray();
+            int msgLength = bits.length + 1; // add 1 because of the message type byte.
+            byte[] length = ByteBuffer.allocate(4).putInt(msgLength).array();
+
+            ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+            outStream.write(length);
+            outStream.write(type);
+            outStream.write(bits);
+            this.out.write(outStream.toByteArray());
+
+        }
 
 
     }
@@ -329,7 +389,7 @@ public class peerProcess {
             if (headerString.equals(Constants.HANDSHAKE) && toAccept.contains(peer)) { //toAccept is a HashSet in peerProcess specifying expected incoming connections
             	try {
         			logger.logAcceptedTCPConnection(peer);
-        		} catch (IOException e) { 
+        		} catch (IOException e) {
         			 System.out.println(e.toString());
         		}
             	return true; //will check whether this is a valid peer in peerProcess
@@ -371,9 +431,9 @@ public class peerProcess {
         private void acceptConnections() { //maybe add a timer so that can proceed even if not all expected connections are attempted
             long start = System.currentTimeMillis();
             Vector<Socket> requests = new Vector<>(numConnecting);
-
+            System.out.println("In acceptConnections for peer: " + myPeerID + ". Expecting: " + numConnecting + " connection requests.");
             try {
-                ServerSocket welcomeSocket = new ServerSocket(port);
+                ServerSocket welcomeSocket = new ServerSocket(myPort);
                 for (int i = 0; i < numConnecting; i++) {
                     if ((System.currentTimeMillis() - start) < Constants.CONNECT_TIMEOUT) {
                         requests.add(welcomeSocket.accept());
@@ -382,17 +442,19 @@ public class peerProcess {
                     }
                 }
                 for(Socket socket: requests) {
-                    in = socket.getInputStream();
-                    out = socket.getOutputStream();
-                    if (checkHandshake()) {
+                    if (checkHandshake()) { //if one fails does it break things? I don't think so. Well...it would break that peer if that peer tried to connect again (?).
                         reciprocateHandshake();
                         sendBitfield();
+                        Connection connection = new Connection(socket);
+                        inHandlers.add(new IncomingHandler(inbox, connection)); //create new incoming handler for this connection. Give it my inbox and this connection. Add to HashSet of incomingHandlers.
+                        outHandlers.add(new OutgoingHandler(connection)); //each OutgoingHandler has its own outbox created in the constructor.
                     } else {
                         continue;
                     }
                 }
             } catch (IOException e) {
                 System.out.println("Exception in peerProcess's InConnectHandler's acceptConnections() method. Use different port?");
+                e.printStackTrace();
             }
         }
 
@@ -431,7 +493,7 @@ public class peerProcess {
             if (headerString.equals(Constants.HANDSHAKE) && peer.equals(ConnectToPeerID)) {
             	try {
         			logger.logMadeTCPConnection(ConnectToPeerID);
-        		} catch (IOException e) { 
+        		} catch (IOException e) {
         			 System.out.println(e.toString());
         		}
                 return true; //will check whether this is a valid peer in peerProcess
@@ -457,11 +519,25 @@ public class peerProcess {
             for (RemotePeerInfo peer: toInitiate) {
                 try {
                     InetAddress address = InetAddress.getByName(peer.getPeerHost());
-                    Socket socket = new Socket(address, peer.getPeerPort());
+                    System.out.println("In requestConnections for peer " + myPeerID + ". Attempting connection to peer host " + peer.getPeerHost() + " address: " + address);
+//                    Socket socket = new Socket(address, peer.getPeerPort());
+                    this.socket = new Socket(address, peer.getPeerPort());
+//                    Connection connection = new Connection(peer.getPeerId(), new Socket(address, peer.getPeerPort()));
+                    initiateHandshake(myPeerID);
+                    if (checkHandshake(peer.getPeerId())) {
+//                        sendBitfield(bitfield);
+//                        inHandlers.add(new IncomingHandler(inbox, connection)); //create new incoming handler for this connection. Give it my inbox and this connection. Add to HashSet of incomingHandlers.
+//                        outHandlers.add(new OutgoingHandler(connection)); //each OutgoingHandler has its own outbox created in the constructor.
+                    } else {
+                        System.out.println("Got an improper handshake in requestConnections from peer: " + peer.getPeerId());
+                        continue;
+                    }
                 } catch (UnknownHostException e) {
                     System.out.println("Unknown host exception in OutConnectHandler's requestConnections() method");
+                    e.printStackTrace();
                 } catch (IOException e) {
                     System.out.println("IOException in OutConnectHandler's requestConnections() method");
+                    e.printStackTrace();
                 }
             }
 
