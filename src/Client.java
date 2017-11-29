@@ -15,23 +15,30 @@ public class Client {
 	void run() {
         try{
             requestSocket = new Socket("localhost", 8001);
-            Connection connection = new Connection("SERV", requestSocket); //added this
+            String connectToPeer = "SERV";
+            Connection connection = new Connection(connectToPeer, requestSocket); //added this
             System.out.println("Connected to localhost in port 8000");
             out = requestSocket.getOutputStream();
             out.flush();
             in = requestSocket.getInputStream();
-
-            try {
-                Thread.sleep(3000);
-            } catch(InterruptedException e) {
-                System.out.println("PROBLEM WITH SLEEP IN CLIENT");
-            }
-
-            if(connection.initiateHandshake("CLIE")){
+//
+//            try {
+//                Thread.sleep(3000);
+//            } catch(InterruptedException e) {
+//                System.out.println("PROBLEM WITH SLEEP IN CLIENT");
+//            }
+			connection.initiateHandshake("CLIE");
+			if (connection.checkHandshake().equals(connectToPeer)) {
                 System.out.println("HandShake successful");
             } else {
                 System.out.println("HandShake failure");
             }
+            BitSet bs = new BitSet();
+            bs.set(0, 10);
+            bs.set(40,50);
+            bs.set(1000,1009);
+            byte[] b = bs.toByteArray();
+            out.write(b);
 
 
         }
@@ -64,17 +71,19 @@ public class Client {
 	{
 		try{
 			requestSocket = new Socket("localhost", 8001);
-			Connection connection = new Connection("SERV", requestSocket); //added this
+			String connectToPeer = "SERV";
+			Connection connection = new Connection(connectToPeer, requestSocket); //added this
 			System.out.println("Connected to localhost in port 8000");
 			out = requestSocket.getOutputStream();
 			out.flush();
 			in = requestSocket.getInputStream();
 
-			if(connection.initiateHandshake("CLIE")){
-			    System.out.println("HandShake successful");
-            } else {
-                System.out.println("HandShake failure");
-            }
+			connection.initiateHandshake("CLIE");
+			if (connection.checkHandshake().equals(connectToPeer)) {
+				System.out.println("HandShake successful");
+			} else {
+				System.out.println("HandShake failure");
+			}
 
 			for (int i = 0; i < 4; i++) {
 				byte[] length = ByteBuffer.allocate(4).putInt(16).array();

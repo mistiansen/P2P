@@ -1,30 +1,16 @@
-/*
- *                     CEN5501C Project2
- * This is the program starting remote processes.
- * This program was only tested on CISE SunOS environment.
- * If you use another environment, for example, linux environment in CISE 
- * or other environments not in CISE, it is not guaranteed to work properly.
- * It is your responsibility to adapt this program to your running environment.
- */
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.util.Vector;
 
-import java.io.*;
-import java.util.*;
-
-/*
- * The StartRemotePeers class begins remote peer processes. 
- * It reads configuration file PeerInfo.cfg and starts remote peer processes.
- * You must modify this program a little bit if your peer processes are written in C or C++.
- * Please look at the lines below the comment saying IMPORTANT.
- */
-public class StartRemotePeers implements Runnable {
+public class PeerStarter {
 
     public Vector<RemotePeerInfo> peerInfoVector;
 
-    public void getConfiguration() {
+    public void getConfiguration(String configFile) {
         String st;
         peerInfoVector = new Vector<RemotePeerInfo>();
         try {
-            BufferedReader in = new BufferedReader(new FileReader("PeerInfo.cfg"));
+            BufferedReader in = new BufferedReader(new FileReader(configFile));
             while ((st = in.readLine()) != null) {
                 String[] tokens = st.split("\\s+");
                 int port = Integer.parseInt(tokens[2]);
@@ -36,18 +22,13 @@ public class StartRemotePeers implements Runnable {
         }
     }
 
-
-
-
-    public void run() {
+    public void startRemote() {
         try {
 //            StartRemotePeers myStart = new StartRemotePeers(); // artifacts from when this was main()
 //            myStart.getConfiguration();
-            getConfiguration();
+            getConfiguration("PeerInfo.cfg");
             // get current path
-//            String path = System.getProperty("user.dir"); //this is the directory where java program is being run from
-            // Setting absolute path instead //
-            String path = "/home/thor/code/IdeaProjects/P2P/out/production/P2P";
+            String path = System.getProperty("user.dir"); //this is the directory where java program is being run from
             System.out.println("Got path: " + path);
             // start clients at remote hosts
             for (int i = 0; i < peerInfoVector.size(); i++) {
@@ -56,7 +37,8 @@ public class StartRemotePeers implements Runnable {
                 // *********************** IMPORTANT *************************** //
                 // If your program is JAVA, use this line.
 //                Runtime.getRuntime().exec("ssh " + pInfo.getPeerHost() + " cd " + path + "; java peerProcess " + pInfo.getPeerId());
-                String command = " cd " + path + "; java peerProcess " + pInfo.getPeerId();
+                String command = "ssh " + pInfo.getPeerHost() + " cd " + path + "; java peerProcess " + pInfo.getPeerId();
+//                String command = " cd " + path + "; java peerProcess " + pInfo.getPeerId();
                 System.out.println("Attempting command: " + command);
                 Runtime.getRuntime().exec(command);
             }
@@ -66,11 +48,26 @@ public class StartRemotePeers implements Runnable {
         }
     }
 
-    /**
-     * @param args
-     */
-    public static void main(String[] args) {
-        // TODO Auto-generated method stub
-        new Thread(new StartRemotePeers()).start();
+    public void startLocal() throws InterruptedException {
+        getConfiguration("PeerInfo.cfg");
+        for (int i = 0; i < peerInfoVector.size(); i++) {
+            RemotePeerInfo pInfo = (RemotePeerInfo) peerInfoVector.elementAt(i);
+            System.out.println("Attempting to start peer: " + pInfo.getPeerId());
+            Thread.sleep(1000);
+            new Thread(new peerProcess(pInfo.getPeerId())).start();
+        }
     }
+
+
+    public static void main(String[] args) {
+//        new Thread(new StartPeers()).start();
+        try {
+            new PeerStarter().startLocal();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+
 }

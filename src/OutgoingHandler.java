@@ -3,14 +3,15 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 public class OutgoingHandler implements Runnable {
 
     private Connection connection;
-    private BlockingQueue<Message> outbox;
+    private BlockingQueue<Message> outbox = new LinkedBlockingQueue<>();
 
-    public OutgoingHandler(BlockingQueue<Message> outbox, Connection connection) {
-        this.outbox = outbox;
+
+    public OutgoingHandler(Connection connection) {
         this.connection = connection;
     }
 
@@ -26,7 +27,7 @@ public class OutgoingHandler implements Runnable {
 
     private byte[] createOutgoing(Message message) throws IOException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        out.write(ByteBuffer.allocate(4).putInt(message.getLength()).array());
+        out.write(ByteBuffer.allocate(4).putInt(message.getPayloadLength() + 1).array()); //have to add 1 for the type field
         out.write((byte) message.getType());
         out.write(message.getPayload());
         return out.toByteArray();

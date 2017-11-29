@@ -1,6 +1,7 @@
 import java.net.*;
 import java.io.*;
 import java.nio.ByteBuffer;
+import java.util.BitSet;
 
 
 public class Server {
@@ -46,12 +47,22 @@ public class Server {
                 out.flush();
                 in = socket.getInputStream();
 
-                if (this.connection.reciprocateHandshake("SERV")) {
-                    System.out.println("Successfully shook hands with client");
+                if (this.connection.checkHandshake().equals("CLIE")) {
+                    this.connection.reciprocateHandshake("SERV");
                 } else {
                     System.out.println("Handshake with client failed");
                 }
-
+                byte[] bitset = new byte[200];
+                in.read(bitset);
+                BitSet bs = BitSet.valueOf(bitset);
+                System.out.println(bs);
+                System.out.println(bs.get(45));
+                System.out.println(bs.length());
+                System.out.println(bitset.length);
+                byte[] bitset2 = bs.toByteArray();
+                System.out.println(bitset2.length);
+                BitSet bs2 = BitSet.valueOf(bitset2);
+                System.out.println(bs2);
 
             } catch (IOException e) {
                 e.printStackTrace();
