@@ -3,3 +3,7 @@
 *.idea
 *.class
 .idea/*
+**project/
+*project/
+**out/*
+out/*

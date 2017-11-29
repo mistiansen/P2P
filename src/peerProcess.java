@@ -199,6 +199,7 @@ public class peerProcess implements Runnable {
 
     private void processHave(Message message) throws InterruptedException {
         int pieceIndex = Util.bytesToInt(message.getPayload());
+        peerPieces.get(message.getFrom()).set(pieceIndex);
         try {
 			logger.logRecievedHave(message.getFrom(), Integer.toString(pieceIndex));
 		} catch (IOException e) { 
@@ -269,6 +270,7 @@ public class peerProcess implements Runnable {
 
     /* This is sent in response to an unchoke */
     /* craft a message and put it in the outbox of the peer sending the unchoke */
+    // TODO: 11/29/17 Need to check peerPieces data structure to see if that peer actually has the piece 
     private void requestPiece(String peer) {
         BitSet toRequest = (BitSet) this.bitfield.clone();
         toRequest.andNot(this.requested); //bits set in the bitfield that are not set in requested (bits needed but not requested)
@@ -381,6 +383,11 @@ public class peerProcess implements Runnable {
         while (peerIterator.hasNext()) {
             System.out.println("In peerProcess for peer " + myPeerID + " here are peers: " + peerIterator.next());
         }
+        // TODO: 11/29/17 need to actually start the inhandlers and outhandlers
+//        Iterator inHandlerIterator = inHandlers.iterator();
+//        while(inHandlerIterator.hasNext()) {
+//            inHandlerIterator.next().
+//        }
     }
 
 
