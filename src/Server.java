@@ -47,8 +47,8 @@ public class Server {
                 out.flush();
                 in = socket.getInputStream();
 
-                if (this.connection.reciprocateHandshake("SERV")) {
-                    System.out.println("Successfully shook hands with client");
+                if (this.connection.checkHandshake().equals("CLIE")) {
+                    this.connection.reciprocateHandshake("SERV");
                 } else {
                     System.out.println("Handshake with client failed");
                 }

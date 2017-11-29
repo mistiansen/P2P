@@ -2,7 +2,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.Vector;
 
-public class StartPeers {
+public class PeerStarter {
 
     public Vector<RemotePeerInfo> peerInfoVector;
 
@@ -48,22 +48,25 @@ public class StartPeers {
         }
     }
 
-    public void startLocal() {
+    public void startLocal() throws InterruptedException {
         getConfiguration("PeerInfo.cfg");
         for (int i = 0; i < peerInfoVector.size(); i++) {
             RemotePeerInfo pInfo = (RemotePeerInfo) peerInfoVector.elementAt(i);
             System.out.println("Attempting to start peer: " + pInfo.getPeerId());
+            Thread.sleep(1000);
             new Thread(new peerProcess(pInfo.getPeerId())).start();
         }
     }
 
-    public void run() {
-        startLocal();
-    }
 
     public static void main(String[] args) {
 //        new Thread(new StartPeers()).start();
-        new StartPeers().startLocal();
+        try {
+            new PeerStarter().startLocal();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
     }
 
 

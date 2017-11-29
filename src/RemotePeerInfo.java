@@ -7,7 +7,7 @@
  * It is your responsibility to adapt this program to your running environment.
  */
 
-public class RemotePeerInfo {
+public class RemotePeerInfo implements Comparable<RemotePeerInfo> {
 	private String peerId;
 	private String peerHost;
 	private int peerPort;
@@ -42,4 +42,9 @@ public class RemotePeerInfo {
 	public void setPeerPort(int peerPort) {
 		this.peerPort = peerPort;
 	}
+
+    public int compareTo(RemotePeerInfo peer) {
+//        return this.getPeerId().compareTo(peer.getPeerId());
+        return peer.getPeerId().compareTo(this.getPeerId()); //want to return descending order
+    }
 }

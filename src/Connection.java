@@ -5,6 +5,7 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.BitSet;
 
+
 public class Connection {
 
     private String peerID; //peerID of the peer you are connected to (not your (peerProcess') peerID)
@@ -35,8 +36,13 @@ public class Connection {
         }
     }
 
+    public void setPeerID(String peerID) {
+        this.peerID = peerID;
+    }
+
     public void send(byte[] out) {
         try {
+            System.out.println("Attempting send in Connection");
             this.out.write(out);
         } catch(IOException e) {
             e.printStackTrace();
@@ -45,7 +51,7 @@ public class Connection {
     }
 
 
-    public boolean checkHandshake() throws IOException {
+    public String checkHandshake() throws IOException {
         byte[] header = new byte[18];
         byte[] zeroes = new byte[10];
         byte[] ID = new byte[4];
@@ -55,31 +61,25 @@ public class Connection {
         String headerString = new String(header);
         String peer = new String(ID);
         System.out.println("In checkHandshake(). Received " + headerString + " from peer " + peer);
-//        if (headerString.equals(Constants.HANDSHAKE) && peer.equals(this.peerID)) {
         if (headerString.equals(Constants.HANDSHAKE)) {
-            return true; //will check whether this is a valid peer in peerProcess
+            return peer;
         } else {
-            return false;
+            return "";
         }
     }
 
-    public boolean reciprocateHandshake(String myID) throws IOException { //myID is the peerID of the peer calling this function (peerProcess) ("Hi, I'm...")
-        if (checkHandshake()) {
-            System.out.println("Entered reciprocate handshake");
-            byte[] zeroes = new byte[10];
-            Arrays.fill(zeroes, (byte) 0);
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            out.write(Constants.HANDSHAKE.getBytes());
-            out.write(zeroes);
-            out.write(myID.getBytes());
-            this.send(out.toByteArray());
-            return true; //NOT FINISHED
-        } else {
-            return false;
-        }
+    public void reciprocateHandshake(String myID) throws IOException { //myID is the peerID of the peer calling this function (peerProcess) ("Hi, I'm...")
+        System.out.println("Entered reciprocate handshake");
+        byte[] zeroes = new byte[10];
+        Arrays.fill(zeroes, (byte) 0);
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        out.write(Constants.HANDSHAKE.getBytes());
+        out.write(zeroes);
+        out.write(myID.getBytes());
+        this.send(out.toByteArray());
     }
 
-    public boolean initiateHandshake(String myID) throws IOException { //myID is the peerID of the peer calling this function (peerProcess)
+    public void initiateHandshake(String myID) throws IOException { //myID is the peerID of the peer calling this function (peerProcess)
         byte[] header = ByteBuffer.allocate(18).put(Constants.HANDSHAKE.getBytes()).array();
         byte[] zeroes = new byte[10];
         byte[] peerID = ByteBuffer.allocate(4).put(myID.getBytes()).array();
@@ -88,24 +88,21 @@ public class Connection {
         out.write(header);
         out.write(zeroes);
         out.write(peerID);
-        this.send(out.toByteArray());
-        if (checkHandshake()) {
-            return true;
-        } else {
-            return false;
-        }
+//        this.send(out.toByteArray());
+        this.out.write(out.toByteArray());
     }
 
-    private void sendBitfield(BitSet bitfield) throws IOException {
+    public void sendBitfield(BitSet bitfield) throws IOException {
         byte type = (byte) Constants.BITFIELD;
         byte[] bits = bitfield.toByteArray();
         int msgLength = bits.length + 1; // add 1 because of the message type byte.
         byte[] length = ByteBuffer.allocate(4).putInt(msgLength).array();
-
         ByteArrayOutputStream outStream = new ByteArrayOutputStream();
         outStream.write(length);
         outStream.write(type);
         outStream.write(bits);
+        System.out.println("Attempting to send bitfield");
+        System.out.println(bitfield);
         this.out.write(outStream.toByteArray());
 
     }
