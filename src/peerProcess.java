@@ -120,10 +120,11 @@ public class peerProcess implements Runnable {
                 processUnchoke(message);
                 break;
             case Constants.INTERESTED:
-                System.out.println("Received an INTERESTED message type in peerProcess. Going to process it.");
+                System.out.println("Received an INTERESTED message type in peerProcess " + myPeerID + " Going to process it.");
                 processInterested(message);
                 break;
             case Constants.NOT_INTERESTED:
+                System.out.println("Received a NOT INTERESTED message type in peerProcess " + myPeerID + ". Going to process it.");
                 processNotInterested(message);
                 break;
             case Constants.HAVE:
@@ -212,8 +213,11 @@ public class peerProcess implements Runnable {
         peerPieces.putIfAbsent(fromPeer, peerBitfield);
         System.out.println("Peer" + myPeerID + " Received bitfield " + peerBitfield + " from peer " + message.getFrom());
         System.out.println("Peer " + message.getFrom() + " pieces is now " + peerPieces.get(message.getFrom()));
-        if (!bitfield.intersects(peerBitfield)) { //they don't have anything we want
+        if (!need.intersects(peerBitfield)) { //they don't have anything we want
             Message notInterested = new Message(myPeerID, 1, Constants.NOT_INTERESTED);
+
+            System.out.println("Trying to put a not interested in outbox for peer " + fromPeer);
+            System.out.println("Peer process " + myPeerID + " has " + outboxes.size());
             outboxes.get(fromPeer).put(notInterested);
         } else {
             Message interested =  new Message(myPeerID, 1, Constants.INTERESTED);
@@ -363,7 +367,9 @@ public class peerProcess implements Runnable {
                         request.sendBitfield(bitfield);
                         logger.logAcceptedTCPConnection(requestor);
                         inHandlers.add(new IncomingHandler(inbox, request)); //create new incoming handler for this connection. Give it my inbox and this connection. Add to HashSet of incomingHandlers.
-                        outHandlers.add(new OutgoingHandler(request)); //each OutgoingHandler has its own outbox created in the constructor.
+                        BlockingQueue<Message> outbox = new LinkedBlockingQueue<>();
+                        outboxes.put(requestor, outbox);
+                        outHandlers.add(new OutgoingHandler(request, outbox)); //each OutgoingHandler has its own outbox created in the constructor.
                     } else {
                         continue;
                     }
@@ -392,7 +398,9 @@ public class peerProcess implements Runnable {
                         logger.logMadeTCPConnection(peer.getPeerId());
                         connection.sendBitfield(bitfield);
                         inHandlers.add(new IncomingHandler(inbox, connection)); //create new incoming handler for this connection. Give it my inbox and this connection. Add to HashSet of incomingHandlers.
-                        outHandlers.add(new OutgoingHandler(connection)); //each OutgoingHandler has its own outbox created in the constructor.
+                        BlockingQueue<Message> outbox = new LinkedBlockingQueue<>();
+                        outboxes.put(peer.getPeerId(), outbox);
+                        outHandlers.add(new OutgoingHandler(connection, outbox)); //each OutgoingHandler has its own outbox created in the constructor.
                     } else {
                         System.out.println("Got an improper handshake in requestConnections from peer: " + peer.getPeerId());
                         continue;

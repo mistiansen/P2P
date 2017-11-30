@@ -15,6 +15,11 @@ public class OutgoingHandler implements Runnable {
         this.connection = connection;
     }
 
+    public OutgoingHandler(Connection connection, BlockingQueue<Message> outbox) {
+        this.connection = connection;
+        this.outbox = outbox;
+    }
+
     private void send() {
         try {
             connection.send(createOutgoing(outbox.take())); //also available: poll (which does the same thing but can specify wait time)
@@ -29,7 +34,9 @@ public class OutgoingHandler implements Runnable {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         out.write(ByteBuffer.allocate(4).putInt(message.getPayloadLength() + 1).array()); //have to add 1 for the type field
         out.write((byte) message.getType());
-        out.write(message.getPayload());
+        if (message.getPayload()!=null) {
+            out.write(message.getPayload());
+        }
         return out.toByteArray();
     }
 
