@@ -207,6 +207,7 @@ public class peerProcess implements Runnable {
         Message response = new Message(this.myPeerID, responseLength, responseType);
         outboxes.get(message.getFrom()).put(response); //get the outbox for the peerID associated with the received message and put in a response.
         // put throws InterruptedException. add(response) should also work, but I guess this is preferred.
+        isEveryoneElseCompleted();
     }
 
     private void processBitField(Message message) throws InterruptedException {
@@ -264,6 +265,7 @@ public class peerProcess implements Runnable {
             need.clear(pieceIndex);
             logger.logDoneDownloadingPiece(message.getFrom(), Integer.toString(pieceIndex), ++totalPieces);
             count.put(message.getFrom(), count.get(message.getFrom()) + 1);
+            amICompleted();
         } catch (FileNotFoundException e) {
             System.out.println("Trying to process a piece but file not found.");
             e.printStackTrace();
