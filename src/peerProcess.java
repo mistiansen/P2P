@@ -1,7 +1,4 @@
 
-
-import com.sun.tools.internal.jxc.ap.Const;
-
 import java.io.*;
 import java.net.*;
 import java.nio.ByteBuffer;
@@ -9,6 +6,7 @@ import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicIntegerArray;
+import java.util.concurrent.TimeUnit;
 
 public class peerProcess implements Runnable {
 
@@ -29,13 +27,15 @@ public class peerProcess implements Runnable {
     private HashSet<String> peers; //hashSet of PeerID strings
     private HashMap<String, RemotePeerInfo> peerInfo;
     private HashSet<String> choked = new HashSet<>();
+    private String optUnchoked = "";
     private HashSet<String> unchoked = new HashSet<>();
     private HashSet<String> interested = new HashSet<>();
     private HashSet<String> chokingMe = new HashSet<>();
 //    private ConcurrentHashMap<String, BitSet> peerPieces; //maps from peerID to the bitfield for that peer (which pieces that peer has)
     private HashMap<String, BitSet> peerPieces = new HashMap<>(); //don't actually see a need for concurrency here, because processing inbox serially in 1 thread.
     /* Do we need to know bitfields for each peer? I guess so to be able to make requests. Updated on receipt of "have" message. */
-
+    private HashMap<String, Integer> count = new HashMap<>();
+    
     private AtomicIntegerArray pieces; //create a new class with this underneath? Then use it like a bitset? No no no...don't need concurrency here. Just update as get pieces.
     // so when a piece is received this bitfield is adjusted. If get multiple pieces? I guess doesn't matter. Or can safely overwrite? Not an issue I think
     // remember, this is for just 1 peer. so we choose who gets requested and whether to send multiple requests. Have a requested BitSet?
@@ -226,7 +226,7 @@ public class peerProcess implements Runnable {
         /* first  see what piece is requested */
         byte[] indexHolder = message.getPayload(); //grab the request payload containing the requested piece index
         int pieceIndex = Util.bytesToInt(indexHolder); //convert the first 4 bytes to an int
-        if (bitfield.get(pieceIndex) && unchoked.contains(message.getFrom())) { //if we have the piece and the requestor is unchoked
+        if (bitfield.get(pieceIndex) && (unchoked.contains(message.getFrom()) || optUnchoked.equals(message.getFrom()))) { //if we have the piece and the requestor is unchoked
             FileInputStream fileInputStream = new FileInputStream(new File(Constants.FILE_NAME));
             int start = pieceIndex * Constants.PIECE_SIZE; // each read reads from index: start to index: Constants.PIECE_SIZE - 1
             byte[] content = new byte[Constants.PIECE_SIZE];
@@ -257,6 +257,7 @@ public class peerProcess implements Runnable {
             bitfield.set(pieceIndex); //think pieceIndex is index of first bit of a piece
             need.clear(pieceIndex);
             logger.logDoneDownloadingPiece(message.getFrom(), Integer.toString(pieceIndex), ++totalPieces);
+            count.put(message.getFrom(), count.get(message.getFrom())+1);
         } catch (FileNotFoundException e) {
             System.out.println("Trying to process a piece but file not found.");
             e.printStackTrace();
@@ -283,7 +284,59 @@ public class peerProcess implements Runnable {
             System.out.println("InterruptedException in peerProcess' requestPiece method");
             e.printStackTrace();
         }
+
+
+//        Message request = new Message(this.myPeerID, )
+
     }
+    
+    private void unchokeTimer() throws InterruptedException{
+    	TimeUnit.SECONDS.sleep(Constants.UNCHOKE_INTERVAL);
+    	int i = 0;
+    	HashSet<String> newPrefs= new HashSet<>();
+    	for (String p : peers){
+    		if (i<Constants.NUM_PREF_NEIGHBORS){
+    			newPrefs.add(p);
+    			i++;
+    		}
+    		else {
+    			int maxdiff=-1;
+    			String replace="";
+    			for (String np : newPrefs){
+    				int diff=count.get(np)-count.get(p);
+    				if (maxdiff<diff) {
+    					maxdiff=diff;
+    					replace=np;
+    				}
+    			}
+    			if (maxdiff>-1){
+    				newPrefs.add(p);
+    				newPrefs.remove(replace);
+    			}
+    		}
+    	}
+    	for (String np : newPrefs){
+    		if (!unchoked.contains(np)) {
+    			//send unchoke
+    		}
+    	}
+    	for (String p : unchoked){
+    		if (!newPrefs.contains(p)) {
+    			//send choke
+    		}
+    	}
+    	unchoked.clear();
+    	unchoked=newPrefs;
+    	count = new HashMap(); // clear hashmap
+    	timeout();
+    }
+    
+    private void optUnchokeTimer() throws InterruptedException{
+    	TimeUnit.SECONDS.sleep(Constants.OPT_UNCHOKE_INTERVAL);
+    	
+    	timeout();
+    }
+
 
 
         private void acceptConnections() { //maybe add a timer so that can proceed even if not all expected connections are attempted
