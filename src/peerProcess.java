@@ -330,13 +330,18 @@ public class peerProcess implements Runnable {
           	}
           	unchoked.clear();
           	unchoked=newPrefs;
+          	try {
+				logger.logPreferredNeighbors(Arrays.copyOf(unchoked.toArray(), unchoked.toArray().length, String[].class));
+			} catch (IOException e) {
+				System.out.println(e.toString());
+			}
           	count = new HashMap(); // clear hashmap
           	timeout();
           }
         }
 
         private void optUnchokeTimer() throws InterruptedException{
-          Random rnd = new Random;
+          Random rnd = new Random();
           while(true){
           	TimeUnit.SECONDS.sleep(Constants.OPT_UNCHOKE_INTERVAL);
             //Create a list of interested peers that are not preferred neighbors and randomly pick one
@@ -364,6 +369,11 @@ public class peerProcess implements Runnable {
                     outboxes.get(optUnchoked).put(response2);
                   }
                   optUnchoked = p;
+                  try {
+					logger.logOptimisticallyUnchokedNeighbor(optUnchoked);
+                  } catch (IOException e) {
+					System.out.println(e.toString());
+                  }
                 }
               }
             }
