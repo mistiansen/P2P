@@ -1,5 +1,7 @@
 
 
+import com.sun.tools.internal.jxc.ap.Const;
+
 import java.io.*;
 import java.net.*;
 import java.nio.ByteBuffer;
@@ -14,6 +16,7 @@ public class peerProcess implements Runnable {
     private int myPort;
     private int numConnecting;
     private int numConnectTo;
+    private int numPieces;
 
     private BlockingQueue<Message> inbox = new LinkedBlockingQueue<>(); //one inbox for this process. Look into timed BlockingQueue "offer" method for timeout?
     private HashMap<String, BlockingQueue> outboxes = new HashMap<>(); //maps a peerID to its outbox. Look into timed BlockingQueue "offer" method for timeout?
@@ -39,6 +42,7 @@ public class peerProcess implements Runnable {
     private boolean haveFile;
     private BitSet bitfield = new BitSet();
     private BitSet requested = new BitSet(); // So maybe only send 1 request for a piece per round. Then when receive or at timeout, unset the bit.
+    private BitSet need = new BitSet();
 
     private Logger logger;
     private int totalPieces = 0;
@@ -82,13 +86,14 @@ public class peerProcess implements Runnable {
                     haveFile = Util.strToBool(tokens[3]);
                     myPort = Integer.parseInt(tokens[2]);
                     System.out.println("my peerID is: " + this.myPeerID + ". My port is : " + myPort);
-                    int numPieces = (int)Math.ceil(Constants.FILE_SIZE / (Constants.PIECE_SIZE * 1.0));
+                    numPieces = (int)Math.ceil(Constants.FILE_SIZE / (Constants.PIECE_SIZE * 1.0));
                     if(haveFile) {
                         System.out.println("Peer " + remotePeerID + " has file");
                         this.bitfield.set(0, numPieces); //sets bits from 0 to numPieces exclusive (so a total of numPieces bits)
                     } else {
                         System.out.println("Peer " + remotePeerID + " does not have file");
-                        this.bitfield.clear(0, numPieces); //don't actually need to do this because the default is 0/false
+//                        this.bitfield.clear(0, numPieces); //don't actually need to do this because the default is 0/false
+                        this.need.set(0, numPieces);
                     } //but then what does a receiver of this bitfield get? Nothing? Yeah...because don't actually need to send a bitfield if don't have the file
                 } else { //should never happen
                     System.out.println("Either parsed the wrong peerID when starting or the peerID for this process is not in the Config");
@@ -103,19 +108,7 @@ public class peerProcess implements Runnable {
 
     /* could potentially move all of this functionality into IncomingHandler, and pass in self so each Handler has access to data structures
     * Would need to make the data structures concurrent, but then would be multithreaded processing of messages */
-    public void dispatch() {
-        try {
-            processMessage(inbox.take());
-        } catch(InterruptedException e) {
-            e.printStackTrace();
-            System.out.println("Interruped exception in peer process dispatch method");
-        }
-    }
-
-
-    /* could potentially move all of this functionality into IncomingHandler, and pass in self so each Handler has access to data structures
-    * Would need to make the data structures concurrent, but then would be multithreaded processing of messages */
-    public void processMessage(Message message) {
+    public void processMessage(Message message) throws IOException, InterruptedException {
 
         switch (message.getType()) {
             case -1: //unfinished
@@ -127,6 +120,7 @@ public class peerProcess implements Runnable {
                 processUnchoke(message);
                 break;
             case Constants.INTERESTED:
+                System.out.println("Received an INTERESTED message type in peerProcess. Going to process it.");
                 processInterested(message);
                 break;
             case Constants.NOT_INTERESTED:
@@ -137,9 +131,11 @@ public class peerProcess implements Runnable {
                     processHave(message);
                 } catch (InterruptedException e) {
                     System.out.println("Interrupted exception in processMessage's processHave section");
+                    e.printStackTrace();
                 }
                 break;
             case Constants.BITFIELD:
+                System.out.println("Received a bitfield message type in peerProcess. Going to process it.");
                 processBitField(message);
                 break;
             case Constants.REQUEST:
@@ -156,55 +152,48 @@ public class peerProcess implements Runnable {
             case Constants.PIECE:
                 processPiece(message);
                 break;
-
         }
     }
 
-    private void processChoke(Message message) {
+    private void processChoke(Message message) throws IOException {
         chokingMe.add(message.getFrom());
-        try {
-			logger.logChokedByNeighbor(message.getFrom());
-		} catch (IOException e) { 
-			 System.out.println(e.toString());
-		}
+        logger.logChokedByNeighbor(message.getFrom());
     }
 
-    private void processUnchoke(Message message) {
-        chokingMe.remove(message.getFrom());
-        requestPiece(message.getFrom());
+    private void processUnchoke(Message message) throws IOException {
+        logger.logUnchokedByNeighbor(message.getFrom());
+        String unchokedMe = message.getFrom();
+        chokingMe.remove(unchokedMe);
+        BitSet toRequest = (BitSet) this.need.clone();
+//        toRequest.andNot(this.requested); //bits set in the bitfield that are not set in requested (bits needed but not requested)
+        toRequest.and(peerPieces.get(unchokedMe)); //only want to request if they have it
         try {
-			logger.logUnchokedByNeighbor(message.getFrom());
-		} catch (IOException e) { 
-			 System.out.println(e.toString());
-		}
+            if (toRequest.isEmpty()) {
+                Message response = new Message(this.myPeerID, 1, Constants.NOT_INTERESTED);
+                outboxes.get(unchokedMe).put(response); //get the outbox for the peer
+            } else {
+                int requestIndex = toRequest.nextSetBit(0); //get the next needed but not yet requested bit (piece that don't have)
+                requestPiece(unchokedMe, requestIndex);
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
-    private void processInterested(Message message) { //Does an "interested" only apply to a single piece index? Or every piece? Looks like every piece.
+    private void processInterested(Message message) throws IOException { //Does an "interested" only apply to a single piece index? Or every piece? Looks like every piece.
         interested.add(message.getFrom());
-        try {
-			logger.logRecievedInterested(message.getFrom());
-		} catch (IOException e) { 
-			 System.out.println(e.toString());
-		}
+        logger.logRecievedInterested(message.getFrom());
     }
 
-    private void processNotInterested(Message message) {
+    private void processNotInterested(Message message) throws IOException {
         interested.remove(message.getFrom());
-        try {
-			logger.logRecievedNotInterested(message.getFrom());
-		} catch (IOException e) { 
-			 System.out.println(e.toString());
-		}
+        logger.logRecievedNotInterested(message.getFrom());
     }
 
-    private void processHave(Message message) throws InterruptedException {
+    private void processHave(Message message) throws InterruptedException, IOException {
         int pieceIndex = Util.bytesToInt(message.getPayload());
         peerPieces.get(message.getFrom()).set(pieceIndex);
-        try {
-			logger.logRecievedHave(message.getFrom(), Integer.toString(pieceIndex));
-		} catch (IOException e) { 
-			 System.out.println(e.toString());
-		}
+        logger.logRecievedHave(message.getFrom(), Integer.toString(pieceIndex));
         int responseType;
         int responseLength = 1; // 1 byte for message type. No payload for 'interested' and not_interested' messages.
         if(bitfield.get(pieceIndex)) {
@@ -217,9 +206,20 @@ public class peerProcess implements Runnable {
         // put throws InterruptedException. add(response) should also work, but I guess this is preferred.
     }
 
-    private void processBitField(Message message) {
+    private void processBitField(Message message) throws InterruptedException {
+        String fromPeer = message.getFrom();
         BitSet peerBitfield = BitSet.valueOf(message.getPayload());
-        peerPieces.putIfAbsent(message.getFrom(), peerBitfield);
+        peerPieces.putIfAbsent(fromPeer, peerBitfield);
+        System.out.println("Peer" + myPeerID + " Received bitfield " + peerBitfield + " from peer " + message.getFrom());
+        System.out.println("Peer " + message.getFrom() + " pieces is now " + peerPieces.get(message.getFrom()));
+        if (!bitfield.intersects(peerBitfield)) { //they don't have anything we want
+            Message notInterested = new Message(myPeerID, 1, Constants.NOT_INTERESTED);
+            outboxes.get(fromPeer).put(notInterested);
+        } else {
+            Message interested =  new Message(myPeerID, 1, Constants.INTERESTED);
+            outboxes.get(fromPeer).put(interested);
+//            requestPiece(fromPeer, );
+        }
     }
 
     private void processRequest(Message message) throws IOException, InterruptedException {
@@ -243,12 +243,11 @@ public class peerProcess implements Runnable {
     }
 
     /* Do we just store the pieces in a data structure then write to file when all present? */
-    private void processPiece(Message message) {
+    private void processPiece(Message message) throws IOException {
         int pieceLength = message.getPayloadLength() - 4; //the length of the piece should be the messageLength - type portion - index portion
         InputStream is = new ByteArrayInputStream(message.getPayload());
         byte[] indexField = new byte[4]; //grab the first 4 bytes, which hold the message length
         byte[] piece = new byte[pieceLength];
-
         try {
             is.read(indexField, 0, 4); //read the first 4 bytes into byte array
             is.read(piece, 0, pieceLength);
@@ -256,46 +255,34 @@ public class peerProcess implements Runnable {
             FileOutputStream fileOutputStream = new FileOutputStream(Constants.FILE_NAME);
             fileOutputStream.write(piece, pieceIndex, pieceLength); //guess can write before have all pieces with this offset method
             bitfield.set(pieceIndex); //think pieceIndex is index of first bit of a piece
-            try {
-    			logger.logDoneDownloadingPiece(message.getFrom(), Integer.toString(pieceIndex), ++totalPieces);
-    		} catch (IOException e) { 
-    			 System.out.println(e.toString());
-    		}
+            need.clear(pieceIndex);
+            logger.logDoneDownloadingPiece(message.getFrom(), Integer.toString(pieceIndex), ++totalPieces);
         } catch (FileNotFoundException e) {
             System.out.println("Trying to process a piece but file not found.");
+            e.printStackTrace();
         } catch (IOException e) {
             System.out.println("IOException in peerProcess processPiece() method");
+            e.printStackTrace();
         }
     }
 
     /* This is sent in response to an unchoke */
     /* craft a message and put it in the outbox of the peer sending the unchoke */
     // TODO: 11/29/17 Need to check peerPieces data structure to see if that peer actually has the piece 
-    private void requestPiece(String peer) {
-        BitSet toRequest = (BitSet) this.bitfield.clone();
-        toRequest.andNot(this.requested); //bits set in the bitfield that are not set in requested (bits needed but not requested)
-        int requestIndex = toRequest.nextSetBit(0); //get the next needed but not yet requested bit (piece that don't have)
+    private void requestPiece(String peer, int pieceIndex) {
         try {
             ByteArrayOutputStream payloadOut = new ByteArrayOutputStream();
-            payloadOut.write(ByteBuffer.allocate(4).putInt(requestIndex).array()); //have to add 1 for the type field
+            payloadOut.write(ByteBuffer.allocate(4).putInt(pieceIndex).array()); //have to add 1 for the type field
             byte[] payload = payloadOut.toByteArray();
             Message request = new Message(this.myPeerID, 5, Constants.REQUEST, payload); //payload length for requests is 1 byte type + 4 bytes piece index
             outboxes.get(peer).put(request); //throws InterruptedException
         } catch (IOException e) {
             System.out.println("IOException in peerProcess' requestPiece method");
+            e.printStackTrace();
         } catch (InterruptedException e) {
             System.out.println("InterruptedException in peerProcess' requestPiece method");
+            e.printStackTrace();
         }
-
-
-//        Message request = new Message(this.myPeerID, )
-
-    }
-
-    private void timeout() {
-
-        this.requested.clear();
-
     }
 
 
@@ -310,13 +297,11 @@ public class peerProcess implements Runnable {
                         Socket connect = welcomeSocket.accept();
                         System.out.println("Just accepted a connection in peerProcess " + myPeerID);
                         incoming.add(new Connection(connect));
-                        System.out.println("End for loop in acceptConnections");
                     } else {
                         System.out.println("Got some sort of timeout in acceptConnections");
                         break;
                     }
                 }
-                System.out.println("Made it out of socket accepting for loop in acceptConnections for peer " + myPeerID);
                 for (Connection request: incoming) {
                     String requestor = request.checkHandshake();
                     if (toAccept.contains(requestor)) { //if one fails does it break things? I don't think so. Well...it would break that peer if that peer tried to connect again (?).
@@ -370,6 +355,34 @@ public class peerProcess implements Runnable {
         }
 
 
+    public void initialize() {
+
+    }
+
+    /* could potentially move all of this functionality into IncomingHandler, and pass in self so each Handler has access to data structures
+* Would need to make the data structures concurrent, but then would be multithreaded processing of messages */
+    public void dispatch() {
+
+
+
+        try {
+            processMessage(inbox.take());
+        } catch(InterruptedException e) {
+            e.printStackTrace();
+            System.out.println("Interrupted exception in peer process dispatch method");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    private void timeout() {
+
+        this.requested.clear();
+
+    }
+
+
     public void run() {
         try {
             ConfigParser.parseConfig(("config.cfg"));
@@ -379,15 +392,22 @@ public class peerProcess implements Runnable {
         processPeerConfig("PeerInfo.cfg");
         acceptConnections();
         requestConnections();
-        Iterator peerIterator = peers.iterator();
-        while (peerIterator.hasNext()) {
-            System.out.println("In peerProcess for peer " + myPeerID + " here are peers: " + peerIterator.next());
-        }
-        // TODO: 11/29/17 need to actually start the inhandlers and outhandlers
-//        Iterator inHandlerIterator = inHandlers.iterator();
-//        while(inHandlerIterator.hasNext()) {
-//            inHandlerIterator.next().
+//        Iterator peerIterator = peers.iterator();
+//        while (peerIterator.hasNext()) {
+//            System.out.println("In peerProcess for peer " + myPeerID + " here are peers: " + peerIterator.next());
 //        }
+        // TODO: 11/29/17 need to actually start the inhandlers and outhandlers
+
+        for(IncomingHandler inHandler: inHandlers) {
+            new Thread(inHandler).start();
+        }
+        for(OutgoingHandler outHandler: outHandlers) {
+            new Thread(outHandler).start();
+        }
+
+        while(true) {
+            dispatch();
+        }
     }
 
 

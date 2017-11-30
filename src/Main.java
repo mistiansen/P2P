@@ -70,26 +70,7 @@ public class Main {
 
     }
 
-    public static void main(String[] args) {
-//        HashSet hs = new HashSet();
-//        hs.add("1001");
-//        hs.add("1002");
-//        hs.add(1);
-//        System.out.println(hs);
-//        System.out.println(hs.contains("1002"));
-//        System.out.println(hs.contains(1002));
-//
-//        byte [] bytes = ByteBuffer.allocate(4).putInt(17291729).array();
-
-
-        String boolStr = "1";
-        System.out.println(Util.strToBool(boolStr));
-        System.out.println(Constants.MESSAGE_SIZE);
-        Constants.setMessageSize(8766578);
-        System.out.println(Constants.MESSAGE_SIZE);
-        System.out.println(Constants.FILE_NAME);
-        Constants.setFileName("file.dat");
-        System.out.println(Constants.FILE_NAME);
+    public void inetaddressTest() {
         try {
             InetAddress address = InetAddress.getByName("lin114-00.cise.ufl.edu");
             SocketAddress socketAddress = new InetSocketAddress(address, 6008);
@@ -98,6 +79,32 @@ public class Main {
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
+
+    }
+
+    public static void main(String[] args) {
+
+        BitSet theirs = new BitSet();
+        BitSet mine = new BitSet();
+        theirs.set(0, 20);
+        mine.set(0, 15);
+        BitSet requested = new BitSet();
+        requested.set(0,5);
+        theirs.andNot(mine);
+        mine.andNot(requested);
+        System.out.println(mine);
+
+//        BitSet and = (BitSet) theirs.clone();
+//        and.and(mine);
+//        System.out.println(mine);
+//        System.out.println(and);
+//        System.out.println(theirs);
+//        System.out.println(mine.intersects(theirs));
+//        mine.clear();
+//        System.out.println(mine.intersects(theirs));
+
+
+
 
     }
 

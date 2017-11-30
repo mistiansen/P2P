@@ -35,6 +35,7 @@ public class OutgoingHandler implements Runnable {
 
     @Override
     public void run() {
+//        System.out.println("Started outgoing handler to handle connection with " + connection.getPeerID());
         while(true) { // maybe have some timeout variable instead?
             send();
         }

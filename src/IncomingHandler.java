@@ -52,6 +52,7 @@ public class IncomingHandler implements Runnable { //realistically, this is an u
 
     @Override
     public void run() {
+//        System.out.println("Started incoming handler to handle connection with " + connection.getPeerID());
         while(true) { //use a timeout mechanism instead?
             receive();
         }

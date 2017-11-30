@@ -36,6 +36,10 @@ public class Connection {
         }
     }
 
+    public String getPeerID() {
+        return peerID;
+    }
+
     public void setPeerID(String peerID) {
         this.peerID = peerID;
     }
@@ -69,7 +73,6 @@ public class Connection {
     }
 
     public void reciprocateHandshake(String myID) throws IOException { //myID is the peerID of the peer calling this function (peerProcess) ("Hi, I'm...")
-        System.out.println("Entered reciprocate handshake");
         byte[] zeroes = new byte[10];
         Arrays.fill(zeroes, (byte) 0);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -101,8 +104,8 @@ public class Connection {
         outStream.write(length);
         outStream.write(type);
         outStream.write(bits);
-        System.out.println("Attempting to send bitfield");
-        System.out.println(bitfield);
+//        System.out.println("Attempting to send bitfield");
+        System.out.println("Sending " + bitfield);
         this.out.write(outStream.toByteArray());
 
     }
