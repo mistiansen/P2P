@@ -170,8 +170,8 @@ public class peerProcess implements Runnable {
         toRequest.and(peerPieces.get(unchokedMe)); //only want to request if they have it
         try {
             if (toRequest.isEmpty()) {
-                Message response = new Message(this.myPeerID, 1, Constants.NOT_INTERESTED);
-                outboxes.get(unchokedMe).put(response); //get the outbox for the peer
+                Message notInterested = new Message(this.myPeerID, 1, Constants.NOT_INTERESTED);
+                outboxes.get(unchokedMe).put(notInterested); //get the outbox for the peer
             } else {
                 int requestIndex = toRequest.nextSetBit(0); //get the next needed but not yet requested bit (piece that don't have)
                 requestPiece(unchokedMe, requestIndex);
@@ -294,96 +294,6 @@ public class peerProcess implements Runnable {
 
     }
 
-        private void unchokeTimer() throws InterruptedException{
-          while(true){
-          	TimeUnit.SECONDS.sleep(Constants.UNCHOKE_INTERVAL);
-          	int i = 0;
-          	HashSet<String> newPrefs= new HashSet<>();
-          	for (String p : peers){
-          		if (i<Constants.NUM_PREF_NEIGHBORS){
-          			newPrefs.add(p);
-          			i++;
-          		}
-          		else {
-          			int maxdiff=-1;
-          			String replace="";
-          			for (String np : newPrefs){
-          				int diff=count.get(np)-count.get(p);
-          				if (maxdiff<diff) {
-          					maxdiff=diff;
-          					replace=np;
-          				}
-          			}
-          			if (maxdiff>-1){
-          				newPrefs.add(p);
-          				newPrefs.remove(replace);
-          			}
-          		}
-          	}
-          	for (String np : newPrefs){
-          		if (!unchoked.contains(np)) {
-                Message response = new Message(this.myPeerID, 0, Constants.UNCHOKE);
-                outboxes.get(np).put(response);
-          		}
-          	}
-          	for (String p : unchoked){
-          		if (!newPrefs.contains(p)) {
-                Message response = new Message(this.myPeerID, 0, Constants.CHOKE);
-                outboxes.get(p).put(response);
-          		}
-          	}
-          	unchoked.clear();
-          	unchoked=newPrefs;
-          	try {
-				logger.logPreferredNeighbors(Arrays.copyOf(unchoked.toArray(), unchoked.toArray().length, String[].class));
-			} catch (IOException e) {
-				System.out.println(e.toString());
-			}
-          	count = new HashMap(); // clear hashmap
-          	timeout();
-          }
-        }
-
-        private void optUnchokeTimer() throws InterruptedException{
-          Random rnd = new Random();
-          while(true){
-          	TimeUnit.SECONDS.sleep(Constants.OPT_UNCHOKE_INTERVAL);
-            //Create a list of interested peers that are not preferred neighbors and randomly pick one
-            HashSet<String> optList = new HashSet<>();
-            for (String p : interested){
-              if (!unchoked.contains(p)){
-                optList.add(p);
-              }
-            }
-            int randSize = optList.size();
-            if (randSize>0) {
-              int rand = rnd.nextInt(randSize);
-              int i=0;
-              for (String p : optList){
-                i++;
-                if (i==rand) {
-                  //If you didnt pick the same optUnchoked peer then send and unchoke message
-                  if (!optUnchoked.equals(p)) {
-                    Message response1 = new Message(this.myPeerID, 0, Constants.UNCHOKE);
-                    outboxes.get(p).put(response1);
-                  }
-                  //If the optUnchoked isn't a preferred peer then it is now choked
-                  if (!unchoked.contains(optUnchoked)) {
-                    Message response2 = new Message(this.myPeerID, 0, Constants.CHOKE);
-                    outboxes.get(optUnchoked).put(response2);
-                  }
-                  optUnchoked = p;
-                  try {
-					logger.logOptimisticallyUnchokedNeighbor(optUnchoked);
-                  } catch (IOException e) {
-					System.out.println(e.toString());
-                  }
-                }
-              }
-            }
-          }
-        }
-
 
 
         private void acceptConnections() { //maybe add a timer so that can proceed even if not all expected connections are attempted
@@ -460,6 +370,8 @@ public class peerProcess implements Runnable {
 
 
     public void initialize() {
+        dispatch(); //process interested or not interested
+
 
     }
 
@@ -520,5 +432,134 @@ public class peerProcess implements Runnable {
         peerProcess me = new peerProcess(peerID);
         me.run();
     }
+
+
+    private class UnchokeTimer implements Runnable {
+
+        private void unchokeTimer() throws InterruptedException{
+
+            do {
+                TimeUnit.SECONDS.sleep(Constants.UNCHOKE_INTERVAL);
+                int i = 0;
+                HashSet<String> newPrefs= new HashSet<>();
+                for (String p : peers){
+                    if (i<Constants.NUM_PREF_NEIGHBORS){
+                        newPrefs.add(p);
+                        i++;
+                    }
+                    else {
+                        int maxdiff=-1;
+                        String replace="";
+                        for (String np : newPrefs){
+                            int diff=count.get(np)-count.get(p);
+                            if (maxdiff<diff) {
+                                maxdiff=diff;
+                                replace=np;
+                            }
+                        }
+                        if (maxdiff>-1){
+                            newPrefs.add(p);
+                            newPrefs.remove(replace);
+                        }
+                    }
+                }
+                for (String np : newPrefs){
+                    if (!unchoked.contains(np)) {
+                        Message response = new Message(myPeerID, 0, Constants.UNCHOKE);
+                        outboxes.get(np).put(response);
+                    }
+                }
+                for (String p : unchoked){
+                    if (!newPrefs.contains(p)) {
+                        Message response = new Message(myPeerID, 0, Constants.CHOKE);
+                        outboxes.get(p).put(response);
+                    }
+                }
+                unchoked.clear();
+                unchoked=newPrefs;
+                try {
+                    logger.logPreferredNeighbors(Arrays.copyOf(unchoked.toArray(), unchoked.toArray().length, String[].class));
+                } catch (IOException e) {
+                    System.out.println(e.toString());
+                }
+                count = new HashMap(); // clear hashmap
+                timeout();
+            } while(true);
+        }
+
+        public void run() {
+            try {
+                unchokeTimer();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private class OptUnchokeTimer implements Runnable {
+
+
+        private void optUnchokeTimer() throws InterruptedException {
+
+            do {
+                Random rnd = new Random();
+                //Create a list of interested peers that are not preferred neighbors and randomly pick one
+                HashSet<String> optList = new HashSet<>();
+                while(interested.isEmpty()) {
+                    Thread.sleep(100);
+                }
+                for (String p : interested){
+                    if (!unchoked.contains(p)){
+                        optList.add(p);
+                    }
+                }
+                int randSize = optList.size();
+                if (randSize>0) {
+                    int rand = rnd.nextInt(randSize);
+                    int i=0;
+                    for (String p : optList){
+                        i++;
+                        if (i==rand) {
+                            //If you didnt pick the same optUnchoked peer then send and unchoke message
+                            if (!optUnchoked.equals(p)) {
+                                Message response1 = new Message(myPeerID, 0, Constants.UNCHOKE);
+                                outboxes.get(p).put(response1);
+                            }
+                            //If the optUnchoked isn't a preferred peer then it is now choked
+                            if (!unchoked.contains(optUnchoked)) {
+                                Message response2 = new Message(myPeerID, 0, Constants.CHOKE);
+                                outboxes.get(optUnchoked).put(response2);
+                            }
+                            optUnchoked = p;
+                            try {
+                                logger.logOptimisticallyUnchokedNeighbor(optUnchoked);
+                            } catch (IOException e) {
+                                System.out.println(e.toString());
+                            }
+                        }
+                    }
+                }
+
+                TimeUnit.SECONDS.sleep(Constants.OPT_UNCHOKE_INTERVAL);
+
+            } while(true);
+
+        }
+
+
+        public void run() {
+            try {
+                optUnchokeTimer();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+
+
+
+    }
+
+
 
 }
