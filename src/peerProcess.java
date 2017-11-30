@@ -499,7 +499,7 @@ public class peerProcess implements Runnable {
 
 
         private void unchokeTimer() throws InterruptedException {
-            do {
+            while (!haveFile) {
                 int i = 0;
                 HashSet<String> newPrefs = new HashSet<>();
                 for (String peer : peers) {
@@ -546,9 +546,9 @@ public class peerProcess implements Runnable {
 
 
                 TimeUnit.SECONDS.sleep(Constants.UNCHOKE_INTERVAL);
-            } while (!haveFile);
+            }
 
-            do {
+            while (!peersHaveFile) {
 
                 //Select k neighbors from interested peers
                 HashSet<String> newPrefs = new HashSet<>();
@@ -578,7 +578,7 @@ public class peerProcess implements Runnable {
 
 
                 TimeUnit.SECONDS.sleep(Constants.UNCHOKE_INTERVAL);
-            } while (!peersHaveFile);
+            }
         }
 
 
