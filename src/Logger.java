@@ -7,8 +7,6 @@ import java.util.Calendar;
 
 /*
  * still need to add to peerProcess:
- * logPreferredNeighbors
- * logOptimisticallyUnchokedNeighbor
  * logFileDownloadComplete
  * done
  */
@@ -55,8 +53,6 @@ class Logger {
         } catch(IOException e) {
             e.printStackTrace();
         }
-
-
     }
 
 
@@ -65,6 +61,7 @@ class Logger {
         String timeStamp = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss").format(Calendar.getInstance().getTime());
         logFile.append(timeStamp + ": Peer " + peerID +
                 " makes a connection to Peer " + connectedPeerID + "\n");
+        logFile.flush();
     }
 
     // when the peer accepted the connection from another peer
@@ -72,6 +69,7 @@ class Logger {
         String timeStamp = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss").format(Calendar.getInstance().getTime());
         logFile.append(timeStamp + ": Peer " + peerID +
                 " is connected from Peer " + connectedPeerID + "\n");
+        logFile.flush();
     }
 
     // when the peer changes its preferred neighbors
@@ -83,6 +81,7 @@ class Logger {
             logFile.append(neighborIDs[i] + ",");
         }
         logFile.append(neighborIDs[neighborIDs.length-1] + "\n");
+        logFile.flush();
     }
 
     // when the peer changes its optimistically unchoked neighbor
@@ -90,6 +89,7 @@ class Logger {
         String timeStamp = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss").format(Calendar.getInstance().getTime());
         logFile.append(timeStamp + ": Peer " + peerID +
                 " has the optimistically unchoked neighbor " + neighborID + "\n");
+        logFile.flush();
     }
 
     // when the peer is unchoked by a neighbor (which means when the peer recieves an unchoking message from a neighbor)
@@ -97,6 +97,7 @@ class Logger {
         String timeStamp = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss").format(Calendar.getInstance().getTime());
         logFile.append(timeStamp + ": Peer " + peerID +
                 " is unchoked by " + neighborID + "\n");
+        logFile.flush();
     }
 
     // when the peer is choked by a neighbor (which means when the peer recieves a choking message from a neighbor)
@@ -104,6 +105,7 @@ class Logger {
         String timeStamp = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss").format(Calendar.getInstance().getTime());
         logFile.append(timeStamp + ": Peer " + peerID +
                 " is choked by " + neighborID + "\n");
+        logFile.flush();
     }
 
     // when the peer receives a ‘have’ message
@@ -112,6 +114,7 @@ class Logger {
         logFile.append(timeStamp + ": Peer " + peerID +
                 " received the ‘have’ message from " + otherPeerID +
                 " for the piece " + pieceIndex + "\n");
+        logFile.flush();
     }
 
     // when the peer receives an ‘interested’ message
@@ -119,6 +122,7 @@ class Logger {
         String timeStamp = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss").format(Calendar.getInstance().getTime());
         logFile.append(timeStamp + ": Peer " + peerID +
                 " received the ‘interested’ message from " + otherPeerID + "\n");
+        logFile.flush();
     }
 
     // when the peer receives an ‘not interested’ message
@@ -126,6 +130,7 @@ class Logger {
         String timeStamp = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss").format(Calendar.getInstance().getTime());
         logFile.append(timeStamp + ": Peer " + peerID +
                 " received the ‘not interested’ message from " + otherPeerID + "\n");
+        logFile.flush();
     }
 
     // when the peer finishes downloading a piece
@@ -135,6 +140,7 @@ class Logger {
                 " has downloaded the piece " + pieceIndex + " from " +
                 otherPeerID + ". Now the number of pieces it has is " +
                 totalPieces + "\n");
+        logFile.flush();
     }
 
     // when the peer downloads the complete file
@@ -142,6 +148,7 @@ class Logger {
         String timeStamp = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss").format(Calendar.getInstance().getTime());
         logFile.append(timeStamp + ": Peer " + peerID +
                 " has downloaded the complete file\n");
+        logFile.flush();
     }
 
     // actually write to the file
@@ -164,8 +171,7 @@ class Logger {
     	logger.logRecievedNotInterested("19");
     	logger.logDoneDownloadingPiece("19", "3",8);
     	logger.logFileDownloadComplete();
-    	logger.done();
     }
-	*/
+    */
     
 }
