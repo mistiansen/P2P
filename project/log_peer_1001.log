@@ -1,6 +1,10 @@
-2017-11-30_14:02:09: Peer 1001 is connected from Peer 1003
-2017-11-30_14:02:09: Peer 1001 is connected from Peer 1002
-2017-11-30_14:02:09: Peer 1001 is connected from Peer 1004
-2017-11-30_14:02:09: Peer 1001 received the ‘interested’ message from 1004
-2017-11-30_14:02:09: Peer 1001 received the ‘interested’ message from 1003
-2017-11-30_14:02:09: Peer 1001 received the ‘interested’ message from 1002
+2017-11-30_17:05:50: Peer 1001 is connected from Peer 1004
+2017-11-30_17:05:50: Peer 1001 is connected from Peer 1002
+2017-11-30_17:05:50: Peer 1001 is connected from Peer 1003
+2017-11-30_17:05:50: Peer 1001 has the preferred neighbors 1003,1002
+2017-11-30_17:05:50: Peer 1001 is unchoked by 1004
+2017-11-30_17:05:50: Peer 1001 is unchoked by 1002
+2017-11-30_17:05:50: Peer 1001 is unchoked by 1003
+2017-11-30_17:05:50: Peer 1001 received the ‘interested’ message from 1002
+2017-11-30_17:05:50: Peer 1001 received the ‘interested’ message from 1003
+2017-11-30_17:05:50: Peer 1001 received the ‘interested’ message from 1004

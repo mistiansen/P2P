@@ -4,6 +4,7 @@ import java.net.*;
 import java.nio.ByteBuffer;
 import java.util.*;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicIntegerArray;
 import java.util.concurrent.TimeUnit;
@@ -35,7 +36,8 @@ public class peerProcess implements Runnable {
     //    private ConcurrentHashMap<String, BitSet> peerPieces; //maps from peerID to the bitfield for that peer (which pieces that peer has)
     private HashMap<String, BitSet> peerPieces = new HashMap<>(); //don't actually see a need for concurrency here, because processing inbox serially in 1 thread.
     /* Do we need to know bitfields for each peer? I guess so to be able to make requests. Updated on receipt of "have" message. */
-    private HashMap<String, Integer> count = new HashMap<>();
+//    private HashMap<String, Integer> count = new HashMap<>();
+    private ConcurrentHashMap<String, Integer> count = new ConcurrentHashMap<>();
 
     private AtomicIntegerArray pieces; //create a new class with this underneath? Then use it like a bitset? No no no...don't need concurrency here. Just update as get pieces.
     // so when a piece is received this bitfield is adjusted. If get multiple pieces? I guess doesn't matter. Or can safely overwrite? Not an issue I think
@@ -163,6 +165,7 @@ public class peerProcess implements Runnable {
         logger.logChokedByNeighbor(message.getFrom());
     }
 
+    // TODO: 11/30/17 need to check bitfield differently
     private void processUnchoke(Message message) throws IOException {
         logger.logUnchokedByNeighbor(message.getFrom());
         String unchokedMe = message.getFrom();
@@ -172,7 +175,7 @@ public class peerProcess implements Runnable {
         toRequest.and(peerPieces.get(unchokedMe)); //only want to request if they have it
         try {
             if (toRequest.isEmpty()) {
-                Message notInterested = new Message(this.myPeerID, 1, Constants.NOT_INTERESTED);
+                Message notInterested = new Message(this.myPeerID, 0, Constants.NOT_INTERESTED);
                 outboxes.get(unchokedMe).put(notInterested); //get the outbox for the peer
             } else {
                 int requestIndex = toRequest.nextSetBit(0); //get the next needed but not yet requested bit (piece that don't have)
@@ -249,7 +252,7 @@ public class peerProcess implements Runnable {
     }
 
     /* Do we just store the pieces in a data structure then write to file when all present? */
-    private void processPiece(Message message) throws IOException {
+    private void processPiece(Message message) throws IOException, InterruptedException {
         int pieceLength = message.getPayloadLength() - 4; //the length of the piece should be the messageLength - type portion - index portion
         InputStream is = new ByteArrayInputStream(message.getPayload());
         byte[] indexField = new byte[4]; //grab the first 4 bytes, which hold the message length
@@ -264,6 +267,16 @@ public class peerProcess implements Runnable {
             need.clear(pieceIndex);
             logger.logDoneDownloadingPiece(message.getFrom(), Integer.toString(pieceIndex), ++totalPieces);
             count.put(message.getFrom(), count.get(message.getFrom()) + 1);
+            for (String peer: outboxes.keySet()) {
+                outboxes.get(peer).put(new Message(myPeerID, 4, Constants.HAVE));
+                BitSet needed = (BitSet) need.clone();
+                needed.and(peerPieces.get(peer)); //needed and peer has it
+                if (needed.isEmpty()) {
+                    outboxes.get(peer).put(new Message(myPeerID, 0, Constants.NOT_INTERESTED));
+                } else {
+                    outboxes.get(peer).put(new Message(myPeerID, 0, Constants.INTERESTED));
+                }
+            }
         } catch (FileNotFoundException e) {
             System.out.println("Trying to process a piece but file not found.");
             e.printStackTrace();
@@ -482,6 +495,9 @@ public class peerProcess implements Runnable {
             new Thread(outHandler).start();
         }
 
+        new Thread(new UnchokeTimer()).start();
+        new Thread(new OptUnchokeTimer()).start();
+
         while (true) {
             dispatch();
         }
@@ -497,6 +513,11 @@ public class peerProcess implements Runnable {
 
     private class UnchokeTimer implements Runnable {
 
+        public UnchokeTimer() {
+            for (String peer: peers) {
+                count.put(peer, 0);
+            }
+        }
 
         private void unchokeTimer() throws InterruptedException {
             do {
@@ -521,6 +542,7 @@ public class peerProcess implements Runnable {
                             newPrefs.remove(replace);
                         }
                     }
+                    count.put(peer, 0);
                 }
                 for (String newpeer : newPrefs) {
                     if (!unchoked.contains(newpeer)) {
@@ -541,7 +563,6 @@ public class peerProcess implements Runnable {
                 } catch (IOException e) {
                     System.out.println(e.toString());
                 }
-                count = new HashMap(); // clear hashmap
                 timeout();
 
 
@@ -575,7 +596,6 @@ public class peerProcess implements Runnable {
                 }
                 unchoked.clear();
                 unchoked = newPrefs;
-
 
                 TimeUnit.SECONDS.sleep(Constants.UNCHOKE_INTERVAL);
             } while (!peersHaveFile);
@@ -619,8 +639,9 @@ public class peerProcess implements Runnable {
                                 outboxes.get(p).put(response1);
                             }
                             //If the optUnchoked isn't a preferred peer then it is now choked
-                            if (!unchoked.contains(optUnchoked)) {
+                            if (!unchoked.contains(optUnchoked) && optUnchoked!="") {
                                 Message response2 = new Message(myPeerID, 0, Constants.CHOKE);
+                                System.out.println("This is the optunchoked " + optUnchoked);
                                 outboxes.get(optUnchoked).put(response2);
                             }
                             optUnchoked = p;
