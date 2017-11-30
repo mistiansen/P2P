@@ -41,6 +41,7 @@ public class peerProcess implements Runnable {
     // so when a piece is received this bitfield is adjusted. If get multiple pieces? I guess doesn't matter. Or can safely overwrite? Not an issue I think
     // remember, this is for just 1 peer. so we choose who gets requested and whether to send multiple requests. Have a requested BitSet?
     private boolean haveFile;
+    private boolean peersHaveFile;
     private BitSet bitfield = new BitSet();
     private BitSet requested = new BitSet(); // So maybe only send 1 request for a piece per round. Then when receive or at timeout, unset the bit.
     private BitSet need = new BitSet();
@@ -414,8 +415,29 @@ public class peerProcess implements Runnable {
           }
         }
 
-
-
+        private boolean amICompleted(){
+        	if(bitfield.cardinality() >= numPieces){
+        		haveFile = true;
+        		return true;
+        	}
+        	else{
+        		haveFile = false;
+        		return false;
+        	}
+        }
+        
+        private boolean isEveryoneElseCompleted(){
+        	for(String peer : peers){
+        		BitSet peerBitset = peerPieces.get(peer);
+        		if(peerBitset.cardinality() < numPieces){
+        			peersHaveFile = false;
+        			return false;
+        		}
+        	}
+        	peersHaveFile = true;
+        	return true;
+        }
+        
         private void acceptConnections() { //maybe add a timer so that can proceed even if not all expected connections are attempted
             long start = System.currentTimeMillis();
             Vector<Connection> incoming = new Vector<>(numConnecting);
