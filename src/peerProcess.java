@@ -202,14 +202,13 @@ public class peerProcess implements Runnable {
         logger.logRecievedHave(message.getFrom(), Integer.toString(pieceIndex));
         int responseType;
         int responseLength = 1; // 1 byte for message type. No payload for 'interested' and not_interested' messages.
-        if (bitfield.get(pieceIndex)) {
-            responseType = Constants.NOT_INTERESTED;
-        } else {
+        if (!bitfield.get(pieceIndex)) {
             responseType = Constants.INTERESTED;
+            Message response = new Message(this.myPeerID, responseLength, responseType);
+            outboxes.get(message.getFrom()).put(response); //get the outbox for the peerID associated with the received message and put in a response.
         }
-        Message response = new Message(this.myPeerID, responseLength, responseType);
-        outboxes.get(message.getFrom()).put(response); //get the outbox for the peerID associated with the received message and put in a response.
         // put throws InterruptedException. add(response) should also work, but I guess this is preferred.
+        isEveryoneElseCompleted();
     }
 
     private void processBitField(Message message) throws InterruptedException {
@@ -277,6 +276,7 @@ public class peerProcess implements Runnable {
                     outboxes.get(peer).put(new Message(myPeerID, 0, Constants.INTERESTED));
                 }
             }
+            amICompleted();
         } catch (FileNotFoundException e) {
             System.out.println("Trying to process a piece but file not found.");
             e.printStackTrace();
@@ -520,7 +520,7 @@ public class peerProcess implements Runnable {
         }
 
         private void unchokeTimer() throws InterruptedException {
-            do {
+            while (!haveFile) {
                 int i = 0;
                 HashSet<String> newPrefs = new HashSet<>();
                 for (String peer : peers) {
@@ -567,9 +567,9 @@ public class peerProcess implements Runnable {
 
 
                 TimeUnit.SECONDS.sleep(Constants.UNCHOKE_INTERVAL);
-            } while (!haveFile);
+            }
 
-            do {
+            while (!peersHaveFile) {
 
                 //Select k neighbors from interested peers
                 HashSet<String> newPrefs = new HashSet<>();
@@ -598,7 +598,7 @@ public class peerProcess implements Runnable {
                 unchoked = newPrefs;
 
                 TimeUnit.SECONDS.sleep(Constants.UNCHOKE_INTERVAL);
-            } while (!peersHaveFile);
+            }
         }
 
 
