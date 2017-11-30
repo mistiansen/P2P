@@ -35,7 +35,7 @@ public class peerProcess implements Runnable {
     private HashMap<String, BitSet> peerPieces = new HashMap<>(); //don't actually see a need for concurrency here, because processing inbox serially in 1 thread.
     /* Do we need to know bitfields for each peer? I guess so to be able to make requests. Updated on receipt of "have" message. */
     private HashMap<String, Integer> count = new HashMap<>();
-    
+
     private AtomicIntegerArray pieces; //create a new class with this underneath? Then use it like a bitset? No no no...don't need concurrency here. Just update as get pieces.
     // so when a piece is received this bitfield is adjusted. If get multiple pieces? I guess doesn't matter. Or can safely overwrite? Not an issue I think
     // remember, this is for just 1 peer. so we choose who gets requested and whether to send multiple requests. Have a requested BitSet?
@@ -46,7 +46,7 @@ public class peerProcess implements Runnable {
 
     private Logger logger;
     private int totalPieces = 0;
-    
+
     public peerProcess(String myPeerID) {
         this.myPeerID = myPeerID;
     }
@@ -64,7 +64,7 @@ public class peerProcess implements Runnable {
 //			 System.out.println(e.toString());
 //	    }
         logger = new Logger(myPeerID);
-        
+
         try {
             BufferedReader in = new BufferedReader(new FileReader(configFile));
             while ((st = in.readLine()) != null) {
@@ -269,7 +269,7 @@ public class peerProcess implements Runnable {
 
     /* This is sent in response to an unchoke */
     /* craft a message and put it in the outbox of the peer sending the unchoke */
-    // TODO: 11/29/17 Need to check peerPieces data structure to see if that peer actually has the piece 
+    // TODO: 11/29/17 Need to check peerPieces data structure to see if that peer actually has the piece
     private void requestPiece(String peer, int pieceIndex) {
         try {
             ByteArrayOutputStream payloadOut = new ByteArrayOutputStream();
@@ -289,53 +289,86 @@ public class peerProcess implements Runnable {
 //        Message request = new Message(this.myPeerID, )
 
     }
-    
-    private void unchokeTimer() throws InterruptedException{
-    	TimeUnit.SECONDS.sleep(Constants.UNCHOKE_INTERVAL);
-    	int i = 0;
-    	HashSet<String> newPrefs= new HashSet<>();
-    	for (String p : peers){
-    		if (i<Constants.NUM_PREF_NEIGHBORS){
-    			newPrefs.add(p);
-    			i++;
-    		}
-    		else {
-    			int maxdiff=-1;
-    			String replace="";
-    			for (String np : newPrefs){
-    				int diff=count.get(np)-count.get(p);
-    				if (maxdiff<diff) {
-    					maxdiff=diff;
-    					replace=np;
-    				}
-    			}
-    			if (maxdiff>-1){
-    				newPrefs.add(p);
-    				newPrefs.remove(replace);
-    			}
-    		}
-    	}
-    	for (String np : newPrefs){
-    		if (!unchoked.contains(np)) {
-    			//send unchoke
-    		}
-    	}
-    	for (String p : unchoked){
-    		if (!newPrefs.contains(p)) {
-    			//send choke
-    		}
-    	}
-    	unchoked.clear();
-    	unchoked=newPrefs;
-    	count = new HashMap(); // clear hashmap
-    	timeout();
-    }
-    
-    private void optUnchokeTimer() throws InterruptedException{
-    	TimeUnit.SECONDS.sleep(Constants.OPT_UNCHOKE_INTERVAL);
-    	
-    	timeout();
-    }
+
+        private void unchokeTimer() throws InterruptedException{
+          while(true){
+          	TimeUnit.SECONDS.sleep(Constants.UNCHOKE_INTERVAL);
+          	int i = 0;
+          	HashSet<String> newPrefs= new HashSet<>();
+          	for (String p : peers){
+          		if (i<Constants.NUM_PREF_NEIGHBORS){
+          			newPrefs.add(p);
+          			i++;
+          		}
+          		else {
+          			int maxdiff=-1;
+          			String replace="";
+          			for (String np : newPrefs){
+          				int diff=count.get(np)-count.get(p);
+          				if (maxdiff<diff) {
+          					maxdiff=diff;
+          					replace=np;
+          				}
+          			}
+          			if (maxdiff>-1){
+          				newPrefs.add(p);
+          				newPrefs.remove(replace);
+          			}
+          		}
+          	}
+          	for (String np : newPrefs){
+          		if (!unchoked.contains(np)) {
+                Message response = new Message(this.myPeerID, 0, Constants.UNCHOKE);
+                outboxes.get(np).put(response);
+          		}
+          	}
+          	for (String p : unchoked){
+          		if (!newPrefs.contains(p)) {
+                Message response = new Message(this.myPeerID, 0, Constants.CHOKE);
+                outboxes.get(p).put(response);
+          		}
+          	}
+          	unchoked.clear();
+          	unchoked=newPrefs;
+          	count = new HashMap(); // clear hashmap
+          	timeout();
+          }
+        }
+
+        private void optUnchokeTimer() throws InterruptedException{
+          Random rnd = new Random;
+          while(true){
+          	TimeUnit.SECONDS.sleep(Constants.OPT_UNCHOKE_INTERVAL);
+            //Create a list of interested peers that are not preferred neighbors and randomly pick one
+            HashSet<String> optList = new HashSet<>();
+            for (String p : interested){
+              if (!unchoked.contains(p)){
+                optList.add(p);
+              }
+            }
+            int randSize = optList.size();
+            if (randSize>0) {
+              int rand = rnd.nextInt(randSize);
+              int i=0;
+              for (String p : optList){
+                i++;
+                if (i==rand) {
+                  //If you didnt pick the same optUnchoked peer then send and unchoke message
+                  if (!optUnchoked.equals(p)) {
+                    Message response1 = new Message(this.myPeerID, 0, Constants.UNCHOKE);
+                    outboxes.get(p).put(response1);
+                  }
+                  //If the optUnchoked isn't a preferred peer then it is now choked
+                  if (!unchoked.contains(optUnchoked)) {
+                    Message response2 = new Message(this.myPeerID, 0, Constants.CHOKE);
+                    outboxes.get(optUnchoked).put(response2);
+                  }
+                  optUnchoked = p;
+                }
+              }
+            }
+          }
+        }
 
 
 
