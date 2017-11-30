@@ -7,6 +7,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicIntegerArray;
 import java.util.concurrent.TimeUnit;
+import java.util.Random;
 
 public class peerProcess implements Runnable {
 
@@ -31,7 +32,7 @@ public class peerProcess implements Runnable {
     private HashSet<String> unchoked = new HashSet<>();
     private HashSet<String> interested = new HashSet<>();
     private HashSet<String> chokingMe = new HashSet<>();
-//    private ConcurrentHashMap<String, BitSet> peerPieces; //maps from peerID to the bitfield for that peer (which pieces that peer has)
+    //    private ConcurrentHashMap<String, BitSet> peerPieces; //maps from peerID to the bitfield for that peer (which pieces that peer has)
     private HashMap<String, BitSet> peerPieces = new HashMap<>(); //don't actually see a need for concurrency here, because processing inbox serially in 1 thread.
     /* Do we need to know bitfields for each peer? I guess so to be able to make requests. Updated on receipt of "have" message. */
     private HashMap<String, Integer> count = new HashMap<>();
@@ -40,6 +41,7 @@ public class peerProcess implements Runnable {
     // so when a piece is received this bitfield is adjusted. If get multiple pieces? I guess doesn't matter. Or can safely overwrite? Not an issue I think
     // remember, this is for just 1 peer. so we choose who gets requested and whether to send multiple requests. Have a requested BitSet?
     private boolean haveFile;
+    private boolean peersHaveFile;
     private BitSet bitfield = new BitSet();
     private BitSet requested = new BitSet(); // So maybe only send 1 request for a piece per round. Then when receive or at timeout, unset the bit.
     private BitSet need = new BitSet();
@@ -77,17 +79,17 @@ public class peerProcess implements Runnable {
                     peerInfo.put(tokens[0], peer);
                     peers.add(tokens[0]);
                     numConnectTo++;
-                } else if(remotePeerID > Integer.parseInt(this.myPeerID)) { //if the peerID in the config is greater than my peerID, expect incoming connection
+                } else if (remotePeerID > Integer.parseInt(this.myPeerID)) { //if the peerID in the config is greater than my peerID, expect incoming connection
                     toAccept.add(tokens[0]);
                     peerInfo.put(tokens[0], peer);
                     peers.add(tokens[0]);
                     numConnecting++;
-                } else if(remotePeerID == Integer.parseInt(this.myPeerID)) {
+                } else if (remotePeerID == Integer.parseInt(this.myPeerID)) {
                     haveFile = Util.strToBool(tokens[3]);
                     myPort = Integer.parseInt(tokens[2]);
                     System.out.println("my peerID is: " + this.myPeerID + ". My port is : " + myPort);
-                    numPieces = (int)Math.ceil(Constants.FILE_SIZE / (Constants.PIECE_SIZE * 1.0));
-                    if(haveFile) {
+                    numPieces = (int) Math.ceil(Constants.FILE_SIZE / (Constants.PIECE_SIZE * 1.0));
+                    if (haveFile) {
                         System.out.println("Peer " + remotePeerID + " has file");
                         this.bitfield.set(0, numPieces); //sets bits from 0 to numPieces exclusive (so a total of numPieces bits)
                     } else {
@@ -142,7 +144,7 @@ public class peerProcess implements Runnable {
             case Constants.REQUEST:
                 try {
                     processRequest(message);
-                } catch(InterruptedException e) {
+                } catch (InterruptedException e) {
                     e.printStackTrace();
                     System.out.println("ERROR processing request for piece (interrupted)");
                 } catch (IOException e) {
@@ -197,7 +199,7 @@ public class peerProcess implements Runnable {
         logger.logRecievedHave(message.getFrom(), Integer.toString(pieceIndex));
         int responseType;
         int responseLength = 1; // 1 byte for message type. No payload for 'interested' and not_interested' messages.
-        if(bitfield.get(pieceIndex)) {
+        if (bitfield.get(pieceIndex)) {
             responseType = Constants.NOT_INTERESTED;
         } else {
             responseType = Constants.INTERESTED;
@@ -220,7 +222,7 @@ public class peerProcess implements Runnable {
             System.out.println("Peer process " + myPeerID + " has " + outboxes.size());
             outboxes.get(fromPeer).put(notInterested);
         } else {
-            Message interested =  new Message(myPeerID, 1, Constants.INTERESTED);
+            Message interested = new Message(myPeerID, 1, Constants.INTERESTED);
             outboxes.get(fromPeer).put(interested);
 //            requestPiece(fromPeer, );
         }
@@ -261,7 +263,7 @@ public class peerProcess implements Runnable {
             bitfield.set(pieceIndex); //think pieceIndex is index of first bit of a piece
             need.clear(pieceIndex);
             logger.logDoneDownloadingPiece(message.getFrom(), Integer.toString(pieceIndex), ++totalPieces);
-            count.put(message.getFrom(), count.get(message.getFrom())+1);
+            count.put(message.getFrom(), count.get(message.getFrom()) + 1);
         } catch (FileNotFoundException e) {
             System.out.println("Trying to process a piece but file not found.");
             e.printStackTrace();
@@ -294,79 +296,139 @@ public class peerProcess implements Runnable {
 
     }
 
+    private void optUnchokeTimer() throws InterruptedException {
+        Random rnd = new Random();
+        while (!peersHaveFile) {
+            TimeUnit.SECONDS.sleep(Constants.OPT_UNCHOKE_INTERVAL);
+            //Create a list of interested peers that are not preferred neighbors and randomly pick one
+            HashSet<String> optList = new HashSet<>();
+            for (String p : interested) {
+                if (!unchoked.contains(p)) {
+                    optList.add(p);
+                }
+            }
+            int randSize = optList.size();
+            if (randSize > 0) {
+                int rand = rnd.nextInt(randSize);
+                int i = 0;
+                for (String p : optList) {
+                    i++;
+                    if (i == rand) {
+                        //If you didnt pick the same optUnchoked peer then send and unchoke message
+                        if (!optUnchoked.equals(p)) {
+                            Message response1 = new Message(this.myPeerID, 0, Constants.UNCHOKE);
+                            outboxes.get(p).put(response1);
+                        }
+                        //If the optUnchoked isn't a preferred peer then it is now choked
+                        if (!unchoked.contains(optUnchoked)) {
+                            Message response2 = new Message(this.myPeerID, 0, Constants.CHOKE);
+                            outboxes.get(optUnchoked).put(response2);
+                        }
+                        optUnchoked = p;
+                        try {
+                            logger.logOptimisticallyUnchokedNeighbor(optUnchoked);
+                        } catch (IOException e) {
+                            System.out.println(e.toString());
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private boolean amICompleted() {
+        if (bitfield.cardinality() >= numPieces) {
+            haveFile = true;
+            return true;
+        } else {
+            haveFile = false;
+            return false;
+        }
+    }
+
+    private boolean isEveryoneElseCompleted() {
+        for (String peer : peers) {
+            BitSet peerBitset = peerPieces.get(peer);
+            if (peerBitset.cardinality() < numPieces) {
+                peersHaveFile = false;
+                return false;
+            }
+        }
+        peersHaveFile = true;
+        return true;
+    }
+
+    private void acceptConnections() { //maybe add a timer so that can proceed even if not all expected connections are attempted
+        long start = System.currentTimeMillis();
+        Vector<Connection> incoming = new Vector<>(numConnecting);
+        System.out.println("In acceptConnections for peer: " + myPeerID + ". Expecting: " + numConnecting + " connection requests.");
+        try {
+            ServerSocket welcomeSocket = new ServerSocket(myPort);
+            for (int i = 0; i < numConnecting; i++) {
+                if ((System.currentTimeMillis() - start) < Constants.CONNECT_TIMEOUT) {
+                    Socket connect = welcomeSocket.accept();
+                    System.out.println("Just accepted a connection in peerProcess " + myPeerID);
+                    incoming.add(new Connection(connect));
+                } else {
+                    System.out.println("Got some sort of timeout in acceptConnections");
+                    break;
+                }
+            }
+            for (Connection request : incoming) {
+                String requestor = request.checkHandshake();
+                if (toAccept.contains(requestor)) { //if one fails does it break things? I don't think so. Well...it would break that peer if that peer tried to connect again (?).
+                    request.setPeerID(requestor);
+                    request.reciprocateHandshake(myPeerID);
+                    request.sendBitfield(bitfield);
+                    logger.logAcceptedTCPConnection(requestor);
+                    inHandlers.add(new IncomingHandler(inbox, request)); //create new incoming handler for this connection. Give it my inbox and this connection. Add to HashSet of incomingHandlers.
+                    BlockingQueue<Message> outbox = new LinkedBlockingQueue<>();
+                    outboxes.put(requestor, outbox);
+                    outHandlers.add(new OutgoingHandler(request, outbox)); //each OutgoingHandler has its own outbox created in the constructor.
+                } else {
+                    continue;
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("Exception in peerProcess's InConnectHandler's acceptConnections() method. Use different port?");
+            e.printStackTrace();
+        }
+    }
 
 
-        private void acceptConnections() { //maybe add a timer so that can proceed even if not all expected connections are attempted
-            long start = System.currentTimeMillis();
-            Vector<Connection> incoming = new Vector<>(numConnecting);
-            System.out.println("In acceptConnections for peer: " + myPeerID + ". Expecting: " + numConnecting + " connection requests.");
+    public void requestConnections() {
+        List<RemotePeerInfo> sortedPeers = new ArrayList<RemotePeerInfo>(toInitiate);
+        Collections.sort(sortedPeers);
+        for (RemotePeerInfo peer : sortedPeers) {
+            System.out.println(peer.getPeerId());
+        }
+        for (RemotePeerInfo peer : sortedPeers) {
             try {
-                ServerSocket welcomeSocket = new ServerSocket(myPort);
-                for (int i = 0; i < numConnecting; i++) {
-                    if ((System.currentTimeMillis() - start) < Constants.CONNECT_TIMEOUT) {
-                        Socket connect = welcomeSocket.accept();
-                        System.out.println("Just accepted a connection in peerProcess " + myPeerID);
-                        incoming.add(new Connection(connect));
-                    } else {
-                        System.out.println("Got some sort of timeout in acceptConnections");
-                        break;
-                    }
+                InetAddress address = InetAddress.getByName(peer.getPeerHost());
+                System.out.println("In requestConnections for peer " + myPeerID + ". Attempting connection to peer " + peer.getPeerId() + " host: " + peer.getPeerHost() + " address: " + address);
+                Connection connection = new Connection(peer.getPeerId(), new Socket(address, peer.getPeerPort()));
+                connection.initiateHandshake(myPeerID);
+                if (connection.checkHandshake().equals(peer.getPeerId())) {
+                    System.out.println("Got a valid handshake in requestConnections() from peer " + peer.getPeerId());
+                    logger.logMadeTCPConnection(peer.getPeerId());
+                    connection.sendBitfield(bitfield);
+                    inHandlers.add(new IncomingHandler(inbox, connection)); //create new incoming handler for this connection. Give it my inbox and this connection. Add to HashSet of incomingHandlers.
+                    BlockingQueue<Message> outbox = new LinkedBlockingQueue<>();
+                    outboxes.put(peer.getPeerId(), outbox);
+                    outHandlers.add(new OutgoingHandler(connection, outbox)); //each OutgoingHandler has its own outbox created in the constructor.
+                } else {
+                    System.out.println("Got an improper handshake in requestConnections from peer: " + peer.getPeerId());
+                    continue;
                 }
-                for (Connection request: incoming) {
-                    String requestor = request.checkHandshake();
-                    if (toAccept.contains(requestor)) { //if one fails does it break things? I don't think so. Well...it would break that peer if that peer tried to connect again (?).
-                        request.setPeerID(requestor);
-                        request.reciprocateHandshake(myPeerID);
-                        request.sendBitfield(bitfield);
-                        logger.logAcceptedTCPConnection(requestor);
-                        inHandlers.add(new IncomingHandler(inbox, request)); //create new incoming handler for this connection. Give it my inbox and this connection. Add to HashSet of incomingHandlers.
-                        BlockingQueue<Message> outbox = new LinkedBlockingQueue<>();
-                        outboxes.put(requestor, outbox);
-                        outHandlers.add(new OutgoingHandler(request, outbox)); //each OutgoingHandler has its own outbox created in the constructor.
-                    } else {
-                        continue;
-                    }
-                }
+            } catch (UnknownHostException e) {
+                System.out.println("Unknown host exception in OutConnectHandler's requestConnections() method");
+                e.printStackTrace();
             } catch (IOException e) {
-                System.out.println("Exception in peerProcess's InConnectHandler's acceptConnections() method. Use different port?");
+                System.out.println("IOException in OutConnectHandler's requestConnections() method");
                 e.printStackTrace();
             }
         }
-
-
-        public void requestConnections() {
-            List<RemotePeerInfo> sortedPeers = new ArrayList<RemotePeerInfo>(toInitiate);
-            Collections.sort(sortedPeers);
-            for (RemotePeerInfo peer: sortedPeers) {
-                System.out.println(peer.getPeerId());
-            }
-            for (RemotePeerInfo peer: sortedPeers) {
-                try {
-                    InetAddress address = InetAddress.getByName(peer.getPeerHost());
-                    System.out.println("In requestConnections for peer " + myPeerID + ". Attempting connection to peer " + peer.getPeerId() + " host: " + peer.getPeerHost() + " address: " + address);
-                    Connection connection = new Connection(peer.getPeerId(), new Socket(address, peer.getPeerPort()));
-                    connection.initiateHandshake(myPeerID);
-                    if (connection.checkHandshake().equals(peer.getPeerId())) {
-                        System.out.println("Got a valid handshake in requestConnections() from peer " + peer.getPeerId());
-                        logger.logMadeTCPConnection(peer.getPeerId());
-                        connection.sendBitfield(bitfield);
-                        inHandlers.add(new IncomingHandler(inbox, connection)); //create new incoming handler for this connection. Give it my inbox and this connection. Add to HashSet of incomingHandlers.
-                        BlockingQueue<Message> outbox = new LinkedBlockingQueue<>();
-                        outboxes.put(peer.getPeerId(), outbox);
-                        outHandlers.add(new OutgoingHandler(connection, outbox)); //each OutgoingHandler has its own outbox created in the constructor.
-                    } else {
-                        System.out.println("Got an improper handshake in requestConnections from peer: " + peer.getPeerId());
-                        continue;
-                    }
-                } catch (UnknownHostException e) {
-                    System.out.println("Unknown host exception in OutConnectHandler's requestConnections() method");
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    System.out.println("IOException in OutConnectHandler's requestConnections() method");
-                    e.printStackTrace();
-                }
-            }
-        }
+    }
 
 
     public void initialize() {
@@ -380,10 +442,9 @@ public class peerProcess implements Runnable {
     public void dispatch() {
 
 
-
         try {
             processMessage(inbox.take());
-        } catch(InterruptedException e) {
+        } catch (InterruptedException e) {
             e.printStackTrace();
             System.out.println("Interrupted exception in peer process dispatch method");
         } catch (IOException e) {
@@ -414,14 +475,14 @@ public class peerProcess implements Runnable {
 //        }
         // TODO: 11/29/17 need to actually start the inhandlers and outhandlers
 
-        for(IncomingHandler inHandler: inHandlers) {
+        for (IncomingHandler inHandler : inHandlers) {
             new Thread(inHandler).start();
         }
-        for(OutgoingHandler outHandler: outHandlers) {
+        for (OutgoingHandler outHandler : outHandlers) {
             new Thread(outHandler).start();
         }
 
-        while(true) {
+        while (true) {
             dispatch();
         }
     }
@@ -436,47 +497,45 @@ public class peerProcess implements Runnable {
 
     private class UnchokeTimer implements Runnable {
 
-        private void unchokeTimer() throws InterruptedException{
 
+        private void unchokeTimer() throws InterruptedException {
             do {
-                TimeUnit.SECONDS.sleep(Constants.UNCHOKE_INTERVAL);
                 int i = 0;
-                HashSet<String> newPrefs= new HashSet<>();
-                for (String p : peers){
-                    if (i<Constants.NUM_PREF_NEIGHBORS){
-                        newPrefs.add(p);
+                HashSet<String> newPrefs = new HashSet<>();
+                for (String peer : peers) {
+                    if (i < Constants.NUM_PREF_NEIGHBORS) {
+                        newPrefs.add(peer);
                         i++;
-                    }
-                    else {
-                        int maxdiff=-1;
-                        String replace="";
-                        for (String np : newPrefs){
-                            int diff=count.get(np)-count.get(p);
-                            if (maxdiff<diff) {
-                                maxdiff=diff;
-                                replace=np;
+                    } else {
+                        int maxdiff = -1;
+                        String replace = "";
+                        for (String newpeer : newPrefs) {
+                            int diff = count.get(newpeer) - count.get(peer);
+                            if (maxdiff < diff) {
+                                maxdiff = diff;
+                                replace = newpeer;
                             }
                         }
-                        if (maxdiff>-1){
-                            newPrefs.add(p);
+                        if (maxdiff > -1) {
+                            newPrefs.add(peer);
                             newPrefs.remove(replace);
                         }
                     }
                 }
-                for (String np : newPrefs){
-                    if (!unchoked.contains(np)) {
+                for (String newpeer : newPrefs) {
+                    if (!unchoked.contains(newpeer)) {
                         Message response = new Message(myPeerID, 0, Constants.UNCHOKE);
-                        outboxes.get(np).put(response);
+                        outboxes.get(newpeer).put(response);
                     }
                 }
-                for (String p : unchoked){
-                    if (!newPrefs.contains(p)) {
+                for (String oldpeer : unchoked) {
+                    if (!newPrefs.contains(oldpeer)) {
                         Message response = new Message(myPeerID, 0, Constants.CHOKE);
-                        outboxes.get(p).put(response);
+                        outboxes.get(oldpeer).put(response);
                     }
                 }
                 unchoked.clear();
-                unchoked=newPrefs;
+                unchoked = newPrefs;
                 try {
                     logger.logPreferredNeighbors(Arrays.copyOf(unchoked.toArray(), unchoked.toArray().length, String[].class));
                 } catch (IOException e) {
@@ -484,8 +543,44 @@ public class peerProcess implements Runnable {
                 }
                 count = new HashMap(); // clear hashmap
                 timeout();
-            } while(true);
+
+
+                TimeUnit.SECONDS.sleep(Constants.UNCHOKE_INTERVAL);
+            } while (!haveFile);
+
+            do {
+
+                //Select k neighbors from interested peers
+                HashSet<String> newPrefs = new HashSet<>();
+                int intSize = interested.size();
+                int selected = 0;
+                for (String peer : interested) {
+                    if (intSize > 0 && selected < Constants.NUM_PREF_NEIGHBORS) {
+                        newPrefs.add(peer);
+                    }
+                    intSize--;
+                    selected++;
+                }
+                for (String newpeer : newPrefs) {
+                    if (!unchoked.contains(newpeer)) {
+                        Message response = new Message(myPeerID, 0, Constants.UNCHOKE);
+                        outboxes.get(newpeer).put(response);
+                    }
+                }
+                for (String oldpeer : unchoked) {
+                    if (!newPrefs.contains(oldpeer)) {
+                        Message response = new Message(myPeerID, 0, Constants.CHOKE);
+                        outboxes.get(oldpeer).put(response);
+                    }
+                }
+                unchoked.clear();
+                unchoked = newPrefs;
+
+
+                TimeUnit.SECONDS.sleep(Constants.UNCHOKE_INTERVAL);
+            } while (!peersHaveFile);
         }
+
 
         public void run() {
             try {
@@ -503,23 +598,21 @@ public class peerProcess implements Runnable {
 
             do {
                 Random rnd = new Random();
+                TimeUnit.SECONDS.sleep(Constants.OPT_UNCHOKE_INTERVAL);
                 //Create a list of interested peers that are not preferred neighbors and randomly pick one
                 HashSet<String> optList = new HashSet<>();
-                while(interested.isEmpty()) {
-                    Thread.sleep(100);
-                }
-                for (String p : interested){
-                    if (!unchoked.contains(p)){
+                for (String p : interested) {
+                    if (!unchoked.contains(p)) {
                         optList.add(p);
                     }
                 }
                 int randSize = optList.size();
-                if (randSize>0) {
+                if (randSize > 0) {
                     int rand = rnd.nextInt(randSize);
-                    int i=0;
-                    for (String p : optList){
+                    int i = 0;
+                    for (String p : optList) {
                         i++;
-                        if (i==rand) {
+                        if (i == rand) {
                             //If you didnt pick the same optUnchoked peer then send and unchoke message
                             if (!optUnchoked.equals(p)) {
                                 Message response1 = new Message(myPeerID, 0, Constants.UNCHOKE);
@@ -539,13 +632,11 @@ public class peerProcess implements Runnable {
                         }
                     }
                 }
-
                 TimeUnit.SECONDS.sleep(Constants.OPT_UNCHOKE_INTERVAL);
 
-            } while(true);
+            } while (!peersHaveFile);
 
         }
-
 
         public void run() {
             try {
@@ -555,11 +646,7 @@ public class peerProcess implements Runnable {
             }
         }
 
-
-
-
     }
-
 
 
 }
