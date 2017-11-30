@@ -7,6 +7,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicIntegerArray;
 import java.util.concurrent.TimeUnit;
+import java.util.Random;
 
 public class peerProcess implements Runnable {
 
@@ -295,41 +296,41 @@ public class peerProcess implements Runnable {
     }
 
         private void unchokeTimer() throws InterruptedException{
-          while(true){
+          while(!haveFile){
           	TimeUnit.SECONDS.sleep(Constants.UNCHOKE_INTERVAL);
           	int i = 0;
           	HashSet<String> newPrefs= new HashSet<>();
-          	for (String p : peers){
+          	for (String peer : peers){
           		if (i<Constants.NUM_PREF_NEIGHBORS){
-          			newPrefs.add(p);
+          			newPrefs.add(peer);
           			i++;
           		}
           		else {
           			int maxdiff=-1;
           			String replace="";
-          			for (String np : newPrefs){
-          				int diff=count.get(np)-count.get(p);
+          			for (String newpeer : newPrefs){
+          				int diff=count.get(newpeer)-count.get(peer);
           				if (maxdiff<diff) {
           					maxdiff=diff;
-          					replace=np;
+          					replace=newpeer;
           				}
           			}
           			if (maxdiff>-1){
-          				newPrefs.add(p);
+          				newPrefs.add(peer);
           				newPrefs.remove(replace);
           			}
           		}
           	}
-          	for (String np : newPrefs){
-          		if (!unchoked.contains(np)) {
+          	for (String newpeer : newPrefs){
+          		if (!unchoked.contains(newpeer)) {
                 Message response = new Message(this.myPeerID, 0, Constants.UNCHOKE);
-                outboxes.get(np).put(response);
+                outboxes.get(newpeer).put(response);
           		}
           	}
-          	for (String p : unchoked){
-          		if (!newPrefs.contains(p)) {
+          	for (String oldpeer : unchoked){
+          		if (!newPrefs.contains(oldpeer)) {
                 Message response = new Message(this.myPeerID, 0, Constants.CHOKE);
-                outboxes.get(p).put(response);
+                outboxes.get(oldpeer).put(response);
           		}
           	}
           	unchoked.clear();
@@ -342,11 +343,40 @@ public class peerProcess implements Runnable {
           	count = new HashMap(); // clear hashmap
           	timeout();
           }
+          //Once you have the file randomly select 3
+          while (!peersHaveFile) {
+            TimeUnit.SECONDS.sleep(Constants.UNCHOKE_INTERVAL);
+            //Select k neighbors from interested peers
+            HashSet<String> newPrefs= new HashSet<>();
+            int intSize = interested.size();
+            int selected = 0;
+            for (String peer : interested){
+              if (intSize>0 && selected<Constants.NUM_PREF_NEIGHBORS) {
+                newPrefs.add(peer);
+              }
+              intSize--;
+              selected++;
+            }
+            for (String newpeer : newPrefs){
+          		if (!unchoked.contains(newpeer)) {
+                Message response = new Message(this.myPeerID, 0, Constants.UNCHOKE);
+                outboxes.get(newpeer).put(response);
+          		}
+          	}
+          	for (String oldpeer : unchoked){
+          		if (!newPrefs.contains(oldpeer)) {
+                Message response = new Message(this.myPeerID, 0, Constants.CHOKE);
+                outboxes.get(oldpeer).put(response);
+          		}
+          	}
+          	unchoked.clear();
+          	unchoked=newPrefs;
+          }
         }
 
         private void optUnchokeTimer() throws InterruptedException{
           Random rnd = new Random();
-          while(true){
+          while(!peersHaveFile){
           	TimeUnit.SECONDS.sleep(Constants.OPT_UNCHOKE_INTERVAL);
             //Create a list of interested peers that are not preferred neighbors and randomly pick one
             HashSet<String> optList = new HashSet<>();
