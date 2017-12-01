@@ -145,7 +145,7 @@ public class peerProcess implements Runnable {
                 }
                 break;
             case Constants.BITFIELD:
-                System.out.println("Received a bitfield message type in peerProcess. Going to process it.");
+                System.out.println("Received a bitfield message type in " + myPeerID + " from " + message.getFrom() + " Going to process it.");
                 processBitField(message);
                 break;
             case Constants.REQUEST:
@@ -226,8 +226,10 @@ public class peerProcess implements Runnable {
             System.out.println(myPeerID + " granting peer " + message.getFrom() + "'s request for piece " + pieceIndex);
             FileInputStream fileInputStream = new FileInputStream(new File(filename)); //or do new FileInputStream(filename)?
             int start = pieceIndex * Constants.PIECE_SIZE; // each read reads from index: start to index: Constants.PIECE_SIZE - 1
+            System.out.println("Trying to read file starting from " + start + " to " + (start + Constants.PIECE_SIZE));
             byte[] content = new byte[Constants.PIECE_SIZE];
-            fileInputStream.read(content, start, Constants.PIECE_SIZE); // Constants.PIECE_SIZE specifies the length of the read
+            System.out.println("IN processRequest. My bitfield is " + bitfield);
+            fileInputStream.read(content, start, Constants.PIECE_SIZE - 1); // Constants.PIECE_SIZE specifies the length of the read
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             out.write(indexHolder);
             out.write(content);
@@ -285,6 +287,7 @@ public class peerProcess implements Runnable {
         System.out.println("NOW in requestPiece of peer " + myPeerID + ". Attempting to request piece " + pieceIndex + " from peer " + peer);
         try {
             byte[] payload = ByteBuffer.allocate(4).putInt(pieceIndex).array();
+            System.out.println("This is the payload in requestPiece in " + myPeerID + "..." + Arrays.toString(payload) + " should be " + pieceIndex);
             Message request = new Message(this.myPeerID, 4, Constants.REQUEST, payload); //payload length for requests is 1 byte type + 4 bytes piece index. NO...not including type.
             outboxes.get(peer).put(request); //throws InterruptedException
         } catch (InterruptedException e) {
