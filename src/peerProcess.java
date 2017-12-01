@@ -224,12 +224,14 @@ public class peerProcess implements Runnable {
         System.out.println(myPeerID + " RECEIVED REQUEST FOR PIECE " + pieceIndex + " from peer " + message.getFrom());
         if (bitfield.get(pieceIndex) && (unchoked.contains(message.getFrom()) || optUnchoked.equals(message.getFrom()))) { //if we have the piece and the requestor is unchoked
             System.out.println(myPeerID + " granting peer " + message.getFrom() + "'s request for piece " + pieceIndex);
-            FileInputStream fileInputStream = new FileInputStream(new File(filename)); //or do new FileInputStream(filename)?
+            FileInputStream fileInputStream = new FileInputStream(filename); //or do new FileInputStream(filename)?
             int start = pieceIndex * Constants.PIECE_SIZE; // each read reads from index: start to index: Constants.PIECE_SIZE - 1
             System.out.println("Trying to read file starting from " + start + " to " + (start + Constants.PIECE_SIZE));
             byte[] content = new byte[Constants.PIECE_SIZE];
-            System.out.println("IN processRequest. My bitfield is " + bitfield);
-            fileInputStream.read(content, start, Constants.PIECE_SIZE - 1); // Constants.PIECE_SIZE specifies the length of the read
+            System.out.println("IN processRequest. My bitfield is " + bitfield+myPeerID);
+            System.out.println("Before fail: "+content+" "+start+" "+ Constants.PIECE_SIZE);
+            fileInputStream.skip(start);
+            fileInputStream.read(content, 0, Constants.PIECE_SIZE); // Constants.PIECE_SIZE specifies the length of the read
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             out.write(indexHolder);
             out.write(content);
@@ -260,7 +262,7 @@ public class peerProcess implements Runnable {
             need.clear(pieceIndex);
             System.out.println(myPeerID + " just got a piece from " + message.getFrom() + " of length " + piece.length);
             logger.logDoneDownloadingPiece(message.getFrom(), Integer.toString(pieceIndex), ++totalPieces);
-            count.put(message.getFrom(), count.get(message.getFrom()) + 1);
+            //count.put(message.getFrom(), count.get(message.getFrom()) + 1);
             byte[] payload = ByteBuffer.allocate(4).putInt(pieceIndex).array();
             for (String peer: outboxes.keySet()) {
                 outboxes.get(peer).put(new Message(myPeerID, 4, Constants.HAVE, payload));
@@ -271,6 +273,17 @@ public class peerProcess implements Runnable {
                 }
             }
             amICompleted();
+            if (!haveFile){
+              BitSet toRequest = (BitSet) this.need.clone();
+              toRequest.and(peerPieces.get(message.getFrom())); //only want to request if they have it (I need and they have it)
+              if (!toRequest.isEmpty()) {
+                  int requestIndex = toRequest.nextSetBit(0); //get the next needed but not yet requested bit (piece that don't have)
+                  requestPiece(message.getFrom(), requestIndex);
+              }
+            } else {
+              logger.logFileDownloadComplete();
+              System.out.println(myPeerID+" Completed File!");
+            }
         } catch (FileNotFoundException e) {
             System.out.println("Trying to process a piece but file not found.");
             e.printStackTrace();
@@ -442,8 +455,18 @@ public class peerProcess implements Runnable {
             new Thread(outHandler).start();
         }
 
-        new Thread(new UnchokeTimer()).start();
-        new Thread(new OptUnchokeTimer()).start();
+        String peery="1002";
+        try {
+        	if (myPeerID.equals("1001")){
+        		unchoked.add(peery);
+                Message response = new Message(myPeerID, 0, Constants.UNCHOKE);
+                outboxes.get(peery).put(response);
+        	}
+        } catch (Exception e) {
+        	System.out.println("shits on fire yo");
+        }
+        //new Thread(new UnchokeTimer()).start();
+        //new Thread(new OptUnchokeTimer()).start();
 
         while (true) {
             dispatch();
