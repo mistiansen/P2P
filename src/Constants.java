@@ -18,7 +18,7 @@ public final class Constants {
     public static int NUM_PREF_NEIGHBORS = 2;
     public static int UNCHOKE_INTERVAL = 50;
     public static int OPT_UNCHOKE_INTERVAL = 15;
-    public static String FILE_NAME = "TheFile.dat";
+    public static String FILE_NAME = "messages.JPG"; //this isn't setting right for some reason?
     public static int FILE_SIZE = 1000232;
     public static int PIECE_SIZE = 32768;
 

@@ -33,7 +33,7 @@ public class ConfigParser {
                         break;
                     case "FileName":
                         Constants.setFileName(tokens[1]);
-//                        System.out.println("FileName " + Constants.FILE_NAME);
+                        System.out.println("FileName " + Constants.FILE_NAME);
 //                        configCount++;
                         break;
                     case "FileSize":

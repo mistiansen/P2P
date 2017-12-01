@@ -1,3 +1,5 @@
+
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.Vector;
@@ -50,6 +52,7 @@ public class PeerStarter {
 
     public void startLocal() throws InterruptedException {
         getConfiguration("PeerInfo.cfg");
+        System.out.println("FILE IS " + Constants.FILE_NAME);
         for (int i = 0; i < peerInfoVector.size(); i++) {
             RemotePeerInfo pInfo = (RemotePeerInfo) peerInfoVector.elementAt(i);
             System.out.println("Attempting to start peer: " + pInfo.getPeerId());

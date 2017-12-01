@@ -1,4 +1,5 @@
 
+
 import java.io.*;
 import java.net.*;
 import java.nio.ByteBuffer;
@@ -47,12 +48,14 @@ public class peerProcess implements Runnable {
     private BitSet bitfield = new BitSet();
     private BitSet requested = new BitSet(); // So maybe only send 1 request for a piece per round. Then when receive or at timeout, unset the bit.
     private BitSet need = new BitSet();
+    private String filename;
 
     private Logger logger;
     private int totalPieces = 0;
 
     public peerProcess(String myPeerID) {
         this.myPeerID = myPeerID;
+        filename = "peers/" + myPeerID + "/" + Constants.FILE_NAME;
     }
 
     public void processPeerConfig(String configFile) { //have to do this here so know what connections to initiate/wait for
@@ -118,17 +121,19 @@ public class peerProcess implements Runnable {
             case -1: //unfinished
                 break;
             case Constants.CHOKE:
+                System.out.println("Received a CHOKE message in peerProcess " + myPeerID + " FROM " + message.getFrom() + "Going to process it.");
                 processChoke(message);
                 break;
             case Constants.UNCHOKE:
+                System.out.println("Received an UNCHOKE in peerProcess " + myPeerID + " FROM " + message.getFrom() + " Going to process it.");
                 processUnchoke(message);
                 break;
             case Constants.INTERESTED:
-                System.out.println("Received an INTERESTED message type in peerProcess " + myPeerID + " Going to process it.");
+                System.out.println("Received an INTERESTED message type in peerProcess " + myPeerID + " FROM " + message.getFrom() + " Going to process it.");
                 processInterested(message);
                 break;
             case Constants.NOT_INTERESTED:
-                System.out.println("Received a NOT INTERESTED message type in peerProcess " + myPeerID + ". Going to process it.");
+                System.out.println("Received a NOT INTERESTED message type in peerProcess " + myPeerID + " FROM " + message.getFrom() + ". Going to process it.");
                 processNotInterested(message);
                 break;
             case Constants.HAVE:
@@ -172,13 +177,15 @@ public class peerProcess implements Runnable {
         chokingMe.remove(unchokedMe);
         BitSet toRequest = (BitSet) this.need.clone();
 //        toRequest.andNot(this.requested); //bits set in the bitfield that are not set in requested (bits needed but not requested)
-        toRequest.and(peerPieces.get(unchokedMe)); //only want to request if they have it
+        toRequest.and(peerPieces.get(unchokedMe)); //only want to request if they have it (I need and they have it)
         try {
             if (toRequest.isEmpty()) {
+                System.out.println(myPeerID + " was unchoked but has nothing to request from peer (processUnchoke)" + unchokedMe);
                 Message notInterested = new Message(this.myPeerID, 0, Constants.NOT_INTERESTED);
                 outboxes.get(unchokedMe).put(notInterested); //get the outbox for the peer
             } else {
                 int requestIndex = toRequest.nextSetBit(0); //get the next needed but not yet requested bit (piece that don't have)
+                System.out.println(myPeerID + " was unchoked and is requesting piece " + requestIndex + " from peer (processUnchoke)" + unchokedMe);
                 requestPiece(unchokedMe, requestIndex);
             }
         } catch (InterruptedException e) {
@@ -235,7 +242,7 @@ public class peerProcess implements Runnable {
         byte[] indexHolder = message.getPayload(); //grab the request payload containing the requested piece index
         int pieceIndex = Util.bytesToInt(indexHolder); //convert the first 4 bytes to an int
         if (bitfield.get(pieceIndex) && (unchoked.contains(message.getFrom()) || optUnchoked.equals(message.getFrom()))) { //if we have the piece and the requestor is unchoked
-            FileInputStream fileInputStream = new FileInputStream(new File(Constants.FILE_NAME));
+            FileInputStream fileInputStream = new FileInputStream(new File(filename)); //or do new FileInputStream(filename)?
             int start = pieceIndex * Constants.PIECE_SIZE; // each read reads from index: start to index: Constants.PIECE_SIZE - 1
             byte[] content = new byte[Constants.PIECE_SIZE];
             fileInputStream.read(content, start, Constants.PIECE_SIZE); // Constants.PIECE_SIZE specifies the length of the read
@@ -250,6 +257,7 @@ public class peerProcess implements Runnable {
         }
     }
 
+    // TODO: 12/1/17 Need to create different file/directory for each peer
     /* Do we just store the pieces in a data structure then write to file when all present? */
     private void processPiece(Message message) throws IOException, InterruptedException {
         int pieceLength = message.getPayloadLength() - 4; //the length of the piece should be the messageLength - type portion - index portion
@@ -260,10 +268,11 @@ public class peerProcess implements Runnable {
             is.read(indexField, 0, 4); //read the first 4 bytes into byte array
             is.read(piece, 0, pieceLength);
             int pieceIndex = Util.bytesToInt(indexField);
-            FileOutputStream fileOutputStream = new FileOutputStream(Constants.FILE_NAME);
+            FileOutputStream fileOutputStream = new FileOutputStream(filename);
             fileOutputStream.write(piece, pieceIndex, pieceLength); //guess can write before have all pieces with this offset method
             bitfield.set(pieceIndex); //think pieceIndex is index of first bit of a piece
             need.clear(pieceIndex);
+            System.out.println(myPeerID + " just got a piece from " + message.getFrom() + " of length " + piece.length);
             logger.logDoneDownloadingPiece(message.getFrom(), Integer.toString(pieceIndex), ++totalPieces);
             count.put(message.getFrom(), count.get(message.getFrom()) + 1);
             for (String peer: outboxes.keySet()) {
@@ -618,7 +627,7 @@ public class peerProcess implements Runnable {
 
             do {
                 Random rnd = new Random();
-                TimeUnit.SECONDS.sleep(Constants.OPT_UNCHOKE_INTERVAL);
+//                TimeUnit.SECONDS.sleep(Constants.OPT_UNCHOKE_INTERVAL);
                 //Create a list of interested peers that are not preferred neighbors and randomly pick one
                 HashSet<String> optList = new HashSet<>();
                 for (String p : interested) {

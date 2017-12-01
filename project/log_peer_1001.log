@@ -1,10 +1,17 @@
-2017-11-30_17:05:50: Peer 1001 is connected from Peer 1004
-2017-11-30_17:05:50: Peer 1001 is connected from Peer 1002
-2017-11-30_17:05:50: Peer 1001 is connected from Peer 1003
-2017-11-30_17:05:50: Peer 1001 has the preferred neighbors 1003,1002
-2017-11-30_17:05:50: Peer 1001 is unchoked by 1004
-2017-11-30_17:05:50: Peer 1001 is unchoked by 1002
-2017-11-30_17:05:50: Peer 1001 is unchoked by 1003
-2017-11-30_17:05:50: Peer 1001 received the ‘interested’ message from 1002
-2017-11-30_17:05:50: Peer 1001 received the ‘interested’ message from 1003
-2017-11-30_17:05:50: Peer 1001 received the ‘interested’ message from 1004
+2017-12-01_10:58:18: Peer 1001 is connected from Peer 1003
+2017-12-01_10:58:18: Peer 1001 is connected from Peer 1002
+2017-12-01_10:58:18: Peer 1001 is connected from Peer 1004
+2017-12-01_10:58:18: Peer 1001 is unchoked by 1003
+2017-12-01_10:58:18: Peer 1001 is unchoked by 1002
+2017-12-01_10:58:18: Peer 1001 received the ‘interested’ message from 1002
+2017-12-01_10:58:18: Peer 1001 is unchoked by 1004
+2017-12-01_10:58:18: Peer 1001 received the ‘interested’ message from 1004
+2017-12-01_10:58:18: Peer 1001 received the ‘interested’ message from 1003
+2017-12-01_10:58:28: Peer 1001 has the optimistically unchoked neighbor 1003
+2017-12-01_10:58:28: Peer 1001 received the ‘have’ message from 1003 for the piece 1
+2017-12-01_10:58:48: Peer 1001 has the optimistically unchoked neighbor 1003
+2017-12-01_10:58:58: Peer 1001 is choked by 1003
+2017-12-01_10:58:58: Peer 1001 received the ‘have’ message from 1004 for the piece 1
+2017-12-01_10:59:38: Peer 1001 is choked by 1003
+2017-12-01_10:59:38: Peer 1001 is choked by 1004
+2017-12-01_11:00:18: Peer 1001 is choked by 1004
