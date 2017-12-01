@@ -236,6 +236,7 @@ public class peerProcess implements Runnable {
             byte[] payload = out.toByteArray();
             Message response = new Message(this.myPeerID, Constants.PIECE_SIZE + 4, Constants.PIECE, payload); // message len is the size of the piece + 4 bytes piece index field
             outboxes.get(message.getFrom()).put(response);
+            logger.logRecievedRequest(message.getFrom(), message.getType());
         } else {
             System.out.println("Peer " + myPeerID + " just processed a request from " + message.getFrom() + " but they aren't unchoked");
             return;
