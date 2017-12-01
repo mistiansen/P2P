@@ -216,7 +216,7 @@ public class peerProcess implements Runnable {
         BitSet peerBitfield = BitSet.valueOf(message.getPayload());
         peerPieces.putIfAbsent(fromPeer, peerBitfield);
         System.out.println("Peer" + myPeerID + " Received bitfield " + peerBitfield + " from peer " + message.getFrom());
-        System.out.println("Peer " + message.getFrom() + " pieces is now " + peerPieces.get(message.getFrom()));
+        System.out.println("Peer " + message.getFrom() + " pieces in " +  myPeerID + " is now " + peerPieces.get(message.getFrom()));
         if (need.intersects(peerBitfield)) { //they HAVE SOMETHING we want
             Message interested = new Message(myPeerID, 0, Constants.INTERESTED); //PAYLOAD length was 1, changed to 0. Think should be 0. the 1 byte is added in send.
             outboxes.get(fromPeer).put(interested);
@@ -227,7 +227,9 @@ public class peerProcess implements Runnable {
         /* first  see what piece is requested */
         byte[] indexHolder = message.getPayload(); //grab the request payload containing the requested piece index
         int pieceIndex = Util.bytesToInt(indexHolder); //convert the first 4 bytes to an int
+        System.out.println(myPeerID + " received request for piece " + pieceIndex + " from peer " + message.getFrom());
         if (bitfield.get(pieceIndex) && (unchoked.contains(message.getFrom()) || optUnchoked.equals(message.getFrom()))) { //if we have the piece and the requestor is unchoked
+            System.out.println(myPeerID + " granting peer " + message.getFrom() + "'s request for piece " + pieceIndex);
             FileInputStream fileInputStream = new FileInputStream(new File(filename)); //or do new FileInputStream(filename)?
             int start = pieceIndex * Constants.PIECE_SIZE; // each read reads from index: start to index: Constants.PIECE_SIZE - 1
             byte[] content = new byte[Constants.PIECE_SIZE];
@@ -289,7 +291,7 @@ public class peerProcess implements Runnable {
             ByteArrayOutputStream payloadOut = new ByteArrayOutputStream();
             payloadOut.write(ByteBuffer.allocate(4).putInt(pieceIndex).array()); //have to add 1 for the type field
             byte[] payload = payloadOut.toByteArray();
-            Message request = new Message(this.myPeerID, 5, Constants.REQUEST, payload); //payload length for requests is 1 byte type + 4 bytes piece index
+            Message request = new Message(this.myPeerID, 4, Constants.REQUEST, payload); //payload length for requests is 1 byte type + 4 bytes piece index. NO...not including type.
             outboxes.get(peer).put(request); //throws InterruptedException
         } catch (IOException e) {
             System.out.println("IOException in peerProcess' requestPiece method");
@@ -302,46 +304,6 @@ public class peerProcess implements Runnable {
 
 //        Message request = new Message(this.myPeerID, )
 
-    }
-
-    private void optUnchokeTimer() throws InterruptedException {
-        Random rnd = new Random();
-        while (!peersHaveFile) {
-            TimeUnit.SECONDS.sleep(Constants.OPT_UNCHOKE_INTERVAL);
-            //Create a list of interested peers that are not preferred neighbors and randomly pick one
-            HashSet<String> optList = new HashSet<>();
-            for (String p : interested) {
-                if (!unchoked.contains(p)) {
-                    optList.add(p);
-                }
-            }
-            int randSize = optList.size();
-            if (randSize > 0) {
-                int rand = rnd.nextInt(randSize);
-                int i = 0;
-                for (String p : optList) {
-                    i++;
-                    if (i == rand) {
-                        //If you didnt pick the same optUnchoked peer then send and unchoke message
-                        if (!optUnchoked.equals(p)) {
-                            Message response1 = new Message(this.myPeerID, 0, Constants.UNCHOKE);
-                            outboxes.get(p).put(response1);
-                        }
-                        //If the optUnchoked isn't a preferred peer then it is now choked
-                        if (!unchoked.contains(optUnchoked)) {
-                            Message response2 = new Message(this.myPeerID, 0, Constants.CHOKE);
-                            outboxes.get(optUnchoked).put(response2);
-                        }
-                        optUnchoked = p;
-                        try {
-                            logger.logOptimisticallyUnchokedNeighbor(optUnchoked);
-                        } catch (IOException e) {
-                            System.out.println(e.toString());
-                        }
-                    }
-                }
-            }
-        }
     }
 
     private boolean amICompleted() {
