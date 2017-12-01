@@ -261,14 +261,13 @@ public class peerProcess implements Runnable {
             System.out.println(myPeerID + " just got a piece from " + message.getFrom() + " of length " + piece.length);
             logger.logDoneDownloadingPiece(message.getFrom(), Integer.toString(pieceIndex), ++totalPieces);
             count.put(message.getFrom(), count.get(message.getFrom()) + 1);
+            byte[] payload = ByteBuffer.allocate(4).putInt(pieceIndex).array();
             for (String peer: outboxes.keySet()) {
-                outboxes.get(peer).put(new Message(myPeerID, 4, Constants.HAVE));
+                outboxes.get(peer).put(new Message(myPeerID, 4, Constants.HAVE, payload));
                 BitSet needed = (BitSet) need.clone();
                 needed.and(peerPieces.get(peer)); //needed and peer has it
                 if (needed.isEmpty()) {
                     outboxes.get(peer).put(new Message(myPeerID, 0, Constants.NOT_INTERESTED));
-                } else {
-                    outboxes.get(peer).put(new Message(myPeerID, 0, Constants.INTERESTED));
                 }
             }
             amICompleted();
@@ -469,8 +468,8 @@ public class peerProcess implements Runnable {
 
         private void unchokeTimer() throws InterruptedException {
             while (!haveFile) {
-                int i = 0;
                 HashSet<String> newPrefs = new HashSet<>();
+                int i = 0;
                 for (String peer : peers) {
                     if (i < Constants.NUM_PREF_NEIGHBORS) {
                         newPrefs.add(peer);
@@ -479,7 +478,7 @@ public class peerProcess implements Runnable {
                         int maxdiff = -1;
                         String replace = "";
                         for (String newpeer : newPrefs) {
-                            int diff = count.get(newpeer) - count.get(peer);
+                            int diff = count.get(peer) - count.get(newpeer);
                             if (maxdiff < diff) {
                                 maxdiff = diff;
                                 replace = newpeer;
@@ -516,7 +515,7 @@ public class peerProcess implements Runnable {
 
                 TimeUnit.SECONDS.sleep(Constants.UNCHOKE_INTERVAL);
             }
-
+            TimeUnit.SECONDS.sleep(1);
             while (!peersHaveFile) {
 
                 //Select k neighbors from interested peers
@@ -569,7 +568,7 @@ public class peerProcess implements Runnable {
 
 
         private void optUnchokeTimer() throws InterruptedException {
-
+        	TimeUnit.SECONDS.sleep(1);
             do {
                 Random rnd = new Random();
 //                TimeUnit.SECONDS.sleep(Constants.OPT_UNCHOKE_INTERVAL);
@@ -585,7 +584,6 @@ public class peerProcess implements Runnable {
                     int rand = rnd.nextInt(randSize);
                     int i = 0;
                     for (String p : optList) {
-                        i++;
                         if (i == rand) {
                             //If you didnt pick the same optUnchoked peer then send and unchoke message
                             if (!optUnchoked.equals(p)) {
@@ -593,9 +591,8 @@ public class peerProcess implements Runnable {
                                 outboxes.get(p).put(response1);
                             }
                             //If the optUnchoked isn't a preferred peer then it is now choked
-                            if (!unchoked.contains(optUnchoked) && optUnchoked!="") {
+                            if (!unchoked.contains(optUnchoked) && optUnchoked!="" && !optUnchoked.equals(p)) {
                                 Message response2 = new Message(myPeerID, 0, Constants.CHOKE);
-                                System.out.println("This is the optunchoked " + optUnchoked + " for peer " + myPeerID);
                                 outboxes.get(optUnchoked).put(response2);
                             }
                             optUnchoked = p;
@@ -605,6 +602,7 @@ public class peerProcess implements Runnable {
                                 System.out.println(e.toString());
                             }
                         }
+                        i++;
                     }
                 }
                 TimeUnit.SECONDS.sleep(Constants.OPT_UNCHOKE_INTERVAL);
