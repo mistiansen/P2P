@@ -3,6 +3,8 @@
 import java.io.*;
 import java.net.*;
 import java.nio.ByteBuffer;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
@@ -224,14 +226,11 @@ public class peerProcess implements Runnable {
         System.out.println(myPeerID + " RECEIVED REQUEST FOR PIECE " + pieceIndex + " from peer " + message.getFrom());
         if (bitfield.get(pieceIndex) && (unchoked.contains(message.getFrom()) || optUnchoked.equals(message.getFrom()))) { //if we have the piece and the requestor is unchoked
             System.out.println(myPeerID + " granting peer " + message.getFrom() + "'s request for piece " + pieceIndex);
-            FileInputStream fileInputStream = new FileInputStream(filename); //or do new FileInputStream(filename)?
+            byte[] byteFile = Files.readAllBytes(Paths.get(filename)); //or do new FileInputStream(filename)?
             int start = pieceIndex * Constants.PIECE_SIZE; // each read reads from index: start to index: Constants.PIECE_SIZE - 1
             System.out.println("Trying to read file starting from " + start + " to " + (start + Constants.PIECE_SIZE));
-            byte[] content = new byte[Constants.PIECE_SIZE];
             System.out.println("IN processRequest. My bitfield is " + bitfield+myPeerID);
-            System.out.println("Before fail: "+content+" "+start+" "+ Constants.PIECE_SIZE);
-            fileInputStream.skip(start);
-            fileInputStream.read(content, 0, Constants.PIECE_SIZE); // Constants.PIECE_SIZE specifies the length of the read
+            byte[] content = Arrays.copyOfRange(byteFile, start, start+Constants.PIECE_SIZE-1);
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             out.write(indexHolder);
             out.write(content);
@@ -253,11 +252,16 @@ public class peerProcess implements Runnable {
         byte[] indexField = new byte[4]; //grab the first 4 bytes, which hold the message length
         byte[] piece = new byte[pieceLength];
         try {
+        	byte[] byteFile = Files.readAllBytes(Paths.get(filename));
+            FileOutputStream fileOutputStream = new FileOutputStream(filename);
             is.read(indexField, 0, 4); //read the first 4 bytes into byte array
             is.read(piece, 0, pieceLength);
             int pieceIndex = Util.bytesToInt(indexField);
-            FileOutputStream fileOutputStream = new FileOutputStream(filename);
-            fileOutputStream.write(piece, pieceIndex, pieceLength); //guess can write before have all pieces with this offset method
+            int start=pieceIndex*Constants.PIECE_SIZE;
+            for (int i=0; i<Constants.PIECE_SIZE; i++) {
+            	byteFile[start+i]=piece[i];
+            }
+            fileOutputStream.write(byteFile);
             bitfield.set(pieceIndex); //think pieceIndex is index of first bit of a piece
             need.clear(pieceIndex);
             System.out.println(myPeerID + " just got a piece from " + message.getFrom() + " of length " + piece.length);
@@ -455,18 +459,8 @@ public class peerProcess implements Runnable {
             new Thread(outHandler).start();
         }
 
-        String peery="1002";
-        try {
-        	if (myPeerID.equals("1001")){
-        		unchoked.add(peery);
-                Message response = new Message(myPeerID, 0, Constants.UNCHOKE);
-                outboxes.get(peery).put(response);
-        	}
-        } catch (Exception e) {
-        	System.out.println("shits on fire yo");
-        }
-        //new Thread(new UnchokeTimer()).start();
-        //new Thread(new OptUnchokeTimer()).start();
+        new Thread(new UnchokeTimer()).start();
+        new Thread(new OptUnchokeTimer()).start();
 
         while (true) {
             dispatch();
