@@ -469,8 +469,8 @@ public class peerProcess implements Runnable {
 
         private void unchokeTimer() throws InterruptedException {
             while (!haveFile) {
-                int i = 0;
                 HashSet<String> newPrefs = new HashSet<>();
+                int i = 0;
                 for (String peer : peers) {
                     if (i < Constants.NUM_PREF_NEIGHBORS) {
                         newPrefs.add(peer);
@@ -479,7 +479,7 @@ public class peerProcess implements Runnable {
                         int maxdiff = -1;
                         String replace = "";
                         for (String newpeer : newPrefs) {
-                            int diff = count.get(newpeer) - count.get(peer);
+                            int diff = count.get(peer) - count.get(newpeer);
                             if (maxdiff < diff) {
                                 maxdiff = diff;
                                 replace = newpeer;
@@ -516,7 +516,7 @@ public class peerProcess implements Runnable {
 
                 TimeUnit.SECONDS.sleep(Constants.UNCHOKE_INTERVAL);
             }
-
+            TimeUnit.SECONDS.sleep(1);
             while (!peersHaveFile) {
 
                 //Select k neighbors from interested peers
@@ -569,7 +569,7 @@ public class peerProcess implements Runnable {
 
 
         private void optUnchokeTimer() throws InterruptedException {
-
+        	TimeUnit.SECONDS.sleep(1);
             do {
                 Random rnd = new Random();
 //                TimeUnit.SECONDS.sleep(Constants.OPT_UNCHOKE_INTERVAL);
@@ -585,7 +585,6 @@ public class peerProcess implements Runnable {
                     int rand = rnd.nextInt(randSize);
                     int i = 0;
                     for (String p : optList) {
-                        i++;
                         if (i == rand) {
                             //If you didnt pick the same optUnchoked peer then send and unchoke message
                             if (!optUnchoked.equals(p)) {
@@ -605,6 +604,7 @@ public class peerProcess implements Runnable {
                                 System.out.println(e.toString());
                             }
                         }
+                        i++;
                     }
                 }
                 TimeUnit.SECONDS.sleep(Constants.OPT_UNCHOKE_INTERVAL);
