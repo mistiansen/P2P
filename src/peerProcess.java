@@ -225,13 +225,13 @@ public class peerProcess implements Runnable {
         System.out.println("Peer" + myPeerID + " Received bitfield " + peerBitfield + " from peer " + message.getFrom());
         System.out.println("Peer " + message.getFrom() + " pieces is now " + peerPieces.get(message.getFrom()));
         if (!need.intersects(peerBitfield)) { //they don't have anything we want
-            Message notInterested = new Message(myPeerID, 1, Constants.NOT_INTERESTED);
+            Message notInterested = new Message(myPeerID, 0, Constants.NOT_INTERESTED); //PAYLOAD length was 1, changed to 0. Think should be 0. the 1 byte is added in send.
 
             System.out.println("Trying to put a not interested in outbox for peer " + fromPeer);
             System.out.println("Peer process " + myPeerID + " has " + outboxes.size());
             outboxes.get(fromPeer).put(notInterested);
         } else {
-            Message interested = new Message(myPeerID, 1, Constants.INTERESTED);
+            Message interested = new Message(myPeerID, 0, Constants.INTERESTED); //PAYLOAD length was 1, changed to 0. Think should be 0. the 1 byte is added in send.
             outboxes.get(fromPeer).put(interested);
 //            requestPiece(fromPeer, );
         }
