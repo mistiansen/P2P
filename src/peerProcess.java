@@ -149,15 +149,8 @@ public class peerProcess implements Runnable {
                 processBitField(message);
                 break;
             case Constants.REQUEST:
-                try {
-                    processRequest(message);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                    System.out.println("ERROR processing request for piece (interrupted)");
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    System.out.println("ERROR processing request for piece (IOException)");
-                }
+                System.out.println("Received a REQUEST MESSAGE IN peer " + myPeerID + ". Going to process it.");
+                processRequest(message);
                 break;
             case Constants.PIECE:
                 processPiece(message);
@@ -225,9 +218,10 @@ public class peerProcess implements Runnable {
 
     private void processRequest(Message message) throws IOException, InterruptedException {
         /* first  see what piece is requested */
+        System.out.println(myPeerID + " RECEIVED REQUEST from peer " + message.getFrom() + " Am I BLOCKING?");
         byte[] indexHolder = message.getPayload(); //grab the request payload containing the requested piece index
         int pieceIndex = Util.bytesToInt(indexHolder); //convert the first 4 bytes to an int
-        System.out.println(myPeerID + " received request for piece " + pieceIndex + " from peer " + message.getFrom());
+        System.out.println(myPeerID + " RECEIVED REQUEST FOR PIECE " + pieceIndex + " from peer " + message.getFrom());
         if (bitfield.get(pieceIndex) && (unchoked.contains(message.getFrom()) || optUnchoked.equals(message.getFrom()))) { //if we have the piece and the requestor is unchoked
             System.out.println(myPeerID + " granting peer " + message.getFrom() + "'s request for piece " + pieceIndex);
             FileInputStream fileInputStream = new FileInputStream(new File(filename)); //or do new FileInputStream(filename)?
@@ -241,6 +235,7 @@ public class peerProcess implements Runnable {
             Message response = new Message(this.myPeerID, Constants.PIECE_SIZE + 4, Constants.PIECE, payload); // message len is the size of the piece + 4 bytes piece index field
             outboxes.get(message.getFrom()).put(response);
         } else {
+            System.out.println("Peer " + myPeerID + " just processed a request from " + message.getFrom() + " but they aren't unchoked");
             return;
         }
     }
@@ -287,23 +282,15 @@ public class peerProcess implements Runnable {
     /* craft a message and put it in the outbox of the peer sending the unchoke */
     // TODO: 11/29/17 Need to check peerPieces data structure to see if that peer actually has the piece
     private void requestPiece(String peer, int pieceIndex) {
+        System.out.println("NOW in requestPiece of peer " + myPeerID + ". Attempting to request piece " + pieceIndex + " from peer " + peer);
         try {
-            ByteArrayOutputStream payloadOut = new ByteArrayOutputStream();
-            payloadOut.write(ByteBuffer.allocate(4).putInt(pieceIndex).array()); //have to add 1 for the type field
-            byte[] payload = payloadOut.toByteArray();
+            byte[] payload = ByteBuffer.allocate(4).putInt(pieceIndex).array();
             Message request = new Message(this.myPeerID, 4, Constants.REQUEST, payload); //payload length for requests is 1 byte type + 4 bytes piece index. NO...not including type.
             outboxes.get(peer).put(request); //throws InterruptedException
-        } catch (IOException e) {
-            System.out.println("IOException in peerProcess' requestPiece method");
-            e.printStackTrace();
         } catch (InterruptedException e) {
             System.out.println("InterruptedException in peerProcess' requestPiece method");
             e.printStackTrace();
         }
-
-
-//        Message request = new Message(this.myPeerID, )
-
     }
 
     private boolean amICompleted() {
@@ -554,6 +541,12 @@ public class peerProcess implements Runnable {
                 unchoked.clear();
                 unchoked = newPrefs;
 
+                try {
+                    logger.logPreferredNeighbors(Arrays.copyOf(unchoked.toArray(), unchoked.toArray().length, String[].class)); // TODO: 12/1/17 CAUSING ARRAY OUT BOUNDS?
+                } catch (IOException e) {
+                    System.out.println(e.toString());
+                }
+
                 TimeUnit.SECONDS.sleep(Constants.UNCHOKE_INTERVAL);
             }
         }
@@ -598,7 +591,7 @@ public class peerProcess implements Runnable {
                             //If the optUnchoked isn't a preferred peer then it is now choked
                             if (!unchoked.contains(optUnchoked) && optUnchoked!="") {
                                 Message response2 = new Message(myPeerID, 0, Constants.CHOKE);
-                                System.out.println("This is the optunchoked " + optUnchoked);
+                                System.out.println("This is the optunchoked " + optUnchoked + " for peer " + myPeerID);
                                 outboxes.get(optUnchoked).put(response2);
                             }
                             optUnchoked = p;

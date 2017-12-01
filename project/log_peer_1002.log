@@ -1,13 +1,14 @@
-2017-12-01_12:54:42: Peer 1002 is connected from Peer 1004
-2017-12-01_12:54:42: Peer 1002 is connected from Peer 1003
-2017-12-01_12:54:42: Peer 1002 is connected from Peer 1005
-2017-12-01_12:54:42: Peer 1002 is connected from Peer 1006
-2017-12-01_12:54:42: Peer 1002 makes a connection to Peer 1001
-2017-12-01_12:54:42: Peer 1002 is unchoked by 1003
-2017-12-01_12:54:42: Peer 1002 is unchoked by 1004
-2017-12-01_12:54:42: Peer 1002 has the preferred neighbors 1003,1001
-2017-12-01_12:55:02: Peer 1002 received the ‘have’ message from 1003 for the piece 1
-2017-12-01_12:55:02: Peer 1002 received the ‘have’ message from 1004 for the piece 1
-2017-12-01_12:55:22: Peer 1002 has the preferred neighbors 1003,1001
-2017-12-01_12:56:02: Peer 1002 has the preferred neighbors 1003,1001
-2017-12-01_12:56:42: Peer 1002 has the preferred neighbors 1003,1001
+2017-12-01_13:43:22: Peer 1002 is connected from Peer 1006
+2017-12-01_13:43:22: Peer 1002 is connected from Peer 1005
+2017-12-01_13:43:22: Peer 1002 is connected from Peer 1003
+2017-12-01_13:43:22: Peer 1002 is connected from Peer 1004
+2017-12-01_13:43:22: Peer 1002 makes a connection to Peer 1001
+2017-12-01_13:43:22: Peer 1002 has the preferred neighbors 1003,1001
+2017-12-01_13:43:22: Peer 1002 is unchoked by 1004
+2017-12-01_13:43:22: Peer 1002 is unchoked by 1003
+2017-12-01_13:43:32: Peer 1002 received the ‘have’ message from 1004 for the piece 1
+2017-12-01_13:43:42: Peer 1002 received the ‘have’ message from 1003 for the piece 1
+2017-12-01_13:44:02: Peer 1002 has the preferred neighbors 1003,1001
+2017-12-01_13:44:42: Peer 1002 has the preferred neighbors 1003,1001
+2017-12-01_13:45:22: Peer 1002 has the preferred neighbors 1003,1001
+2017-12-01_13:46:02: Peer 1002 has the preferred neighbors 1003,1001

@@ -1,14 +1,29 @@
-2017-12-01_12:54:42: Peer 1006 makes a connection to Peer 1005
-2017-12-01_12:54:42: Peer 1006 makes a connection to Peer 1004
-2017-12-01_12:54:42: Peer 1006 makes a connection to Peer 1003
-2017-12-01_12:54:42: Peer 1006 makes a connection to Peer 1002
-2017-12-01_12:54:42: Peer 1006 makes a connection to Peer 1001
-2017-12-01_12:54:42: Peer 1006 received the ‘interested’ message from 1003
-2017-12-01_12:54:42: Peer 1006 received the ‘interested’ message from 1004
-2017-12-01_12:54:42: Peer 1006 received the ‘interested’ message from 1002
-2017-12-01_12:55:02: Peer 1006 received the ‘have’ message from 1004 for the piece 1
-2017-12-01_12:55:02: Peer 1006 received the ‘have’ message from 1003 for the piece 1
-2017-12-01_12:55:22: Peer 1006 is choked by 1004
-2017-12-01_12:55:22: Peer 1006 is choked by 1004
-2017-12-01_12:55:22: Peer 1006 is choked by 1003
-2017-12-01_12:55:22: Peer 1006 is choked by 1003
+2017-12-01_13:43:22: Peer 1006 makes a connection to Peer 1005
+2017-12-01_13:43:22: Peer 1006 makes a connection to Peer 1004
+2017-12-01_13:43:22: Peer 1006 makes a connection to Peer 1003
+2017-12-01_13:43:22: Peer 1006 makes a connection to Peer 1002
+2017-12-01_13:43:22: Peer 1006 makes a connection to Peer 1001
+2017-12-01_13:43:22: Peer 1006 has the preferred neighbors 2017-12-01_13:43:22: Peer 1006 received the ‘interested’ message from 1002
+2017-12-01_13:43:22: Peer 1006 received the ‘interested’ message from 1004
+2017-12-01_13:43:22: Peer 1006 received the ‘interested’ message from 1003
+2017-12-01_13:43:32: Peer 1006 has the optimistically unchoked neighbor 1004
+2017-12-01_13:43:32: Peer 1006 received the ‘have’ message from 1004 for the piece 1
+2017-12-01_13:43:42: Peer 1006 received the ‘have’ message from 1003 for the piece 1
+2017-12-01_13:44:02: Peer 1006 has the optimistically unchoked neighbor 1004
+2017-12-01_13:44:12: Peer 1006 has the optimistically unchoked neighbor 1003
+2017-12-01_13:44:12: Peer 1006 is choked by 1003
+2017-12-01_13:44:12: Peer 1006 is choked by 1003
+2017-12-01_13:44:22: Peer 1006 has the optimistically unchoked neighbor 1003
+2017-12-01_13:44:32: Peer 1006 has the optimistically unchoked neighbor 1004
+2017-12-01_13:44:32: Peer 1006 is choked by 1004
+2017-12-01_13:44:32: Peer 1006 is choked by 1004
+2017-12-01_13:44:42: Peer 1006 has the optimistically unchoked neighbor 1003
+2017-12-01_13:44:42: Peer 1006 is choked by 1003
+2017-12-01_13:44:42: Peer 1006 is choked by 1003
+2017-12-01_13:44:52: Peer 1006 has the optimistically unchoked neighbor 1003
+2017-12-01_13:45:12: Peer 1006 has the optimistically unchoked neighbor 1003
+2017-12-01_13:45:32: Peer 1006 has the optimistically unchoked neighbor 1004
+2017-12-01_13:45:32: Peer 1006 is choked by 1004
+2017-12-01_13:45:32: Peer 1006 is choked by 1004
+2017-12-01_13:45:42: Peer 1006 has the optimistically unchoked neighbor 1004
+2017-12-01_13:46:02: Peer 1006 has the optimistically unchoked neighbor 1004

@@ -46,7 +46,8 @@ public class Connection {
 
     public void send(byte[] out) {
         try {
-            System.out.println("Attempting send in Connection to " + peerID + ". Bytes: " + out.toString());
+            System.out.println("Attempting send in Connection to " + peerID);
+//            System.out.println("Attempting send in Connection to " + peerID + ". Bytes: " + new String(out));
             this.out.write(out);
         } catch(IOException e) {
             e.printStackTrace();

@@ -1,20 +1,33 @@
-2017-12-01_12:54:42: Peer 1003 is connected from Peer 1004
-2017-12-01_12:54:42: Peer 1003 is connected from Peer 1006
-2017-12-01_12:54:42: Peer 1003 is connected from Peer 1005
-2017-12-01_12:54:42: Peer 1003 makes a connection to Peer 1002
-2017-12-01_12:54:42: Peer 1003 makes a connection to Peer 1001
-2017-12-01_12:54:42: Peer 1003 has the preferred neighbors 2017-12-01_12:54:42: Peer 1003 is unchoked by 1002
-1002,1001
-2017-12-01_12:55:02: Peer 1003 is unchoked by 1001
-2017-12-01_12:55:02: Peer 1003 has downloaded the piece 0 from 1001. Now the number of pieces it has is 1
-2017-12-01_12:55:02: Peer 1003 received the ‘have’ message from 1004 for the piece 1
-2017-12-01_12:55:02: Peer 1003 is choked by 1004
-2017-12-01_12:55:02: Peer 1003 received the ‘interested’ message from 1002
-2017-12-01_12:55:12: Peer 1003 is unchoked by 1005
-2017-12-01_12:55:12: Peer 1003 is choked by 1001
-2017-12-01_12:55:22: Peer 1003 is unchoked by 1001
-2017-12-01_12:55:22: Peer 1003 is unchoked by 1005
-2017-12-01_12:55:22: Peer 1003 is unchoked by 1006
-2017-12-01_12:55:22: Peer 1003 has the preferred neighbors 1004,1002
-2017-12-01_12:56:02: Peer 1003 has the preferred neighbors 1002,1001
-2017-12-01_12:56:42: Peer 1003 has the preferred neighbors 1002,1001
+2017-12-01_13:43:22: Peer 1003 is connected from Peer 1006
+2017-12-01_13:43:22: Peer 1003 is connected from Peer 1005
+2017-12-01_13:43:22: Peer 1003 is connected from Peer 1004
+2017-12-01_13:43:22: Peer 1003 makes a connection to Peer 1002
+2017-12-01_13:43:22: Peer 1003 makes a connection to Peer 1001
+2017-12-01_13:43:22: Peer 1003 has the preferred neighbors 1002,1001
+2017-12-01_13:43:22: Peer 1003 is unchoked by 1002
+2017-12-01_13:43:32: Peer 1003 received the ‘have’ message from 1004 for the piece 1
+2017-12-01_13:43:42: Peer 1003 is unchoked by 1001
+2017-12-01_13:43:42: Peer 1003 has downloaded the piece 0 from 1001. Now the number of pieces it has is 1
+2017-12-01_13:43:42: Peer 1003 is choked by 1004
+2017-12-01_13:43:42: Peer 1003 received the ‘interested’ message from 1002
+2017-12-01_13:43:52: Peer 1003 is unchoked by 1005
+2017-12-01_13:44:02: Peer 1003 is choked by 1005
+2017-12-01_13:44:02: Peer 1003 has the preferred neighbors 1004,1002
+2017-12-01_13:44:12: Peer 1003 is unchoked by 1006
+2017-12-01_13:44:12: Peer 1003 is choked by 1005
+2017-12-01_13:44:22: Peer 1003 is choked by 1006
+2017-12-01_13:44:22: Peer 1003 is choked by 1005
+2017-12-01_13:44:32: Peer 1003 is choked by 1006
+2017-12-01_13:44:42: Peer 1003 is unchoked by 1006
+2017-12-01_13:44:42: Peer 1003 is unchoked by 1005
+2017-12-01_13:44:42: Peer 1003 has the preferred neighbors 1002,1001
+2017-12-01_13:44:52: Peer 1003 is choked by 1006
+2017-12-01_13:44:52: Peer 1003 is choked by 1005
+2017-12-01_13:45:12: Peer 1003 is choked by 1006
+2017-12-01_13:45:22: Peer 1003 is choked by 1005
+2017-12-01_13:45:22: Peer 1003 has the preferred neighbors 1002,1001
+2017-12-01_13:45:32: Peer 1003 is choked by 1006
+2017-12-01_13:45:32: Peer 1003 is choked by 1005
+2017-12-01_13:45:42: Peer 1003 is choked by 1005
+2017-12-01_13:45:52: Peer 1003 is choked by 1005
+2017-12-01_13:46:02: Peer 1003 has the preferred neighbors 1002,1001
