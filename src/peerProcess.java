@@ -178,18 +178,10 @@ public class peerProcess implements Runnable {
         BitSet toRequest = (BitSet) this.need.clone();
 //        toRequest.andNot(this.requested); //bits set in the bitfield that are not set in requested (bits needed but not requested)
         toRequest.and(peerPieces.get(unchokedMe)); //only want to request if they have it (I need and they have it)
-        try {
-            if (toRequest.isEmpty()) {
-                System.out.println(myPeerID + " was unchoked but has nothing to request from peer (processUnchoke)" + unchokedMe);
-                Message notInterested = new Message(this.myPeerID, 0, Constants.NOT_INTERESTED);
-                outboxes.get(unchokedMe).put(notInterested); //get the outbox for the peer
-            } else {
-                int requestIndex = toRequest.nextSetBit(0); //get the next needed but not yet requested bit (piece that don't have)
-                System.out.println(myPeerID + " was unchoked and is requesting piece " + requestIndex + " from peer (processUnchoke)" + unchokedMe);
-                requestPiece(unchokedMe, requestIndex);
-            }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        if (!toRequest.isEmpty()) {
+            int requestIndex = toRequest.nextSetBit(0); //get the next needed but not yet requested bit (piece that don't have)
+            System.out.println(myPeerID + " was unchoked and is requesting piece " + requestIndex + " from peer (processUnchoke)" + unchokedMe);
+            requestPiece(unchokedMe, requestIndex);
         }
     }
 
@@ -210,6 +202,7 @@ public class peerProcess implements Runnable {
         int responseType;
         int responseLength = 1; // 1 byte for message type. No payload for 'interested' and not_interested' messages.
         if (!bitfield.get(pieceIndex)) {
+            System.out.println("Got HAVE from " + message.getFrom() + " for piece " + pieceIndex + ". " + myPeerID + "'s bitfield is " + bitfield + ". I do need " + pieceIndex + ". Sending INTERESTED ");
             responseType = Constants.INTERESTED;
             Message response = new Message(this.myPeerID, responseLength, responseType);
             outboxes.get(message.getFrom()).put(response); //get the outbox for the peerID associated with the received message and put in a response.
@@ -224,16 +217,9 @@ public class peerProcess implements Runnable {
         peerPieces.putIfAbsent(fromPeer, peerBitfield);
         System.out.println("Peer" + myPeerID + " Received bitfield " + peerBitfield + " from peer " + message.getFrom());
         System.out.println("Peer " + message.getFrom() + " pieces is now " + peerPieces.get(message.getFrom()));
-        if (!need.intersects(peerBitfield)) { //they don't have anything we want
-            Message notInterested = new Message(myPeerID, 0, Constants.NOT_INTERESTED); //PAYLOAD length was 1, changed to 0. Think should be 0. the 1 byte is added in send.
-
-            System.out.println("Trying to put a not interested in outbox for peer " + fromPeer);
-            System.out.println("Peer process " + myPeerID + " has " + outboxes.size());
-            outboxes.get(fromPeer).put(notInterested);
-        } else {
+        if (need.intersects(peerBitfield)) { //they HAVE SOMETHING we want
             Message interested = new Message(myPeerID, 0, Constants.INTERESTED); //PAYLOAD length was 1, changed to 0. Think should be 0. the 1 byte is added in send.
             outboxes.get(fromPeer).put(interested);
-//            requestPiece(fromPeer, );
         }
     }
 
