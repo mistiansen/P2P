@@ -261,14 +261,13 @@ public class peerProcess implements Runnable {
             System.out.println(myPeerID + " just got a piece from " + message.getFrom() + " of length " + piece.length);
             logger.logDoneDownloadingPiece(message.getFrom(), Integer.toString(pieceIndex), ++totalPieces);
             count.put(message.getFrom(), count.get(message.getFrom()) + 1);
+            byte[] payload = ByteBuffer.allocate(4).putInt(pieceIndex).array();
             for (String peer: outboxes.keySet()) {
-                outboxes.get(peer).put(new Message(myPeerID, 4, Constants.HAVE));
+                outboxes.get(peer).put(new Message(myPeerID, 4, Constants.HAVE, payload));
                 BitSet needed = (BitSet) need.clone();
                 needed.and(peerPieces.get(peer)); //needed and peer has it
                 if (needed.isEmpty()) {
                     outboxes.get(peer).put(new Message(myPeerID, 0, Constants.NOT_INTERESTED));
-                } else {
-                    outboxes.get(peer).put(new Message(myPeerID, 0, Constants.INTERESTED));
                 }
             }
             amICompleted();
@@ -592,9 +591,8 @@ public class peerProcess implements Runnable {
                                 outboxes.get(p).put(response1);
                             }
                             //If the optUnchoked isn't a preferred peer then it is now choked
-                            if (!unchoked.contains(optUnchoked) && optUnchoked!="") {
+                            if (!unchoked.contains(optUnchoked) && optUnchoked!="" && !optUnchoked.equals(p)) {
                                 Message response2 = new Message(myPeerID, 0, Constants.CHOKE);
-                                System.out.println("This is the optunchoked " + optUnchoked + " for peer " + myPeerID);
                                 outboxes.get(optUnchoked).put(response2);
                             }
                             optUnchoked = p;
