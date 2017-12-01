@@ -74,6 +74,8 @@ class Logger {
 
     // when the peer changes its preferred neighbors
     public void logPreferredNeighbors(String...neighborIDs) throws IOException{
+    	if(neighborIDs.length == 0)
+    		return;
         String timeStamp = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss").format(Calendar.getInstance().getTime());
         logFile.append(timeStamp + ": Peer " + peerID +
                 " has the preferred neighbors ");
@@ -149,6 +151,13 @@ class Logger {
         logFile.append(timeStamp + ": Peer " + peerID +
                 " has downloaded the complete file\n");
         logFile.flush();
+    }
+    
+    public void logRecievedRequest(String otherPeerID, int messageType) throws IOException{
+    	 String timeStamp = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss").format(Calendar.getInstance().getTime());
+         logFile.append(timeStamp + ": Peer " + peerID +
+                 " recieved a request of type " + messageType + " from " + otherPeerID + "[TESTING]\n");
+         logFile.flush();
     }
 
     // actually write to the file
