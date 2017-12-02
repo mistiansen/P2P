@@ -26,10 +26,6 @@ public class Message {
         return payloadLength;
     }
 
-    public void setPayloadLength(int payloadLength) {
-        this.payloadLength = payloadLength;
-    }
-
     public int getType() {
         return type;
     }

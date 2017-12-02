@@ -118,6 +118,7 @@ public class Connection {
         byte[] length = new byte[4]; //grab the first 4 bytes, which hold the message length
         in.read(length, 0, 4); //read the first 4 bytes into byte array
         int payloadLength = Util.bytesToInt(length) - 1; //convert the first 4 bytes to an int; subtract 1 for the message type
+        System.out.println("Got payload length variable of " + payloadLength + " in connection receive ");
         int messageType = in.read(); //read the next byte, which holds the message type
         if (messageType == 0 || messageType == 1 || messageType == 2 || messageType == 3) { //choke, unchoke, interested, not_interested don't have payloads
             return new Message(this.peerID, payloadLength, messageType);

@@ -3,6 +3,8 @@
 import java.io.*;
 import java.net.*;
 import java.nio.ByteBuffer;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
@@ -49,6 +51,9 @@ public class peerProcess implements Runnable {
     private BitSet requested = new BitSet(); // So maybe only send 1 request for a piece per round. Then when receive or at timeout, unset the bit.
     private BitSet need = new BitSet();
     private String filename;
+    private byte[] contents = new byte[Constants.FILE_SIZE];
+//    private ByteArrayOutputStream contentStream = new ByteArrayOutputStream();
+
 
     private Logger logger;
     private int totalPieces = 0;
@@ -97,6 +102,8 @@ public class peerProcess implements Runnable {
                     if (haveFile) {
                         System.out.println("Peer " + remotePeerID + " has file");
                         this.bitfield.set(0, numPieces); //sets bits from 0 to numPieces exclusive (so a total of numPieces bits)
+                        contents = Files.readAllBytes(Paths.get(filename));
+                        System.out.println("READ FILE IT IS " + contents.length + " bytes long");
                     } else {
                         System.out.println("Peer " + remotePeerID + " does not have file");
 //                        this.bitfield.clear(0, numPieces); //don't actually need to do this because the default is 0/false
@@ -223,20 +230,22 @@ public class peerProcess implements Runnable {
         int pieceIndex = Util.bytesToInt(indexHolder); //convert the first 4 bytes to an int
         System.out.println(myPeerID + " RECEIVED REQUEST FOR PIECE " + pieceIndex + " from peer " + message.getFrom());
         if (bitfield.get(pieceIndex) && (unchoked.contains(message.getFrom()) || optUnchoked.equals(message.getFrom()))) { //if we have the piece and the requestor is unchoked
-            System.out.println(myPeerID + " granting peer " + message.getFrom() + "'s request for piece " + pieceIndex);
-            FileInputStream fileInputStream = new FileInputStream(filename); //or do new FileInputStream(filename)?
+//            System.out.println(myPeerID + " granting peer " + message.getFrom() + "'s request for piece " + pieceIndex);
+//            FileInputStream fileInputStream = new FileInputStream(filename); //or do new FileInputStream(filename)?
             int start = pieceIndex * Constants.PIECE_SIZE; // each read reads from index: start to index: Constants.PIECE_SIZE - 1
-            System.out.println("Trying to read file starting from " + start + " to " + (start + Constants.PIECE_SIZE));
-            byte[] content = new byte[Constants.PIECE_SIZE];
-            System.out.println("IN processRequest. My bitfield is " + bitfield+myPeerID);
-            System.out.println("Before fail: "+content+" "+start+" "+ Constants.PIECE_SIZE);
-            fileInputStream.skip(start);
-            fileInputStream.read(content, 0, Constants.PIECE_SIZE); // Constants.PIECE_SIZE specifies the length of the read
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            out.write(indexHolder);
-            out.write(content);
-            byte[] payload = out.toByteArray();
-            Message response = new Message(this.myPeerID, Constants.PIECE_SIZE + 4, Constants.PIECE, payload); // message len is the size of the piece + 4 bytes piece index field
+//            System.out.println("Trying to read file starting from " + start + " to " + (start + Constants.PIECE_SIZE));
+//            byte[] content = new byte[Constants.PIECE_SIZE];
+//            System.out.println("IN processRequest. My bitfield is " + bitfield+myPeerID);
+//            System.out.println("Before fail: "+content+" "+start+" "+ Constants.PIECE_SIZE);
+//            fileInputStream.skip(start);
+//            fileInputStream.read(content, 0, Constants.PIECE_SIZE); // Constants.PIECE_SIZE specifies the length of the read
+//            ByteArrayOutputStream out = new ByteArrayOutputStream();
+//            out.write(indexHolder);
+//            out.write(content);
+//            byte[] payload = out.toByteArray();
+            byte[] payload = Arrays.copyOfRange(contents, start, start + Constants.PIECE_SIZE);
+            System.out.println("Payload array length in processRequest for peer " + myPeerID + " is " + payload.length);
+            Message response = new Message(this.myPeerID, payload.length + 4, Constants.PIECE, payload); // message len is the size of the piece + 4 bytes piece index field
             outboxes.get(message.getFrom()).put(response);
             logger.logRecievedRequest(message.getFrom(), message.getType());
         } else {
@@ -256,8 +265,11 @@ public class peerProcess implements Runnable {
             is.read(indexField, 0, 4); //read the first 4 bytes into byte array
             is.read(piece, 0, pieceLength);
             int pieceIndex = Util.bytesToInt(indexField);
-            FileOutputStream fileOutputStream = new FileOutputStream(filename);
-            fileOutputStream.write(piece, pieceIndex, pieceLength); //guess can write before have all pieces with this offset method
+//            FileOutputStream fileOutputStream = new FileOutputStream(filename, true);
+//            fileOutputStream.write(piece, 0, pieceLength); //guess can write before have all pieces with this offset method. THe offset is the output in the DATA ARRAY
+            System.out.println("Here is pieceIndex and pieceLength in processPiece " + pieceIndex + " " + pieceLength + " for piece from peer " + myPeerID);
+            System.arraycopy(piece, 0, contents, pieceIndex, pieceLength);
+
             bitfield.set(pieceIndex); //think pieceIndex is index of first bit of a piece
             need.clear(pieceIndex);
             System.out.println(myPeerID + " just got a piece from " + message.getFrom() + " of length " + piece.length);
@@ -312,6 +324,16 @@ public class peerProcess implements Runnable {
     private boolean amICompleted() {
         if (bitfield.cardinality() >= numPieces) {
             haveFile = true;
+
+            try {
+                FileOutputStream fileOut = new FileOutputStream(filename);
+                fileOut.write(contents);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
             return true;
         } else {
             haveFile = false;
@@ -406,8 +428,6 @@ public class peerProcess implements Runnable {
 
     public void initialize() {
         dispatch(); //process interested or not interested
-
-
     }
 
     /* could potentially move all of this functionality into IncomingHandler, and pass in self so each Handler has access to data structures

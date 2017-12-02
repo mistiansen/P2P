@@ -1,0 +1,9 @@
+2017-12-01_19:50:39: Peer 1001 is connected from Peer 1004
+2017-12-01_19:50:39: Peer 1001 is connected from Peer 1003
+2017-12-01_19:50:39: Peer 1001 is connected from Peer 1002
+2017-12-01_19:50:39: Peer 1001 is connected from Peer 1005
+2017-12-01_19:50:39: Peer 1001 is connected from Peer 1006
+2017-12-01_19:50:40: Peer 1001 received the ‘interested’ message from 1003
+2017-12-01_19:50:40: Peer 1001 received the ‘interested’ message from 1002
+2017-12-01_19:50:40: Peer 1001 received the ‘interested’ message from 1004
+2017-12-01_19:50:40: Peer 1001 recieved a request of type 6 from 1002[TESTING]

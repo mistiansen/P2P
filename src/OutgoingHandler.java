@@ -32,7 +32,9 @@ public class OutgoingHandler implements Runnable {
 
     private byte[] createOutgoing(Message message) throws IOException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        out.write(ByteBuffer.allocate(4).putInt(message.getPayloadLength() + 1).array()); //have to add 1 for the type field
+        System.out.println("Here's the payload length in OutHandler's createOutgoing " + message.getPayloadLength());
+        int messageLength = message.getPayloadLength() + 1;
+        out.write(ByteBuffer.allocate(4).putInt(messageLength).array()); //have to add 1 for the type field
         out.write((byte) message.getType());
         if (message.getPayload()!=null) {
             out.write(message.getPayload());
