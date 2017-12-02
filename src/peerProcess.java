@@ -230,7 +230,7 @@ public class peerProcess implements Runnable {
             int start = pieceIndex * Constants.PIECE_SIZE; // each read reads from index: start to index: Constants.PIECE_SIZE - 1
             System.out.println("Trying to read file starting from " + start + " to " + (start + Constants.PIECE_SIZE));
             System.out.println("IN processRequest. My bitfield is " + bitfield+myPeerID);
-            byte[] content = Arrays.copyOfRange(byteFile, start, start+Constants.PIECE_SIZE-1);
+            byte[] content = Arrays.copyOfRange(byteFile, start, start+Constants.PIECE_SIZE);
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             out.write(indexHolder);
             out.write(content);
@@ -258,7 +258,10 @@ public class peerProcess implements Runnable {
             is.read(piece, 0, pieceLength);
             int pieceIndex = Util.bytesToInt(indexField);
             int start=pieceIndex*Constants.PIECE_SIZE;
-            for (int i=0; i<Constants.PIECE_SIZE; i++) {
+            System.out.println("Starting at "+start);
+            System.out.println("Max Size is "+byteFile.length);
+            System.out.println("Size of array is "+pieceLength);
+            for (int i=0; i<Constants.PIECE_SIZE && (start+i)<Constants.FILE_SIZE; i++) {
             	byteFile[start+i]=piece[i];
             }
             fileOutputStream.write(byteFile);
@@ -446,6 +449,16 @@ public class peerProcess implements Runnable {
         processPeerConfig("PeerInfo.cfg");
         acceptConnections();
         requestConnections();
+        if (!haveFile) {
+        	byte[] createFile = new byte[Constants.FILE_SIZE];
+        	try {
+	        	FileOutputStream fileOutputStream = new FileOutputStream(filename);
+	            fileOutputStream.write(createFile);
+	            fileOutputStream.close();
+        	} catch (Exception E) {
+        		System.out.println("Failure to initialize file");
+        	}
+        }
 //        Iterator peerIterator = peers.iterator();
 //        while (peerIterator.hasNext()) {
 //            System.out.println("In peerProcess for peer " + myPeerID + " here are peers: " + peerIterator.next());
@@ -459,8 +472,18 @@ public class peerProcess implements Runnable {
             new Thread(outHandler).start();
         }
 
-        new Thread(new UnchokeTimer()).start();
-        new Thread(new OptUnchokeTimer()).start();
+        String peery="1002";
+        try {
+        	if (myPeerID.equals("1001")){
+        		unchoked.add(peery);
+                Message response = new Message(myPeerID, 0, Constants.UNCHOKE);
+                outboxes.get(peery).put(response);
+        	}
+        } catch (Exception e) {
+        	System.out.println("Shits on fire yo");
+        }
+        //new Thread(new UnchokeTimer()).start();
+        //new Thread(new OptUnchokeTimer()).start();
 
         while (true) {
             dispatch();
