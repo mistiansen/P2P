@@ -299,6 +299,7 @@ public class peerProcess implements Runnable {
               fileOutputStream.write(byteFile);
               if (peersHaveFile){
             	  System.out.println("Process done exiting!");
+//            	  logger.logAllDone();
             	  System.exit(0);
               }
             }
@@ -441,9 +442,7 @@ public class peerProcess implements Runnable {
 
 
     private void timeout() {
-
       this.requested.clear();
-
     }
 
 
@@ -487,13 +486,9 @@ public class peerProcess implements Runnable {
         new Thread(new UnchokeTimer()).start();
         new Thread(new OptUnchokeTimer()).start();
 
-        while (true) {
+        while (!peersHaveFile || !haveFile) {
             dispatch();
         }
-
-//        while (!peersHaveFile || !haveFile) {
-//
-//        }
 
 //        try {
 //            logger.logAllDone();
@@ -501,7 +496,7 @@ public class peerProcess implements Runnable {
 //            e.printStackTrace();
 //        }
 
-//        System.out.println("All done. Bye!");
+        System.out.println("All done. Bye!");
 //        System.exit(0);
 
     }
