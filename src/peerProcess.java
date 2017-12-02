@@ -51,7 +51,7 @@ public class peerProcess implements Runnable {
     private BitSet requested = new BitSet(); // So maybe only send 1 request for a piece per round. Then when receive or at timeout, unset the bit.
     private BitSet need = new BitSet();
     private String filename;
-
+    private byte[] byteFile;
     private Logger logger;
     private int totalPieces = 0;
 
@@ -227,7 +227,6 @@ public class peerProcess implements Runnable {
         System.out.println(myPeerID + " RECEIVED REQUEST FOR PIECE " + pieceIndex + " from peer " + message.getFrom());
         if (bitfield.get(pieceIndex) && (unchoked.contains(message.getFrom()) || optUnchoked.equals(message.getFrom()))) { //if we have the piece and the requestor is unchoked
             System.out.println(myPeerID + " granting peer " + message.getFrom() + "'s request for piece " + pieceIndex);
-            byte[] byteFile = Files.readAllBytes(Paths.get(filename)); //or do new FileInputStream(filename)?
             int start = pieceIndex * Constants.PIECE_SIZE; // each read reads from index: start to index: Constants.PIECE_SIZE - 1
             System.out.println("Trying to read file starting from " + start + " to " + (start + Constants.PIECE_SIZE));
             System.out.println("IN processRequest. My bitfield is " + bitfield+myPeerID);
@@ -253,8 +252,6 @@ public class peerProcess implements Runnable {
         byte[] indexField = new byte[4]; //grab the first 4 bytes, which hold the message length
         byte[] piece = new byte[pieceLength];
         try {
-        	byte[] byteFile = Files.readAllBytes(Paths.get(filename));
-            FileOutputStream fileOutputStream = new FileOutputStream(filename);
             is.read(indexField, 0, 4); //read the first 4 bytes into byte array
             is.read(piece, 0, pieceLength);
             int pieceIndex = Util.bytesToInt(indexField);
@@ -262,7 +259,6 @@ public class peerProcess implements Runnable {
             for (int i=0; i<Constants.PIECE_SIZE && (start+i)<Constants.FILE_SIZE; i++) {
             	byteFile[start+i]=piece[i];
             }
-            fileOutputStream.write(byteFile);
             bitfield.set(pieceIndex); //think pieceIndex is index of first bit of a piece
             need.clear(pieceIndex);
             System.out.println(myPeerID + " just got a piece from " + message.getFrom() + " of length " + piece.length);
@@ -289,6 +285,8 @@ public class peerProcess implements Runnable {
             } else {
               logger.logFileDownloadComplete();
               System.out.println(myPeerID+" Completed File!");
+              FileOutputStream fileOutputStream = new FileOutputStream(filename);
+              fileOutputStream.write(byteFile);
               if (peersHaveFile){
             	  System.out.println("Process done exiting!");
             	  System.exit(0);
@@ -461,9 +459,14 @@ public class peerProcess implements Runnable {
 	            fileOutputStream.write(createFile);
 	            fileOutputStream.close();
         	} catch (Exception E) {
-        		System.out.println("Failure to initialize file");
+        		System.out.println("Failure to initialize bytefile");
         	}
-        }
+        } 
+    	try {
+    		byteFile = Files.readAllBytes(Paths.get(filename)); //or do new FileInputStream(filename)?
+    	} catch (Exception E) {
+    		System.out.println("Failure to initialize file");
+    	}
 //        Iterator peerIterator = peers.iterator();
 //        while (peerIterator.hasNext()) {
 //            System.out.println("In peerProcess for peer " + myPeerID + " here are peers: " + peerIterator.next());
