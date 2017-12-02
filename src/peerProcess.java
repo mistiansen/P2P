@@ -241,7 +241,7 @@ public class peerProcess implements Runnable {
             byte[] payload = out.toByteArray();
             Message response = new Message(this.myPeerID, Constants.PIECE_SIZE + 4, Constants.PIECE, payload); // message len is the size of the piece + 4 bytes piece index field
             outboxes.get(message.getFrom()).put(response);
-            logger.logRecievedRequest(message.getFrom(), message.getType());
+//            logger.logRecievedRequest(message.getFrom(), message.getType());
         } else {
             System.out.println("Peer " + myPeerID + " just processed a request from " + message.getFrom() + " but they aren't unchoked");
             return;
@@ -424,12 +424,6 @@ public class peerProcess implements Runnable {
     }
 
 
-    public void initialize() {
-        dispatch(); //process interested or not interested
-
-
-    }
-
     /* could potentially move all of this functionality into IncomingHandler, and pass in self so each Handler has access to data structures
 * Would need to make the data structures concurrent, but then would be multithreaded processing of messages */
     public void dispatch() {
@@ -496,6 +490,10 @@ public class peerProcess implements Runnable {
         while (true) {
             dispatch();
         }
+
+//        while (!peersHaveFile || !haveFile) {
+//
+//        }
 
 //        try {
 //            logger.logAllDone();

@@ -1,357 +1,353 @@
-2017-12-01_22:56:38: Peer 1005 is connected from Peer 1006
-2017-12-01_22:56:38: Peer 1005 makes a connection to Peer 1004
-2017-12-01_22:56:38: Peer 1005 makes a connection to Peer 1003
-2017-12-01_22:56:38: Peer 1005 makes a connection to Peer 1002
-2017-12-01_22:56:38: Peer 1005 makes a connection to Peer 1001
-2017-12-01_22:56:38: Peer 1005 has the preferred neighbors 1002,1001
-2017-12-01_22:56:39: Peer 1005 is unchoked by 1001
-2017-12-01_22:56:39: Peer 1005 received the ‘have’ message from 1004 for the piece 5
-2017-12-01_22:56:39: Peer 1005 has downloaded the piece 22 from 1001. Now the number of pieces it has is 1
-2017-12-01_22:56:39: Peer 1005 received the ‘have’ message from 1006 for the piece 21
-2017-12-01_22:56:39: Peer 1005 received the ‘not interested’ message from 1006
-2017-12-01_22:56:39: Peer 1005 received the ‘have’ message from 1006 for the piece 17
-2017-12-01_22:56:39: Peer 1005 received the ‘not interested’ message from 1006
-2017-12-01_22:56:39: Peer 1005 received the ‘not interested’ message from 1004
-2017-12-01_22:56:39: Peer 1005 received the ‘interested’ message from 1006
-2017-12-01_22:56:39: Peer 1005 received the ‘interested’ message from 1002
-2017-12-01_22:56:39: Peer 1005 has downloaded the piece 12 from 1001. Now the number of pieces it has is 2
-2017-12-01_22:56:39: Peer 1005 received the ‘have’ message from 1004 for the piece 20
-2017-12-01_22:56:39: Peer 1005 received the ‘not interested’ message from 1004
-2017-12-01_22:56:39: Peer 1005 received the ‘interested’ message from 1002
-2017-12-01_22:56:39: Peer 1005 received the ‘interested’ message from 1003
-2017-12-01_22:56:39: Peer 1005 received the ‘interested’ message from 1004
-2017-12-01_22:56:39: Peer 1005 received the ‘have’ message from 1006 for the piece 30
-2017-12-01_22:56:39: Peer 1005 received the ‘interested’ message from 1006
-2017-12-01_22:56:39: Peer 1005 received the ‘interested’ message from 1003
-2017-12-01_22:56:39: Peer 1005 has downloaded the piece 25 from 1001. Now the number of pieces it has is 3
-2017-12-01_22:56:39: Peer 1005 received the ‘interested’ message from 1002
-2017-12-01_22:56:39: Peer 1005 received the ‘interested’ message from 1004
-2017-12-01_22:56:39: Peer 1005 received the ‘interested’ message from 1003
-2017-12-01_22:56:39: Peer 1005 received the ‘have’ message from 1006 for the piece 20
-2017-12-01_22:56:39: Peer 1005 received the ‘interested’ message from 1006
-2017-12-01_22:56:39: Peer 1005 received the ‘have’ message from 1004 for the piece 3
-2017-12-01_22:56:39: Peer 1005 received the ‘interested’ message from 1004
-2017-12-01_22:56:39: Peer 1005 has downloaded the piece 2 from 1001. Now the number of pieces it has is 4
-2017-12-01_22:56:39: Peer 1005 received the ‘have’ message from 1004 for the piece 40
-2017-12-01_22:56:39: Peer 1005 received the ‘interested’ message from 1002
-2017-12-01_22:56:39: Peer 1005 received the ‘interested’ message from 1003
-2017-12-01_22:56:39: Peer 1005 received the ‘interested’ message from 1004
-2017-12-01_22:56:39: Peer 1005 received the ‘have’ message from 1006 for the piece 8
-2017-12-01_22:56:39: Peer 1005 received the ‘interested’ message from 1006
-2017-12-01_22:56:39: Peer 1005 has downloaded the piece 13 from 1001. Now the number of pieces it has is 5
-2017-12-01_22:56:39: Peer 1005 received the ‘have’ message from 1004 for the piece 14
-2017-12-01_22:56:39: Peer 1005 received the ‘interested’ message from 1003
-2017-12-01_22:56:39: Peer 1005 received the ‘interested’ message from 1004
-2017-12-01_22:56:39: Peer 1005 received the ‘interested’ message from 1002
-2017-12-01_22:56:39: Peer 1005 received the ‘interested’ message from 1006
-2017-12-01_22:56:39: Peer 1005 has downloaded the piece 30 from 1001. Now the number of pieces it has is 6
-2017-12-01_22:56:39: Peer 1005 received the ‘have’ message from 1004 for the piece 24
-2017-12-01_22:56:39: Peer 1005 received the ‘interested’ message from 1002
-2017-12-01_22:56:39: Peer 1005 received the ‘interested’ message from 1003
-2017-12-01_22:56:39: Peer 1005 received the ‘have’ message from 1006 for the piece 3
-2017-12-01_22:56:39: Peer 1005 received the ‘interested’ message from 1004
-2017-12-01_22:56:40: Peer 1005 received the ‘have’ message from 1006 for the piece 12
-2017-12-01_22:56:40: Peer 1005 has downloaded the piece 36 from 1001. Now the number of pieces it has is 7
-2017-12-01_22:56:40: Peer 1005 received the ‘have’ message from 1004 for the piece 33
-2017-12-01_22:56:40: Peer 1005 received the ‘interested’ message from 1002
-2017-12-01_22:56:40: Peer 1005 received the ‘interested’ message from 1004
-2017-12-01_22:56:40: Peer 1005 received the ‘interested’ message from 1003
-2017-12-01_22:56:40: Peer 1005 received the ‘interested’ message from 1006
-2017-12-01_22:56:40: Peer 1005 has downloaded the piece 7 from 1001. Now the number of pieces it has is 8
-2017-12-01_22:56:40: Peer 1005 received the ‘have’ message from 1006 for the piece 26
-2017-12-01_22:56:40: Peer 1005 received the ‘interested’ message from 1002
-2017-12-01_22:56:40: Peer 1005 received the ‘interested’ message from 1006
-2017-12-01_22:56:40: Peer 1005 received the ‘interested’ message from 1003
-2017-12-01_22:56:40: Peer 1005 received the ‘interested’ message from 1004
-2017-12-01_22:56:40: Peer 1005 received the ‘have’ message from 1006 for the piece 16
-2017-12-01_22:56:40: Peer 1005 has downloaded the piece 8 from 1001. Now the number of pieces it has is 9
-2017-12-01_22:56:40: Peer 1005 received the ‘have’ message from 1004 for the piece 27
-2017-12-01_22:56:40: Peer 1005 received the ‘interested’ message from 1003
-2017-12-01_22:56:40: Peer 1005 received the ‘interested’ message from 1002
-2017-12-01_22:56:40: Peer 1005 received the ‘interested’ message from 1004
-2017-12-01_22:56:40: Peer 1005 received the ‘have’ message from 1006 for the piece 35
-2017-12-01_22:56:40: Peer 1005 received the ‘have’ message from 1004 for the piece 10
-2017-12-01_22:56:40: Peer 1005 has downloaded the piece 27 from 1001. Now the number of pieces it has is 10
-2017-12-01_22:56:40: Peer 1005 received the ‘interested’ message from 1003
-2017-12-01_22:56:40: Peer 1005 received the ‘interested’ message from 1002
-2017-12-01_22:56:40: Peer 1005 received the ‘have’ message from 1004 for the piece 30
-2017-12-01_22:56:40: Peer 1005 received the ‘interested’ message from 1006
-2017-12-01_22:56:40: Peer 1005 has downloaded the piece 38 from 1001. Now the number of pieces it has is 11
-2017-12-01_22:56:40: Peer 1005 received the ‘have’ message from 1006 for the piece 0
-2017-12-01_22:56:40: Peer 1005 received the ‘interested’ message from 1006
-2017-12-01_22:56:40: Peer 1005 received the ‘interested’ message from 1002
-2017-12-01_22:56:40: Peer 1005 received the ‘interested’ message from 1003
-2017-12-01_22:56:40: Peer 1005 received the ‘interested’ message from 1004
-2017-12-01_22:56:40: Peer 1005 received the ‘have’ message from 1006 for the piece 15
-2017-12-01_22:56:40: Peer 1005 has downloaded the piece 6 from 1001. Now the number of pieces it has is 12
-2017-12-01_22:56:40: Peer 1005 received the ‘interested’ message from 1002
-2017-12-01_22:56:40: Peer 1005 received the ‘have’ message from 1004 for the piece 12
-2017-12-01_22:56:40: Peer 1005 received the ‘interested’ message from 1003
-2017-12-01_22:56:40: Peer 1005 received the ‘have’ message from 1006 for the piece 13
-2017-12-01_22:56:40: Peer 1005 received the ‘interested’ message from 1006
-2017-12-01_22:56:40: Peer 1005 received the ‘interested’ message from 1004
-2017-12-01_22:56:40: Peer 1005 has downloaded the piece 0 from 1001. Now the number of pieces it has is 13
-2017-12-01_22:56:40: Peer 1005 received the ‘have’ message from 1004 for the piece 31
-2017-12-01_22:56:40: Peer 1005 received the ‘interested’ message from 1003
-2017-12-01_22:56:40: Peer 1005 received the ‘interested’ message from 1004
-2017-12-01_22:56:40: Peer 1005 received the ‘interested’ message from 1002
-2017-12-01_22:56:40: Peer 1005 received the ‘have’ message from 1004 for the piece 1
-2017-12-01_22:56:40: Peer 1005 received the ‘have’ message from 1006 for the piece 1
-2017-12-01_22:56:40: Peer 1005 has downloaded the piece 11 from 1001. Now the number of pieces it has is 14
-2017-12-01_22:56:40: Peer 1005 received the ‘interested’ message from 1003
-2017-12-01_22:56:40: Peer 1005 received the ‘interested’ message from 1002
-2017-12-01_22:56:40: Peer 1005 received the ‘interested’ message from 1004
-2017-12-01_22:56:40: Peer 1005 received the ‘interested’ message from 1006
-2017-12-01_22:56:40: Peer 1005 has downloaded the piece 32 from 1001. Now the number of pieces it has is 15
-2017-12-01_22:56:40: Peer 1005 received the ‘have’ message from 1004 for the piece 4
-2017-12-01_22:56:40: Peer 1005 received the ‘interested’ message from 1003
-2017-12-01_22:56:40: Peer 1005 received the ‘have’ message from 1006 for the piece 33
-2017-12-01_22:56:40: Peer 1005 received the ‘interested’ message from 1002
-2017-12-01_22:56:40: Peer 1005 received the ‘interested’ message from 1004
-2017-12-01_22:56:40: Peer 1005 received the ‘interested’ message from 1006
-2017-12-01_22:56:40: Peer 1005 received the ‘have’ message from 1004 for the piece 13
-2017-12-01_22:56:40: Peer 1005 received the ‘have’ message from 1006 for the piece 2
-2017-12-01_22:56:40: Peer 1005 has downloaded the piece 1 from 1001. Now the number of pieces it has is 16
-2017-12-01_22:56:40: Peer 1005 received the ‘interested’ message from 1003
-2017-12-01_22:56:40: Peer 1005 received the ‘interested’ message from 1002
-2017-12-01_22:56:40: Peer 1005 received the ‘have’ message from 1004 for the piece 0
-2017-12-01_22:56:40: Peer 1005 received the ‘have’ message from 1006 for the piece 29
-2017-12-01_22:56:40: Peer 1005 has downloaded the piece 3 from 1001. Now the number of pieces it has is 17
-2017-12-01_22:56:40: Peer 1005 received the ‘interested’ message from 1003
-2017-12-01_22:56:40: Peer 1005 received the ‘interested’ message from 1002
-2017-12-01_22:56:40: Peer 1005 received the ‘have’ message from 1004 for the piece 7
-2017-12-01_22:56:40: Peer 1005 received the ‘have’ message from 1006 for the piece 4
-2017-12-01_22:56:40: Peer 1005 has downloaded the piece 15 from 1001. Now the number of pieces it has is 18
-2017-12-01_22:56:40: Peer 1005 received the ‘interested’ message from 1003
-2017-12-01_22:56:40: Peer 1005 received the ‘interested’ message from 1002
-2017-12-01_22:56:40: Peer 1005 received the ‘interested’ message from 1004
-2017-12-01_22:56:40: Peer 1005 received the ‘have’ message from 1006 for the piece 5
-2017-12-01_22:56:40: Peer 1005 received the ‘have’ message from 1004 for the piece 36
-2017-12-01_22:56:40: Peer 1005 has downloaded the piece 4 from 1001. Now the number of pieces it has is 19
-2017-12-01_22:56:40: Peer 1005 received the ‘interested’ message from 1003
-2017-12-01_22:56:40: Peer 1005 received the ‘interested’ message from 1002
-2017-12-01_22:56:40: Peer 1005 received the ‘have’ message from 1004 for the piece 2
-2017-12-01_22:56:40: Peer 1005 received the ‘have’ message from 1006 for the piece 25
-2017-12-01_22:56:40: Peer 1005 has downloaded the piece 5 from 1001. Now the number of pieces it has is 20
-2017-12-01_22:56:40: Peer 1005 received the ‘interested’ message from 1002
-2017-12-01_22:56:40: Peer 1005 received the ‘interested’ message from 1003
-2017-12-01_22:56:40: Peer 1005 received the ‘have’ message from 1004 for the piece 6
-2017-12-01_22:56:40: Peer 1005 received the ‘have’ message from 1006 for the piece 6
-2017-12-01_22:56:40: Peer 1005 has downloaded the piece 21 from 1001. Now the number of pieces it has is 21
-2017-12-01_22:56:40: Peer 1005 received the ‘interested’ message from 1004
-2017-12-01_22:56:40: Peer 1005 received the ‘interested’ message from 1002
-2017-12-01_22:56:40: Peer 1005 received the ‘interested’ message from 1003
-2017-12-01_22:56:40: Peer 1005 received the ‘have’ message from 1006 for the piece 31
-2017-12-01_22:56:40: Peer 1005 received the ‘have’ message from 1004 for the piece 15
-2017-12-01_22:56:40: Peer 1005 has downloaded the piece 24 from 1001. Now the number of pieces it has is 22
-2017-12-01_22:56:40: Peer 1005 received the ‘interested’ message from 1002
-2017-12-01_22:56:40: Peer 1005 received the ‘interested’ message from 1003
-2017-12-01_22:56:40: Peer 1005 received the ‘have’ message from 1004 for the piece 26
-2017-12-01_22:56:40: Peer 1005 received the ‘interested’ message from 1006
-2017-12-01_22:56:40: Peer 1005 has downloaded the piece 31 from 1001. Now the number of pieces it has is 23
-2017-12-01_22:56:40: Peer 1005 received the ‘have’ message from 1006 for the piece 22
-2017-12-01_22:56:40: Peer 1005 received the ‘interested’ message from 1003
-2017-12-01_22:56:40: Peer 1005 received the ‘interested’ message from 1002
-2017-12-01_22:56:40: Peer 1005 received the ‘have’ message from 1004 for the piece 28
-2017-12-01_22:56:40: Peer 1005 received the ‘have’ message from 1006 for the piece 10
-2017-12-01_22:56:40: Peer 1005 has downloaded the piece 9 from 1001. Now the number of pieces it has is 24
-2017-12-01_22:56:40: Peer 1005 received the ‘interested’ message from 1003
-2017-12-01_22:56:40: Peer 1005 received the ‘interested’ message from 1002
-2017-12-01_22:56:40: Peer 1005 received the ‘have’ message from 1004 for the piece 8
-2017-12-01_22:56:40: Peer 1005 received the ‘interested’ message from 1004
-2017-12-01_22:56:40: Peer 1005 received the ‘have’ message from 1006 for the piece 7
-2017-12-01_22:56:40: Peer 1005 received the ‘interested’ message from 1006
-2017-12-01_22:56:40: Peer 1005 has downloaded the piece 28 from 1001. Now the number of pieces it has is 25
-2017-12-01_22:56:40: Peer 1005 received the ‘interested’ message from 1003
-2017-12-01_22:56:40: Peer 1005 received the ‘interested’ message from 1006
-2017-12-01_22:56:40: Peer 1005 received the ‘interested’ message from 1002
-2017-12-01_22:56:40: Peer 1005 received the ‘have’ message from 1004 for the piece 9
-2017-12-01_22:56:40: Peer 1005 received the ‘have’ message from 1006 for the piece 9
-2017-12-01_22:56:40: Peer 1005 has downloaded the piece 10 from 1001. Now the number of pieces it has is 26
-2017-12-01_22:56:40: Peer 1005 received the ‘interested’ message from 1002
-2017-12-01_22:56:40: Peer 1005 received the ‘interested’ message from 1003
-2017-12-01_22:56:40: Peer 1005 received the ‘have’ message from 1004 for the piece 11
-2017-12-01_22:56:40: Peer 1005 received the ‘have’ message from 1006 for the piece 11
-2017-12-01_22:56:40: Peer 1005 has downloaded the piece 14 from 1001. Now the number of pieces it has is 27
-2017-12-01_22:56:40: Peer 1005 received the ‘interested’ message from 1006
-2017-12-01_22:56:40: Peer 1005 received the ‘interested’ message from 1002
-2017-12-01_22:56:40: Peer 1005 received the ‘interested’ message from 1003
-2017-12-01_22:56:40: Peer 1005 received the ‘have’ message from 1004 for the piece 16
-2017-12-01_22:56:40: Peer 1005 received the ‘have’ message from 1006 for the piece 14
-2017-12-01_22:56:40: Peer 1005 has downloaded the piece 16 from 1001. Now the number of pieces it has is 28
-2017-12-01_22:56:40: Peer 1005 received the ‘interested’ message from 1003
-2017-12-01_22:56:40: Peer 1005 received the ‘interested’ message from 1002
-2017-12-01_22:56:40: Peer 1005 received the ‘have’ message from 1004 for the piece 25
-2017-12-01_22:56:40: Peer 1005 received the ‘have’ message from 1006 for the piece 18
-2017-12-01_22:56:40: Peer 1005 has downloaded the piece 19 from 1001. Now the number of pieces it has is 29
-2017-12-01_22:56:40: Peer 1005 received the ‘interested’ message from 1003
-2017-12-01_22:56:40: Peer 1005 received the ‘interested’ message from 1002
-2017-12-01_22:56:40: Peer 1005 received the ‘interested’ message from 1004
-2017-12-01_22:56:41: Peer 1005 received the ‘interested’ message from 1006
-2017-12-01_22:56:41: Peer 1005 received the ‘have’ message from 1004 for the piece 17
-2017-12-01_22:56:41: Peer 1005 has downloaded the piece 17 from 1001. Now the number of pieces it has is 30
-2017-12-01_22:56:41: Peer 1005 received the ‘have’ message from 1006 for the piece 23
-2017-12-01_22:56:41: Peer 1005 received the ‘interested’ message from 1002
-2017-12-01_22:56:41: Peer 1005 received the ‘interested’ message from 1003
-2017-12-01_22:56:41: Peer 1005 received the ‘have’ message from 1004 for the piece 18
-2017-12-01_22:56:41: Peer 1005 received the ‘have’ message from 1006 for the piece 28
-2017-12-01_22:56:41: Peer 1005 has downloaded the piece 18 from 1001. Now the number of pieces it has is 31
-2017-12-01_22:56:41: Peer 1005 received the ‘interested’ message from 1003
-2017-12-01_22:56:41: Peer 1005 received the ‘interested’ message from 1002
-2017-12-01_22:56:41: Peer 1005 received the ‘have’ message from 1004 for the piece 19
-2017-12-01_22:56:41: Peer 1005 received the ‘have’ message from 1006 for the piece 36
-2017-12-01_22:56:41: Peer 1005 has downloaded the piece 20 from 1001. Now the number of pieces it has is 32
-2017-12-01_22:56:41: Peer 1005 received the ‘interested’ message from 1002
-2017-12-01_22:56:41: Peer 1005 received the ‘interested’ message from 1003
-2017-12-01_22:56:41: Peer 1005 received the ‘have’ message from 1004 for the piece 21
-2017-12-01_22:56:41: Peer 1005 received the ‘have’ message from 1006 for the piece 19
-2017-12-01_22:56:41: Peer 1005 has downloaded the piece 39 from 1001. Now the number of pieces it has is 33
-2017-12-01_22:56:41: Peer 1005 received the ‘interested’ message from 1003
-2017-12-01_22:56:41: Peer 1005 received the ‘interested’ message from 1004
-2017-12-01_22:56:41: Peer 1005 received the ‘interested’ message from 1006
-2017-12-01_22:56:41: Peer 1005 received the ‘interested’ message from 1002
-2017-12-01_22:56:41: Peer 1005 received the ‘have’ message from 1006 for the piece 24
-2017-12-01_22:56:41: Peer 1005 received the ‘have’ message from 1004 for the piece 22
-2017-12-01_22:56:41: Peer 1005 has downloaded the piece 23 from 1001. Now the number of pieces it has is 34
-2017-12-01_22:56:41: Peer 1005 received the ‘interested’ message from 1003
-2017-12-01_22:56:41: Peer 1005 received the ‘interested’ message from 1002
-2017-12-01_22:56:41: Peer 1005 received the ‘interested’ message from 1004
-2017-12-01_22:56:41: Peer 1005 received the ‘have’ message from 1006 for the piece 27
-2017-12-01_22:56:41: Peer 1005 received the ‘have’ message from 1004 for the piece 23
-2017-12-01_22:56:41: Peer 1005 has downloaded the piece 26 from 1001. Now the number of pieces it has is 35
-2017-12-01_22:56:41: Peer 1005 received the ‘interested’ message from 1002
-2017-12-01_22:56:41: Peer 1005 received the ‘interested’ message from 1003
-2017-12-01_22:56:41: Peer 1005 received the ‘have’ message from 1004 for the piece 29
-2017-12-01_22:56:41: Peer 1005 received the ‘have’ message from 1006 for the piece 32
-2017-12-01_22:56:41: Peer 1005 has downloaded the piece 29 from 1001. Now the number of pieces it has is 36
-2017-12-01_22:56:41: Peer 1005 received the ‘interested’ message from 1002
-2017-12-01_22:56:41: Peer 1005 received the ‘interested’ message from 1003
-2017-12-01_22:56:41: Peer 1005 received the ‘have’ message from 1004 for the piece 32
-2017-12-01_22:56:41: Peer 1005 received the ‘have’ message from 1006 for the piece 34
-2017-12-01_22:56:41: Peer 1005 has downloaded the piece 33 from 1001. Now the number of pieces it has is 37
-2017-12-01_22:56:41: Peer 1005 received the ‘interested’ message from 1003
-2017-12-01_22:56:41: Peer 1005 received the ‘interested’ message from 1002
-2017-12-01_22:56:41: Peer 1005 received the ‘have’ message from 1004 for the piece 37
-2017-12-01_22:56:41: Peer 1005 received the ‘have’ message from 1006 for the piece 37
-2017-12-01_22:56:41: Peer 1005 has downloaded the piece 34 from 1001. Now the number of pieces it has is 38
-2017-12-01_22:56:41: Peer 1005 received the ‘interested’ message from 1003
-2017-12-01_22:56:41: Peer 1005 received the ‘interested’ message from 1002
-2017-12-01_22:56:41: Peer 1005 received the ‘interested’ message from 1004
-2017-12-01_22:56:41: Peer 1005 received the ‘have’ message from 1006 for the piece 38
-2017-12-01_22:56:41: Peer 1005 has downloaded the piece 35 from 1001. Now the number of pieces it has is 39
-2017-12-01_22:56:41: Peer 1005 received the ‘have’ message from 1004 for the piece 34
-2017-12-01_22:56:41: Peer 1005 received the ‘interested’ message from 1003
-2017-12-01_22:56:41: Peer 1005 received the ‘interested’ message from 1002
-2017-12-01_22:56:41: Peer 1005 received the ‘have’ message from 1006 for the piece 39
-2017-12-01_22:56:41: Peer 1005 received the ‘interested’ message from 1004
-2017-12-01_22:56:41: Peer 1005 received the ‘have’ message from 1004 for the piece 35
-2017-12-01_22:56:41: Peer 1005 has downloaded the piece 37 from 1001. Now the number of pieces it has is 40
-2017-12-01_22:56:41: Peer 1005 received the ‘not interested’ message from 1006
-2017-12-01_22:56:41: Peer 1005 received the ‘interested’ message from 1002
-2017-12-01_22:56:41: Peer 1005 received the ‘interested’ message from 1003
-2017-12-01_22:56:41: Peer 1005 received the ‘have’ message from 1004 for the piece 38
-2017-12-01_22:56:41: Peer 1005 received the ‘have’ message from 1006 for the piece 40
-2017-12-01_22:56:41: Peer 1005 received the ‘not interested’ message from 1006
-2017-12-01_22:56:41: Peer 1005 has downloaded the piece 40 from 1001. Now the number of pieces it has is 41
-2017-12-01_22:56:41: Peer 1005 has downloaded the complete file
-2017-12-01_22:56:41: Peer 1005 received the ‘interested’ message from 1002
-2017-12-01_22:56:41: Peer 1005 received the ‘interested’ message from 1003
-2017-12-01_22:56:41: Peer 1005 received the ‘have’ message from 1004 for the piece 39
-2017-12-01_22:56:41: Peer 1005 received the ‘not interested’ message from 1004
-2017-12-01_22:56:44: Peer 1005 has the preferred neighbors 1003,1002
-2017-12-01_22:56:44: Peer 1005 recieved a request of type 6 from 1003[TESTING]
-2017-12-01_22:56:44: Peer 1005 is choked by 1001
-2017-12-01_22:56:44: Peer 1005 received the ‘have’ message from 1003 for the piece 29
-2017-12-01_22:56:44: Peer 1005 received the ‘have’ message from 1002 for the piece 11
-2017-12-01_22:56:44: Peer 1005 received the ‘have’ message from 1003 for the piece 14
-2017-12-01_22:56:44: Peer 1005 received the ‘have’ message from 1003 for the piece 33
-2017-12-01_22:56:44: Peer 1005 recieved a request of type 6 from 1003[TESTING]
-2017-12-01_22:56:44: Peer 1005 received the ‘have’ message from 1003 for the piece 4
-2017-12-01_22:56:44: Peer 1005 received the ‘have’ message from 1003 for the piece 0
-2017-12-01_22:56:44: Peer 1005 received the ‘have’ message from 1002 for the piece 4
-2017-12-01_22:56:44: Peer 1005 received the ‘have’ message from 1003 for the piece 35
-2017-12-01_22:56:44: Peer 1005 received the ‘have’ message from 1003 for the piece 39
-2017-12-01_22:56:44: Peer 1005 recieved a request of type 6 from 1003[TESTING]
-2017-12-01_22:56:44: Peer 1005 received the ‘have’ message from 1003 for the piece 21
-2017-12-01_22:56:44: Peer 1005 received the ‘have’ message from 1003 for the piece 1
-2017-12-01_22:56:44: Peer 1005 received the ‘have’ message from 1002 for the piece 36
-2017-12-01_22:56:44: Peer 1005 received the ‘have’ message from 1003 for the piece 2
-2017-12-01_22:56:44: Peer 1005 recieved a request of type 6 from 1003[TESTING]
-2017-12-01_22:56:44: Peer 1005 received the ‘have’ message from 1003 for the piece 19
-2017-12-01_22:56:44: Peer 1005 received the ‘have’ message from 1003 for the piece 8
-2017-12-01_22:56:44: Peer 1005 received the ‘have’ message from 1003 for the piece 20
-2017-12-01_22:56:44: Peer 1005 received the ‘have’ message from 1002 for the piece 8
-2017-12-01_22:56:44: Peer 1005 received the ‘have’ message from 1003 for the piece 3
-2017-12-01_22:56:44: Peer 1005 recieved a request of type 6 from 1003[TESTING]
-2017-12-01_22:56:44: Peer 1005 received the ‘have’ message from 1003 for the piece 7
-2017-12-01_22:56:44: Peer 1005 received the ‘have’ message from 1003 for the piece 38
-2017-12-01_22:56:44: Peer 1005 received the ‘have’ message from 1003 for the piece 9
-2017-12-01_22:56:44: Peer 1005 received the ‘have’ message from 1002 for the piece 12
-2017-12-01_22:56:44: Peer 1005 received the ‘have’ message from 1003 for the piece 6
-2017-12-01_22:56:44: Peer 1005 recieved a request of type 6 from 1003[TESTING]
-2017-12-01_22:56:44: Peer 1005 received the ‘have’ message from 1003 for the piece 5
-2017-12-01_22:56:44: Peer 1005 received the ‘have’ message from 1003 for the piece 10
-2017-12-01_22:56:44: Peer 1005 received the ‘have’ message from 1003 for the piece 18
-2017-12-01_22:56:44: Peer 1005 received the ‘have’ message from 1002 for the piece 26
-2017-12-01_22:56:44: Peer 1005 received the ‘have’ message from 1003 for the piece 11
-2017-12-01_22:56:44: Peer 1005 received the ‘have’ message from 1003 for the piece 26
-2017-12-01_22:56:44: Peer 1005 recieved a request of type 6 from 1003[TESTING]
-2017-12-01_22:56:44: Peer 1005 received the ‘have’ message from 1003 for the piece 12
-2017-12-01_22:56:44: Peer 1005 received the ‘have’ message from 1003 for the piece 13
-2017-12-01_22:56:44: Peer 1005 received the ‘have’ message from 1002 for the piece 0
-2017-12-01_22:56:44: Peer 1005 received the ‘have’ message from 1003 for the piece 24
-2017-12-01_22:56:44: Peer 1005 received the ‘have’ message from 1003 for the piece 15
-2017-12-01_22:56:44: Peer 1005 recieved a request of type 6 from 1003[TESTING]
-2017-12-01_22:56:44: Peer 1005 received the ‘have’ message from 1003 for the piece 30
-2017-12-01_22:56:44: Peer 1005 received the ‘have’ message from 1003 for the piece 32
-2017-12-01_22:56:44: Peer 1005 received the ‘have’ message from 1002 for the piece 33
-2017-12-01_22:56:44: Peer 1005 received the ‘have’ message from 1003 for the piece 17
-2017-12-01_22:56:44: Peer 1005 recieved a request of type 6 from 1003[TESTING]
-2017-12-01_22:56:44: Peer 1005 received the ‘have’ message from 1003 for the piece 16
-2017-12-01_22:56:44: Peer 1005 received the ‘have’ message from 1003 for the piece 22
-2017-12-01_22:56:44: Peer 1005 received the ‘have’ message from 1003 for the piece 34
-2017-12-01_22:56:44: Peer 1005 received the ‘have’ message from 1002 for the piece 1
-2017-12-01_22:56:44: Peer 1005 recieved a request of type 6 from 1003[TESTING]
-2017-12-01_22:56:44: Peer 1005 received the ‘have’ message from 1003 for the piece 23
-2017-12-01_22:56:44: Peer 1005 received the ‘have’ message from 1003 for the piece 25
-2017-12-01_22:56:44: Peer 1005 received the ‘have’ message from 1003 for the piece 27
-2017-12-01_22:56:44: Peer 1005 received the ‘have’ message from 1003 for the piece 28
-2017-12-01_22:56:45: Peer 1005 received the ‘have’ message from 1002 for the piece 2
-2017-12-01_22:56:45: Peer 1005 recieved a request of type 6 from 1003[TESTING]
-2017-12-01_22:56:45: Peer 1005 received the ‘have’ message from 1003 for the piece 36
-2017-12-01_22:56:45: Peer 1005 received the ‘have’ message from 1003 for the piece 31
-2017-12-01_22:56:45: Peer 1005 received the ‘have’ message from 1003 for the piece 37
-2017-12-01_22:56:45: Peer 1005 received the ‘have’ message from 1003 for the piece 40
-2017-12-01_22:56:45: Peer 1005 received the ‘have’ message from 1002 for the piece 34
-2017-12-01_22:56:45: Peer 1005 received the ‘not interested’ message from 1003
-2017-12-01_22:56:45: Peer 1005 received the ‘have’ message from 1002 for the piece 20
-2017-12-01_22:56:45: Peer 1005 received the ‘have’ message from 1002 for the piece 21
-2017-12-01_22:56:45: Peer 1005 received the ‘have’ message from 1002 for the piece 3
-2017-12-01_22:56:45: Peer 1005 received the ‘have’ message from 1002 for the piece 19
-2017-12-01_22:56:45: Peer 1005 received the ‘have’ message from 1002 for the piece 31
-2017-12-01_22:56:45: Peer 1005 received the ‘have’ message from 1002 for the piece 5
-2017-12-01_22:56:45: Peer 1005 received the ‘have’ message from 1002 for the piece 6
-2017-12-01_22:56:45: Peer 1005 received the ‘have’ message from 1002 for the piece 7
-2017-12-01_22:56:45: Peer 1005 received the ‘have’ message from 1002 for the piece 9
-2017-12-01_22:56:45: Peer 1005 received the ‘have’ message from 1002 for the piece 30
-2017-12-01_22:56:45: Peer 1005 received the ‘have’ message from 1002 for the piece 39
-2017-12-01_22:56:45: Peer 1005 received the ‘have’ message from 1002 for the piece 10
-2017-12-01_22:56:45: Peer 1005 received the ‘have’ message from 1002 for the piece 38
-2017-12-01_22:56:45: Peer 1005 received the ‘have’ message from 1002 for the piece 13
-2017-12-01_22:56:45: Peer 1005 received the ‘have’ message from 1002 for the piece 14
-2017-12-01_22:56:45: Peer 1005 received the ‘have’ message from 1002 for the piece 15
-2017-12-01_22:56:45: Peer 1005 received the ‘have’ message from 1002 for the piece 16
-2017-12-01_22:56:45: Peer 1005 received the ‘have’ message from 1002 for the piece 17
-2017-12-01_22:56:45: Peer 1005 received the ‘have’ message from 1002 for the piece 29
-2017-12-01_22:56:45: Peer 1005 received the ‘have’ message from 1002 for the piece 22
-2017-12-01_22:56:45: Peer 1005 received the ‘have’ message from 1002 for the piece 18
-2017-12-01_22:56:46: Peer 1005 received the ‘have’ message from 1002 for the piece 23
-2017-12-01_22:56:46: Peer 1005 received the ‘have’ message from 1002 for the piece 24
-2017-12-01_22:56:46: Peer 1005 received the ‘have’ message from 1002 for the piece 25
-2017-12-01_22:56:46: Peer 1005 received the ‘have’ message from 1002 for the piece 27
-2017-12-01_22:56:46: Peer 1005 received the ‘have’ message from 1002 for the piece 28
-2017-12-01_22:56:46: Peer 1005 received the ‘have’ message from 1002 for the piece 32
-2017-12-01_22:56:46: Peer 1005 received the ‘have’ message from 1002 for the piece 40
-2017-12-01_22:56:46: Peer 1005 received the ‘have’ message from 1002 for the piece 35
-2017-12-01_22:56:46: Peer 1005 received the ‘have’ message from 1002 for the piece 37
-2017-12-01_22:56:46: Peer 1005 received the ‘not interested’ message from 1002
+2017-12-01_23:14:12: Peer 1005 is connected from Peer 1006
+2017-12-01_23:14:12: Peer 1005 makes a connection to Peer 1004
+2017-12-01_23:14:12: Peer 1005 makes a connection to Peer 1003
+2017-12-01_23:14:12: Peer 1005 makes a connection to Peer 1002
+2017-12-01_23:14:12: Peer 1005 makes a connection to Peer 1001
+2017-12-01_23:14:12: Peer 1005 has the preferred neighbors 1002,1001
+2017-12-01_23:14:13: Peer 1005 is unchoked by 1001
+2017-12-01_23:14:13: Peer 1005 has downloaded the piece 11 from 1001. Now the number of pieces it has is 1
+2017-12-01_23:14:13: Peer 1005 received the ‘have’ message from 1004 for the piece 4
+2017-12-01_23:14:13: Peer 1005 received the ‘have’ message from 1006 for the piece 21
+2017-12-01_23:14:13: Peer 1005 received the ‘not interested’ message from 1006
+2017-12-01_23:14:13: Peer 1005 received the ‘not interested’ message from 1004
+2017-12-01_23:14:13: Peer 1005 received the ‘interested’ message from 1002
+2017-12-01_23:14:13: Peer 1005 received the ‘interested’ message from 1003
+2017-12-01_23:14:13: Peer 1005 received the ‘interested’ message from 1006
+2017-12-01_23:14:13: Peer 1005 has downloaded the piece 24 from 1001. Now the number of pieces it has is 2
+2017-12-01_23:14:13: Peer 1005 received the ‘have’ message from 1006 for the piece 11
+2017-12-01_23:14:13: Peer 1005 received the ‘interested’ message from 1003
+2017-12-01_23:14:13: Peer 1005 received the ‘interested’ message from 1002
+2017-12-01_23:14:13: Peer 1005 received the ‘interested’ message from 1004
+2017-12-01_23:14:13: Peer 1005 received the ‘have’ message from 1004 for the piece 24
+2017-12-01_23:14:13: Peer 1005 received the ‘not interested’ message from 1006
+2017-12-01_23:14:13: Peer 1005 received the ‘interested’ message from 1006
+2017-12-01_23:14:13: Peer 1005 has downloaded the piece 18 from 1001. Now the number of pieces it has is 3
+2017-12-01_23:14:13: Peer 1005 received the ‘have’ message from 1004 for the piece 5
+2017-12-01_23:14:13: Peer 1005 received the ‘interested’ message from 1002
+2017-12-01_23:14:13: Peer 1005 received the ‘interested’ message from 1006
+2017-12-01_23:14:13: Peer 1005 received the ‘interested’ message from 1003
+2017-12-01_23:14:13: Peer 1005 received the ‘interested’ message from 1004
+2017-12-01_23:14:13: Peer 1005 received the ‘have’ message from 1004 for the piece 31
+2017-12-01_23:14:13: Peer 1005 received the ‘have’ message from 1006 for the piece 14
+2017-12-01_23:14:13: Peer 1005 has downloaded the piece 2 from 1001. Now the number of pieces it has is 4
+2017-12-01_23:14:13: Peer 1005 received the ‘have’ message from 1006 for the piece 26
+2017-12-01_23:14:13: Peer 1005 received the ‘interested’ message from 1002
+2017-12-01_23:14:13: Peer 1005 received the ‘interested’ message from 1003
+2017-12-01_23:14:13: Peer 1005 received the ‘interested’ message from 1006
+2017-12-01_23:14:13: Peer 1005 received the ‘have’ message from 1004 for the piece 39
+2017-12-01_23:14:13: Peer 1005 received the ‘interested’ message from 1004
+2017-12-01_23:14:13: Peer 1005 received the ‘have’ message from 1006 for the piece 32
+2017-12-01_23:14:13: Peer 1005 has downloaded the piece 33 from 1001. Now the number of pieces it has is 5
+2017-12-01_23:14:13: Peer 1005 received the ‘interested’ message from 1003
+2017-12-01_23:14:13: Peer 1005 received the ‘interested’ message from 1002
+2017-12-01_23:14:13: Peer 1005 received the ‘have’ message from 1004 for the piece 26
+2017-12-01_23:14:13: Peer 1005 received the ‘interested’ message from 1004
+2017-12-01_23:14:13: Peer 1005 received the ‘interested’ message from 1006
+2017-12-01_23:14:13: Peer 1005 has downloaded the piece 27 from 1001. Now the number of pieces it has is 6
+2017-12-01_23:14:13: Peer 1005 received the ‘have’ message from 1006 for the piece 22
+2017-12-01_23:14:13: Peer 1005 received the ‘interested’ message from 1003
+2017-12-01_23:14:13: Peer 1005 received the ‘interested’ message from 1002
+2017-12-01_23:14:13: Peer 1005 received the ‘interested’ message from 1006
+2017-12-01_23:14:13: Peer 1005 received the ‘have’ message from 1004 for the piece 32
+2017-12-01_23:14:13: Peer 1005 received the ‘interested’ message from 1004
+2017-12-01_23:14:13: Peer 1005 received the ‘have’ message from 1006 for the piece 0
+2017-12-01_23:14:13: Peer 1005 has downloaded the piece 10 from 1001. Now the number of pieces it has is 7
+2017-12-01_23:14:13: Peer 1005 received the ‘interested’ message from 1002
+2017-12-01_23:14:13: Peer 1005 received the ‘interested’ message from 1003
+2017-12-01_23:14:13: Peer 1005 received the ‘interested’ message from 1004
+2017-12-01_23:14:13: Peer 1005 received the ‘have’ message from 1006 for the piece 35
+2017-12-01_23:14:13: Peer 1005 received the ‘interested’ message from 1006
+2017-12-01_23:14:13: Peer 1005 has downloaded the piece 26 from 1001. Now the number of pieces it has is 8
+2017-12-01_23:14:13: Peer 1005 received the ‘have’ message from 1004 for the piece 21
+2017-12-01_23:14:13: Peer 1005 received the ‘interested’ message from 1003
+2017-12-01_23:14:13: Peer 1005 received the ‘interested’ message from 1002
+2017-12-01_23:14:13: Peer 1005 received the ‘have’ message from 1004 for the piece 36
+2017-12-01_23:14:13: Peer 1005 received the ‘have’ message from 1006 for the piece 27
+2017-12-01_23:14:13: Peer 1005 has downloaded the piece 13 from 1001. Now the number of pieces it has is 9
+2017-12-01_23:14:13: Peer 1005 received the ‘interested’ message from 1002
+2017-12-01_23:14:13: Peer 1005 received the ‘interested’ message from 1003
+2017-12-01_23:14:13: Peer 1005 received the ‘interested’ message from 1004
+2017-12-01_23:14:13: Peer 1005 received the ‘interested’ message from 1006
+2017-12-01_23:14:13: Peer 1005 has downloaded the piece 1 from 1001. Now the number of pieces it has is 10
+2017-12-01_23:14:13: Peer 1005 received the ‘have’ message from 1004 for the piece 17
+2017-12-01_23:14:13: Peer 1005 received the ‘interested’ message from 1003
+2017-12-01_23:14:13: Peer 1005 received the ‘have’ message from 1006 for the piece 1
+2017-12-01_23:14:13: Peer 1005 received the ‘interested’ message from 1002
+2017-12-01_23:14:13: Peer 1005 received the ‘interested’ message from 1004
+2017-12-01_23:14:14: Peer 1005 received the ‘have’ message from 1004 for the piece 14
+2017-12-01_23:14:14: Peer 1005 received the ‘have’ message from 1006 for the piece 28
+2017-12-01_23:14:14: Peer 1005 has downloaded the piece 4 from 1001. Now the number of pieces it has is 11
+2017-12-01_23:14:14: Peer 1005 received the ‘interested’ message from 1002
+2017-12-01_23:14:14: Peer 1005 received the ‘interested’ message from 1003
+2017-12-01_23:14:14: Peer 1005 received the ‘have’ message from 1004 for the piece 38
+2017-12-01_23:14:14: Peer 1005 received the ‘have’ message from 1006 for the piece 2
+2017-12-01_23:14:14: Peer 1005 received the ‘interested’ message from 1006
+2017-12-01_23:14:14: Peer 1005 has downloaded the piece 37 from 1001. Now the number of pieces it has is 12
+2017-12-01_23:14:14: Peer 1005 received the ‘interested’ message from 1006
+2017-12-01_23:14:14: Peer 1005 received the ‘interested’ message from 1003
+2017-12-01_23:14:14: Peer 1005 received the ‘interested’ message from 1002
+2017-12-01_23:14:14: Peer 1005 received the ‘have’ message from 1004 for the piece 33
+2017-12-01_23:14:14: Peer 1005 has downloaded the piece 20 from 1001. Now the number of pieces it has is 13
+2017-12-01_23:14:14: Peer 1005 received the ‘have’ message from 1006 for the piece 8
+2017-12-01_23:14:14: Peer 1005 received the ‘interested’ message from 1004
+2017-12-01_23:14:14: Peer 1005 received the ‘interested’ message from 1006
+2017-12-01_23:14:14: Peer 1005 received the ‘interested’ message from 1002
+2017-12-01_23:14:14: Peer 1005 received the ‘interested’ message from 1003
+2017-12-01_23:14:14: Peer 1005 received the ‘have’ message from 1006 for the piece 13
+2017-12-01_23:14:14: Peer 1005 received the ‘interested’ message from 1004
+2017-12-01_23:14:14: Peer 1005 received the ‘have’ message from 1004 for the piece 16
+2017-12-01_23:14:14: Peer 1005 has downloaded the piece 0 from 1001. Now the number of pieces it has is 14
+2017-12-01_23:14:14: Peer 1005 received the ‘interested’ message from 1002
+2017-12-01_23:14:14: Peer 1005 received the ‘interested’ message from 1003
+2017-12-01_23:14:14: Peer 1005 received the ‘have’ message from 1004 for the piece 23
+2017-12-01_23:14:14: Peer 1005 received the ‘interested’ message from 1004
+2017-12-01_23:14:14: Peer 1005 received the ‘have’ message from 1006 for the piece 3
+2017-12-01_23:14:14: Peer 1005 has downloaded the piece 9 from 1001. Now the number of pieces it has is 15
+2017-12-01_23:14:14: Peer 1005 received the ‘interested’ message from 1003
+2017-12-01_23:14:14: Peer 1005 received the ‘interested’ message from 1002
+2017-12-01_23:14:14: Peer 1005 received the ‘have’ message from 1004 for the piece 0
+2017-12-01_23:14:14: Peer 1005 received the ‘interested’ message from 1004
+2017-12-01_23:14:14: Peer 1005 received the ‘interested’ message from 1006
+2017-12-01_23:14:14: Peer 1005 has downloaded the piece 6 from 1001. Now the number of pieces it has is 16
+2017-12-01_23:14:14: Peer 1005 received the ‘have’ message from 1006 for the piece 4
+2017-12-01_23:14:14: Peer 1005 received the ‘interested’ message from 1003
+2017-12-01_23:14:14: Peer 1005 received the ‘interested’ message from 1002
+2017-12-01_23:14:14: Peer 1005 received the ‘interested’ message from 1004
+2017-12-01_23:14:14: Peer 1005 received the ‘have’ message from 1004 for the piece 20
+2017-12-01_23:14:14: Peer 1005 received the ‘interested’ message from 1006
+2017-12-01_23:14:14: Peer 1005 received the ‘have’ message from 1006 for the piece 31
+2017-12-01_23:14:14: Peer 1005 has downloaded the piece 31 from 1001. Now the number of pieces it has is 17
+2017-12-01_23:14:14: Peer 1005 received the ‘interested’ message from 1003
+2017-12-01_23:14:14: Peer 1005 received the ‘interested’ message from 1002
+2017-12-01_23:14:14: Peer 1005 received the ‘have’ message from 1004 for the piece 11
+2017-12-01_23:14:14: Peer 1005 received the ‘have’ message from 1006 for the piece 5
+2017-12-01_23:14:14: Peer 1005 has downloaded the piece 25 from 1001. Now the number of pieces it has is 18
+2017-12-01_23:14:14: Peer 1005 received the ‘interested’ message from 1004
+2017-12-01_23:14:14: Peer 1005 received the ‘interested’ message from 1002
+2017-12-01_23:14:14: Peer 1005 received the ‘interested’ message from 1003
+2017-12-01_23:14:14: Peer 1005 received the ‘interested’ message from 1006
+2017-12-01_23:14:14: Peer 1005 received the ‘have’ message from 1004 for the piece 34
+2017-12-01_23:14:14: Peer 1005 has downloaded the piece 3 from 1001. Now the number of pieces it has is 19
+2017-12-01_23:14:14: Peer 1005 received the ‘interested’ message from 1003
+2017-12-01_23:14:14: Peer 1005 received the ‘interested’ message from 1002
+2017-12-01_23:14:14: Peer 1005 received the ‘have’ message from 1006 for the piece 17
+2017-12-01_23:14:14: Peer 1005 received the ‘have’ message from 1004 for the piece 1
+2017-12-01_23:14:14: Peer 1005 received the ‘interested’ message from 1004
+2017-12-01_23:14:14: Peer 1005 received the ‘have’ message from 1006 for the piece 40
+2017-12-01_23:14:14: Peer 1005 has downloaded the piece 35 from 1001. Now the number of pieces it has is 20
+2017-12-01_23:14:14: Peer 1005 received the ‘interested’ message from 1003
+2017-12-01_23:14:14: Peer 1005 received the ‘interested’ message from 1002
+2017-12-01_23:14:14: Peer 1005 received the ‘interested’ message from 1004
+2017-12-01_23:14:14: Peer 1005 received the ‘have’ message from 1006 for the piece 34
+2017-12-01_23:14:14: Peer 1005 received the ‘have’ message from 1004 for the piece 2
+2017-12-01_23:14:14: Peer 1005 has downloaded the piece 5 from 1001. Now the number of pieces it has is 21
+2017-12-01_23:14:14: Peer 1005 received the ‘interested’ message from 1003
+2017-12-01_23:14:14: Peer 1005 received the ‘interested’ message from 1002
+2017-12-01_23:14:14: Peer 1005 received the ‘have’ message from 1004 for the piece 29
+2017-12-01_23:14:14: Peer 1005 received the ‘have’ message from 1006 for the piece 19
+2017-12-01_23:14:14: Peer 1005 has downloaded the piece 7 from 1001. Now the number of pieces it has is 22
+2017-12-01_23:14:14: Peer 1005 received the ‘interested’ message from 1003
+2017-12-01_23:14:14: Peer 1005 received the ‘interested’ message from 1002
+2017-12-01_23:14:14: Peer 1005 received the ‘interested’ message from 1004
+2017-12-01_23:14:14: Peer 1005 received the ‘interested’ message from 1006
+2017-12-01_23:14:14: Peer 1005 has downloaded the piece 32 from 1001. Now the number of pieces it has is 23
+2017-12-01_23:14:14: Peer 1005 received the ‘have’ message from 1006 for the piece 12
+2017-12-01_23:14:14: Peer 1005 received the ‘have’ message from 1004 for the piece 10
+2017-12-01_23:14:14: Peer 1005 received the ‘interested’ message from 1003
+2017-12-01_23:14:14: Peer 1005 received the ‘interested’ message from 1002
+2017-12-01_23:14:14: Peer 1005 received the ‘have’ message from 1006 for the piece 6
+2017-12-01_23:14:14: Peer 1005 received the ‘have’ message from 1004 for the piece 3
+2017-12-01_23:14:14: Peer 1005 has downloaded the piece 16 from 1001. Now the number of pieces it has is 24
+2017-12-01_23:14:14: Peer 1005 received the ‘interested’ message from 1006
+2017-12-01_23:14:14: Peer 1005 received the ‘interested’ message from 1003
+2017-12-01_23:14:14: Peer 1005 received the ‘interested’ message from 1002
+2017-12-01_23:14:14: Peer 1005 received the ‘have’ message from 1004 for the piece 13
+2017-12-01_23:14:14: Peer 1005 received the ‘have’ message from 1006 for the piece 10
+2017-12-01_23:14:14: Peer 1005 has downloaded the piece 22 from 1001. Now the number of pieces it has is 25
+2017-12-01_23:14:14: Peer 1005 received the ‘interested’ message from 1004
+2017-12-01_23:14:14: Peer 1005 received the ‘interested’ message from 1003
+2017-12-01_23:14:14: Peer 1005 received the ‘interested’ message from 1002
+2017-12-01_23:14:14: Peer 1005 received the ‘have’ message from 1006 for the piece 7
+2017-12-01_23:14:14: Peer 1005 received the ‘have’ message from 1004 for the piece 6
+2017-12-01_23:14:14: Peer 1005 has downloaded the piece 8 from 1001. Now the number of pieces it has is 26
+2017-12-01_23:14:14: Peer 1005 received the ‘interested’ message from 1002
+2017-12-01_23:14:14: Peer 1005 received the ‘interested’ message from 1003
+2017-12-01_23:14:14: Peer 1005 received the ‘interested’ message from 1004
+2017-12-01_23:14:14: Peer 1005 received the ‘have’ message from 1006 for the piece 24
+2017-12-01_23:14:14: Peer 1005 received the ‘have’ message from 1004 for the piece 7
+2017-12-01_23:14:14: Peer 1005 has downloaded the piece 12 from 1001. Now the number of pieces it has is 27
+2017-12-01_23:14:14: Peer 1005 received the ‘interested’ message from 1003
+2017-12-01_23:14:14: Peer 1005 received the ‘interested’ message from 1002
+2017-12-01_23:14:14: Peer 1005 received the ‘interested’ message from 1004
+2017-12-01_23:14:14: Peer 1005 received the ‘have’ message from 1006 for the piece 9
+2017-12-01_23:14:14: Peer 1005 received the ‘have’ message from 1004 for the piece 8
+2017-12-01_23:14:14: Peer 1005 has downloaded the piece 15 from 1001. Now the number of pieces it has is 28
+2017-12-01_23:14:14: Peer 1005 received the ‘interested’ message from 1006
+2017-12-01_23:14:14: Peer 1005 received the ‘interested’ message from 1003
+2017-12-01_23:14:14: Peer 1005 received the ‘interested’ message from 1002
+2017-12-01_23:14:14: Peer 1005 received the ‘interested’ message from 1004
+2017-12-01_23:14:14: Peer 1005 received the ‘have’ message from 1004 for the piece 9
+2017-12-01_23:14:14: Peer 1005 received the ‘have’ message from 1006 for the piece 15
+2017-12-01_23:14:14: Peer 1005 has downloaded the piece 14 from 1001. Now the number of pieces it has is 29
+2017-12-01_23:14:14: Peer 1005 received the ‘interested’ message from 1003
+2017-12-01_23:14:14: Peer 1005 received the ‘interested’ message from 1002
+2017-12-01_23:14:14: Peer 1005 received the ‘have’ message from 1004 for the piece 35
+2017-12-01_23:14:14: Peer 1005 received the ‘have’ message from 1006 for the piece 16
+2017-12-01_23:14:14: Peer 1005 has downloaded the piece 23 from 1001. Now the number of pieces it has is 30
+2017-12-01_23:14:14: Peer 1005 received the ‘interested’ message from 1002
+2017-12-01_23:14:14: Peer 1005 received the ‘interested’ message from 1003
+2017-12-01_23:14:14: Peer 1005 received the ‘interested’ message from 1006
+2017-12-01_23:14:14: Peer 1005 received the ‘have’ message from 1004 for the piece 12
+2017-12-01_23:14:14: Peer 1005 received the ‘have’ message from 1006 for the piece 18
+2017-12-01_23:14:14: Peer 1005 has downloaded the piece 17 from 1001. Now the number of pieces it has is 31
+2017-12-01_23:14:14: Peer 1005 received the ‘interested’ message from 1003
+2017-12-01_23:14:14: Peer 1005 received the ‘interested’ message from 1002
+2017-12-01_23:14:14: Peer 1005 received the ‘have’ message from 1004 for the piece 15
+2017-12-01_23:14:14: Peer 1005 received the ‘have’ message from 1006 for the piece 20
+2017-12-01_23:14:14: Peer 1005 has downloaded the piece 19 from 1001. Now the number of pieces it has is 32
+2017-12-01_23:14:14: Peer 1005 received the ‘interested’ message from 1003
+2017-12-01_23:14:14: Peer 1005 received the ‘interested’ message from 1004
+2017-12-01_23:14:14: Peer 1005 received the ‘interested’ message from 1002
+2017-12-01_23:14:14: Peer 1005 received the ‘have’ message from 1006 for the piece 33
+2017-12-01_23:14:14: Peer 1005 received the ‘have’ message from 1004 for the piece 18
+2017-12-01_23:14:14: Peer 1005 has downloaded the piece 21 from 1001. Now the number of pieces it has is 33
+2017-12-01_23:14:14: Peer 1005 received the ‘interested’ message from 1002
+2017-12-01_23:14:14: Peer 1005 received the ‘interested’ message from 1003
+2017-12-01_23:14:15: Peer 1005 received the ‘have’ message from 1004 for the piece 19
+2017-12-01_23:14:15: Peer 1005 has downloaded the piece 28 from 1001. Now the number of pieces it has is 34
+2017-12-01_23:14:15: Peer 1005 received the ‘have’ message from 1006 for the piece 23
+2017-12-01_23:14:15: Peer 1005 received the ‘interested’ message from 1004
+2017-12-01_23:14:15: Peer 1005 received the ‘interested’ message from 1002
+2017-12-01_23:14:15: Peer 1005 received the ‘interested’ message from 1003
+2017-12-01_23:14:15: Peer 1005 received the ‘have’ message from 1004 for the piece 22
+2017-12-01_23:14:15: Peer 1005 has downloaded the piece 29 from 1001. Now the number of pieces it has is 35
+2017-12-01_23:14:15: Peer 1005 received the ‘have’ message from 1006 for the piece 25
+2017-12-01_23:14:15: Peer 1005 received the ‘interested’ message from 1003
+2017-12-01_23:14:15: Peer 1005 received the ‘interested’ message from 1002
+2017-12-01_23:14:15: Peer 1005 received the ‘interested’ message from 1006
+2017-12-01_23:14:15: Peer 1005 received the ‘have’ message from 1004 for the piece 25
+2017-12-01_23:14:15: Peer 1005 has downloaded the piece 30 from 1001. Now the number of pieces it has is 36
+2017-12-01_23:14:15: Peer 1005 received the ‘interested’ message from 1003
+2017-12-01_23:14:15: Peer 1005 received the ‘interested’ message from 1004
+2017-12-01_23:14:15: Peer 1005 received the ‘interested’ message from 1002
+2017-12-01_23:14:15: Peer 1005 received the ‘have’ message from 1006 for the piece 29
+2017-12-01_23:14:15: Peer 1005 received the ‘interested’ message from 1006
+2017-12-01_23:14:15: Peer 1005 received the ‘have’ message from 1004 for the piece 27
+2017-12-01_23:14:15: Peer 1005 has downloaded the piece 34 from 1001. Now the number of pieces it has is 37
+2017-12-01_23:14:15: Peer 1005 received the ‘have’ message from 1006 for the piece 30
+2017-12-01_23:14:15: Peer 1005 received the ‘interested’ message from 1003
+2017-12-01_23:14:15: Peer 1005 received the ‘interested’ message from 1002
+2017-12-01_23:14:15: Peer 1005 received the ‘have’ message from 1004 for the piece 28
+2017-12-01_23:14:15: Peer 1005 has downloaded the piece 36 from 1001. Now the number of pieces it has is 38
+2017-12-01_23:14:15: Peer 1005 received the ‘have’ message from 1006 for the piece 36
+2017-12-01_23:14:15: Peer 1005 received the ‘interested’ message from 1003
+2017-12-01_23:14:15: Peer 1005 received the ‘interested’ message from 1002
+2017-12-01_23:14:15: Peer 1005 received the ‘have’ message from 1004 for the piece 30
+2017-12-01_23:14:15: Peer 1005 has downloaded the piece 38 from 1001. Now the number of pieces it has is 39
+2017-12-01_23:14:15: Peer 1005 received the ‘have’ message from 1006 for the piece 37
+2017-12-01_23:14:15: Peer 1005 received the ‘interested’ message from 1002
+2017-12-01_23:14:15: Peer 1005 received the ‘interested’ message from 1003
+2017-12-01_23:14:15: Peer 1005 received the ‘have’ message from 1004 for the piece 37
+2017-12-01_23:14:15: Peer 1005 received the ‘not interested’ message from 1006
+2017-12-01_23:14:15: Peer 1005 received the ‘interested’ message from 1006
+2017-12-01_23:14:15: Peer 1005 has downloaded the piece 39 from 1001. Now the number of pieces it has is 40
+2017-12-01_23:14:15: Peer 1005 received the ‘have’ message from 1006 for the piece 38
+2017-12-01_23:14:15: Peer 1005 received the ‘not interested’ message from 1006
+2017-12-01_23:14:15: Peer 1005 received the ‘not interested’ message from 1004
+2017-12-01_23:14:15: Peer 1005 received the ‘interested’ message from 1003
+2017-12-01_23:14:15: Peer 1005 received the ‘interested’ message from 1002
+2017-12-01_23:14:15: Peer 1005 received the ‘interested’ message from 1006
+2017-12-01_23:14:15: Peer 1005 received the ‘have’ message from 1004 for the piece 40
+2017-12-01_23:14:15: Peer 1005 received the ‘not interested’ message from 1004
+2017-12-01_23:14:15: Peer 1005 has downloaded the piece 40 from 1001. Now the number of pieces it has is 41
+2017-12-01_23:14:15: Peer 1005 has downloaded the complete file
+2017-12-01_23:14:15: Peer 1005 received the ‘have’ message from 1006 for the piece 39
+2017-12-01_23:14:15: Peer 1005 received the ‘not interested’ message from 1006
+2017-12-01_23:14:15: Peer 1005 received the ‘interested’ message from 1002
+2017-12-01_23:14:15: Peer 1005 received the ‘interested’ message from 1003
+2017-12-01_23:14:18: Peer 1005 has the preferred neighbors 1003,1002
+2017-12-01_23:14:18: Peer 1005 received the ‘have’ message from 1003 for the piece 0
+2017-12-01_23:14:18: Peer 1005 is choked by 1001
+2017-12-01_23:14:18: Peer 1005 received the ‘have’ message from 1002 for the piece 19
+2017-12-01_23:14:18: Peer 1005 received the ‘have’ message from 1003 for the piece 39
+2017-12-01_23:14:18: Peer 1005 received the ‘have’ message from 1003 for the piece 14
+2017-12-01_23:14:18: Peer 1005 received the ‘have’ message from 1003 for the piece 4
+2017-12-01_23:14:18: Peer 1005 received the ‘have’ message from 1003 for the piece 20
+2017-12-01_23:14:18: Peer 1005 received the ‘have’ message from 1002 for the piece 36
+2017-12-01_23:14:18: Peer 1005 received the ‘have’ message from 1003 for the piece 40
+2017-12-01_23:14:18: Peer 1005 received the ‘have’ message from 1003 for the piece 19
+2017-12-01_23:14:18: Peer 1005 received the ‘have’ message from 1003 for the piece 23
+2017-12-01_23:14:18: Peer 1005 received the ‘have’ message from 1003 for the piece 1
+2017-12-01_23:14:18: Peer 1005 received the ‘have’ message from 1002 for the piece 20
+2017-12-01_23:14:18: Peer 1005 received the ‘have’ message from 1003 for the piece 6
+2017-12-01_23:14:18: Peer 1005 received the ‘have’ message from 1003 for the piece 13
+2017-12-01_23:14:18: Peer 1005 received the ‘have’ message from 1003 for the piece 31
+2017-12-01_23:14:18: Peer 1005 received the ‘have’ message from 1003 for the piece 37
+2017-12-01_23:14:18: Peer 1005 received the ‘have’ message from 1002 for the piece 27
+2017-12-01_23:14:18: Peer 1005 received the ‘have’ message from 1003 for the piece 2
+2017-12-01_23:14:18: Peer 1005 received the ‘have’ message from 1003 for the piece 3
+2017-12-01_23:14:18: Peer 1005 received the ‘have’ message from 1003 for the piece 24
+2017-12-01_23:14:18: Peer 1005 received the ‘have’ message from 1003 for the piece 12
+2017-12-01_23:14:18: Peer 1005 received the ‘have’ message from 1002 for the piece 12
+2017-12-01_23:14:18: Peer 1005 received the ‘have’ message from 1003 for the piece 26
+2017-12-01_23:14:18: Peer 1005 received the ‘have’ message from 1003 for the piece 17
+2017-12-01_23:14:18: Peer 1005 received the ‘have’ message from 1003 for the piece 5
+2017-12-01_23:14:18: Peer 1005 received the ‘have’ message from 1003 for the piece 7
+2017-12-01_23:14:18: Peer 1005 received the ‘have’ message from 1002 for the piece 15
+2017-12-01_23:14:18: Peer 1005 received the ‘have’ message from 1003 for the piece 8
+2017-12-01_23:14:18: Peer 1005 received the ‘have’ message from 1003 for the piece 25
+2017-12-01_23:14:18: Peer 1005 received the ‘have’ message from 1003 for the piece 35
+2017-12-01_23:14:18: Peer 1005 received the ‘have’ message from 1003 for the piece 9
+2017-12-01_23:14:18: Peer 1005 received the ‘have’ message from 1002 for the piece 30
+2017-12-01_23:14:18: Peer 1005 received the ‘have’ message from 1003 for the piece 10
+2017-12-01_23:14:18: Peer 1005 received the ‘have’ message from 1003 for the piece 11
+2017-12-01_23:14:18: Peer 1005 received the ‘have’ message from 1003 for the piece 15
+2017-12-01_23:14:18: Peer 1005 received the ‘have’ message from 1003 for the piece 27
+2017-12-01_23:14:18: Peer 1005 received the ‘have’ message from 1002 for the piece 0
+2017-12-01_23:14:18: Peer 1005 received the ‘have’ message from 1003 for the piece 36
+2017-12-01_23:14:18: Peer 1005 received the ‘have’ message from 1003 for the piece 16
+2017-12-01_23:14:18: Peer 1005 received the ‘have’ message from 1003 for the piece 18
+2017-12-01_23:14:18: Peer 1005 received the ‘have’ message from 1003 for the piece 21
+2017-12-01_23:14:18: Peer 1005 received the ‘have’ message from 1002 for the piece 17
+2017-12-01_23:14:18: Peer 1005 received the ‘have’ message from 1003 for the piece 22
+2017-12-01_23:14:18: Peer 1005 received the ‘have’ message from 1003 for the piece 28
+2017-12-01_23:14:18: Peer 1005 received the ‘have’ message from 1003 for the piece 29
+2017-12-01_23:14:18: Peer 1005 received the ‘have’ message from 1003 for the piece 32
+2017-12-01_23:14:18: Peer 1005 received the ‘have’ message from 1002 for the piece 28
+2017-12-01_23:14:18: Peer 1005 received the ‘have’ message from 1003 for the piece 30
+2017-12-01_23:14:18: Peer 1005 received the ‘have’ message from 1003 for the piece 33
+2017-12-01_23:14:18: Peer 1005 received the ‘have’ message from 1003 for the piece 34
+2017-12-01_23:14:18: Peer 1005 received the ‘have’ message from 1003 for the piece 38
+2017-12-01_23:14:18: Peer 1005 received the ‘not interested’ message from 1003
+2017-12-01_23:14:18: Peer 1005 received the ‘have’ message from 1002 for the piece 1
+2017-12-01_23:14:18: Peer 1005 received the ‘have’ message from 1002 for the piece 18
+2017-12-01_23:14:18: Peer 1005 received the ‘have’ message from 1002 for the piece 9
+2017-12-01_23:14:18: Peer 1005 received the ‘have’ message from 1002 for the piece 33
+2017-12-01_23:14:19: Peer 1005 received the ‘have’ message from 1002 for the piece 40
+2017-12-01_23:14:19: Peer 1005 received the ‘have’ message from 1002 for the piece 2
+2017-12-01_23:14:19: Peer 1005 received the ‘have’ message from 1002 for the piece 3
+2017-12-01_23:14:19: Peer 1005 received the ‘have’ message from 1002 for the piece 13
+2017-12-01_23:14:19: Peer 1005 received the ‘have’ message from 1002 for the piece 35
+2017-12-01_23:14:19: Peer 1005 received the ‘have’ message from 1002 for the piece 32
+2017-12-01_23:14:19: Peer 1005 received the ‘have’ message from 1002 for the piece 4
+2017-12-01_23:14:19: Peer 1005 received the ‘have’ message from 1002 for the piece 16
+2017-12-01_23:14:19: Peer 1005 received the ‘have’ message from 1002 for the piece 8
+2017-12-01_23:14:19: Peer 1005 received the ‘have’ message from 1002 for the piece 38
+2017-12-01_23:14:19: Peer 1005 received the ‘have’ message from 1002 for the piece 31
+2017-12-01_23:14:19: Peer 1005 received the ‘have’ message from 1002 for the piece 5
+2017-12-01_23:14:19: Peer 1005 received the ‘have’ message from 1002 for the piece 29
+2017-12-01_23:14:19: Peer 1005 received the ‘have’ message from 1002 for the piece 6
+2017-12-01_23:14:19: Peer 1005 received the ‘have’ message from 1002 for the piece 7
+2017-12-01_23:14:19: Peer 1005 received the ‘have’ message from 1002 for the piece 10
+2017-12-01_23:14:19: Peer 1005 received the ‘have’ message from 1002 for the piece 11
+2017-12-01_23:14:19: Peer 1005 received the ‘have’ message from 1002 for the piece 25
+2017-12-01_23:14:19: Peer 1005 received the ‘have’ message from 1002 for the piece 14
+2017-12-01_23:14:19: Peer 1005 received the ‘have’ message from 1002 for the piece 21
+2017-12-01_23:14:19: Peer 1005 received the ‘have’ message from 1002 for the piece 22
+2017-12-01_23:14:19: Peer 1005 received the ‘have’ message from 1002 for the piece 34
+2017-12-01_23:14:20: Peer 1005 received the ‘have’ message from 1002 for the piece 23
+2017-12-01_23:14:20: Peer 1005 received the ‘have’ message from 1002 for the piece 24
+2017-12-01_23:14:20: Peer 1005 received the ‘have’ message from 1002 for the piece 26
+2017-12-01_23:14:20: Peer 1005 received the ‘have’ message from 1002 for the piece 37
+2017-12-01_23:14:20: Peer 1005 received the ‘have’ message from 1002 for the piece 39
+2017-12-01_23:14:20: Peer 1005 received the ‘not interested’ message from 1002
