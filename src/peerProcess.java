@@ -173,6 +173,7 @@ public class peerProcess implements Runnable {
         BitSet toRequest = (BitSet) this.need.clone();
 //        toRequest.andNot(this.requested); //bits set in the bitfield that are not set in requested (bits needed but not requested)
         toRequest.and(peerPieces.get(unchokedMe)); //only want to request if they have it (I need and they have it)
+        toRequest.andNot(requested);
         if (!toRequest.isEmpty()) {
             int requestIndex = toRequest.nextSetBit(0); //get the next needed but not yet requested bit (piece that don't have)
             System.out.println(myPeerID + " was unchoked and is requesting piece " + requestIndex + " from peer (processUnchoke)" + unchokedMe);
@@ -258,9 +259,6 @@ public class peerProcess implements Runnable {
             is.read(piece, 0, pieceLength);
             int pieceIndex = Util.bytesToInt(indexField);
             int start=pieceIndex*Constants.PIECE_SIZE;
-            System.out.println("Starting at "+start);
-            System.out.println("Max Size is "+byteFile.length);
-            System.out.println("Size of array is "+pieceLength);
             for (int i=0; i<Constants.PIECE_SIZE && (start+i)<Constants.FILE_SIZE; i++) {
             	byteFile[start+i]=piece[i];
             }
@@ -283,6 +281,7 @@ public class peerProcess implements Runnable {
             if (!haveFile){
               BitSet toRequest = (BitSet) this.need.clone();
               toRequest.and(peerPieces.get(message.getFrom())); //only want to request if they have it (I need and they have it)
+              toRequest.andNot(requested);
               if (!toRequest.isEmpty()) {
                   int requestIndex = toRequest.nextSetBit(0); //get the next needed but not yet requested bit (piece that don't have)
                   requestPiece(message.getFrom(), requestIndex);
@@ -290,6 +289,10 @@ public class peerProcess implements Runnable {
             } else {
               logger.logFileDownloadComplete();
               System.out.println(myPeerID+" Completed File!");
+              if (peersHaveFile){
+            	  System.out.println("Process done exiting!");
+            	  System.exit(0);
+              }
             }
         } catch (FileNotFoundException e) {
             System.out.println("Trying to process a piece but file not found.");
@@ -310,6 +313,7 @@ public class peerProcess implements Runnable {
             System.out.println("This is the payload in requestPiece in " + myPeerID + "..." + Arrays.toString(payload) + " should be " + pieceIndex);
             Message request = new Message(this.myPeerID, 4, Constants.REQUEST, payload); //payload length for requests is 1 byte type + 4 bytes piece index. NO...not including type.
             outboxes.get(peer).put(request); //throws InterruptedException
+            requested.set(pieceIndex);
         } catch (InterruptedException e) {
             System.out.println("InterruptedException in peerProcess' requestPiece method");
             e.printStackTrace();
@@ -334,6 +338,7 @@ public class peerProcess implements Runnable {
                 return false;
             }
         }
+        System.out.println(myPeerID+" noticed rest have finished!");
         peersHaveFile = true;
         return true;
     }
@@ -435,8 +440,19 @@ public class peerProcess implements Runnable {
 
     private void timeout() {
 
-        this.requested.clear();
-
+      this.requested.clear();
+      BitSet toRequest = (BitSet) this.need.clone();
+      for(String peer : peers) {
+    	  if (!chokingMe.contains(peer)) {
+		      toRequest.and(peerPieces.get(peer)); //only want to request if they have it (I need and they have it)
+		      toRequest.andNot(requested);
+		      if (!toRequest.isEmpty()) {
+		          int requestIndex = toRequest.nextSetBit(0); //get the next needed but not yet requested bit (piece that don't have)
+		          System.out.println(myPeerID + " was unchoked and is requesting piece " + requestIndex + " from peer (processUnchoke)" + peer);
+		          requestPiece(peer, requestIndex);
+		      }
+    	  }
+      }
     }
 
 
@@ -472,18 +488,8 @@ public class peerProcess implements Runnable {
             new Thread(outHandler).start();
         }
 
-        String peery="1002";
-        try {
-        	if (myPeerID.equals("1001")){
-        		unchoked.add(peery);
-                Message response = new Message(myPeerID, 0, Constants.UNCHOKE);
-                outboxes.get(peery).put(response);
-        	}
-        } catch (Exception e) {
-        	System.out.println("Shits on fire yo");
-        }
-        //new Thread(new UnchokeTimer()).start();
-        //new Thread(new OptUnchokeTimer()).start();
+        new Thread(new UnchokeTimer()).start();
+        new Thread(new OptUnchokeTimer()).start();
 
         while (true) {
             dispatch();
@@ -648,7 +654,6 @@ public class peerProcess implements Runnable {
                 TimeUnit.SECONDS.sleep(Constants.OPT_UNCHOKE_INTERVAL);
 
             } while (!peersHaveFile);
-
         }
 
         public void run() {
