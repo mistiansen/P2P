@@ -267,7 +267,7 @@ public class peerProcess implements Runnable {
             need.clear(pieceIndex);
             System.out.println(myPeerID + " just got a piece from " + message.getFrom() + " of length " + piece.length);
             logger.logDoneDownloadingPiece(message.getFrom(), Integer.toString(pieceIndex), ++totalPieces);
-            //count.put(message.getFrom(), count.get(message.getFrom()) + 1);
+            count.put(message.getFrom(), count.get(message.getFrom()) + 1);
             byte[] payload = ByteBuffer.allocate(4).putInt(pieceIndex).array();
             for (String peer: outboxes.keySet()) {
                 outboxes.get(peer).put(new Message(myPeerID, 4, Constants.HAVE, payload));
@@ -464,7 +464,7 @@ public class peerProcess implements Runnable {
         	} catch (Exception E) {
         		System.out.println("Failure to initialize bytefile");
         	}
-        } 
+        }
     	try {
     		byteFile = Files.readAllBytes(Paths.get(filename)); //or do new FileInputStream(filename)?
     	} catch (Exception E) {
@@ -540,6 +540,8 @@ public class peerProcess implements Runnable {
                             newPrefs.remove(replace);
                         }
                     }
+                }
+                for (String peer: peers) {
                     count.put(peer, 0);
                 }
                 for (String newpeer : newPrefs) {
