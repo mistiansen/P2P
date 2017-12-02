@@ -12,35 +12,6 @@ import java.util.Calendar;
  */
 
 class Logger {
-	
-//	private static Logger singleton = null;
-//
-//    private Logger(String peerID) throws IOException {
-//        this.peerID = peerID;
-//        String fileName = "project/log_peer_" + peerID + ".log";
-//        logFile = new BufferedWriter(new FileWriter(fileName));
-//    }
-//
-//    public static Logger getInstance() {
-//        if(singleton == null) {
-//            throw new AssertionError("You have to call init first");
-//        }
-//
-//        return singleton;
-//    }
-//
-//    // must call init before getInstance()
-//    public synchronized static Logger init(String peerID) throws IOException {
-//        if (singleton != null)
-//        {
-//            // in my opinion this is optional, but for the purists it ensures
-//            // that you only ever get the same instance when you call getInstance
-//            throw new AssertionError("You already initialized me");
-//        }
-//
-//        singleton = new Logger(peerID);
-//        return singleton;
-//    }
 
     private String peerID;
     private BufferedWriter logFile;
@@ -150,6 +121,14 @@ class Logger {
         String timeStamp = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss").format(Calendar.getInstance().getTime());
         logFile.append(timeStamp + ": Peer " + peerID +
                 " has downloaded the complete file\n");
+        logFile.flush();
+    }
+
+    // when the peer downloads the complete file
+    public void logAllDone() throws IOException{
+        String timeStamp = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss").format(Calendar.getInstance().getTime());
+        logFile.append(timeStamp + ": Peer " + peerID +
+                " disconnects. Everyone is done. \n");
         logFile.flush();
     }
     

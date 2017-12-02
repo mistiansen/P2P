@@ -87,12 +87,22 @@ public class Main {
         BitSet theirs = new BitSet();
         BitSet mine = new BitSet();
         theirs.set(0, 20);
-        mine.set(0, 15);
-        BitSet requested = new BitSet();
-        requested.set(0,5);
-        theirs.andNot(mine);
-        mine.andNot(requested);
+        mine.set(13, 25);
+        BitSet need = new BitSet();
+        need.set(3,12);
+//        theirs.andNot(mine);
+//        mine.andNot(requested);
         System.out.println(mine);
+
+
+        BitSet toRequest = (BitSet) need.clone();
+        toRequest.and(theirs); //only want to request if they have it (I need and they have it)
+        toRequest.andNot(mine);
+        System.out.println(toRequest);
+        int sex = toRequest.nextSetBit(0);
+        System.out.println(sex);
+
+        System.out.println(toRequest.length());
 
 //        BitSet and = (BitSet) theirs.clone();
 //        and.and(mine);

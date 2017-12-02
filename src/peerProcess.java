@@ -176,11 +176,15 @@ public class peerProcess implements Runnable {
         String unchokedMe = message.getFrom();
         chokingMe.remove(unchokedMe);
         BitSet toRequest = (BitSet) this.need.clone();
-//        toRequest.andNot(this.requested); //bits set in the bitfield that are not set in requested (bits needed but not requested)
         toRequest.and(peerPieces.get(unchokedMe)); //only want to request if they have it (I need and they have it)
-        toRequest.andNot(requested);
+        toRequest.andNot(requested); //bits set in the bitfield that are not set in requested (bits needed but not requested)
         if (!toRequest.isEmpty()) {
-            int requestIndex = toRequest.nextSetBit(0); //get the next needed but not yet requested bit (piece that don't have)
+            int numNeeded = toRequest.length();
+            int requestIndex = new Random().nextInt(numNeeded);
+            if (!toRequest.get(requestIndex)) {
+                requestIndex = toRequest.nextSetBit(0);
+                System.out.println("Generated a requested index that I don't really need? " + requestIndex);
+            }
             System.out.println(myPeerID + " was unchoked and is requesting piece " + requestIndex + " from peer (processUnchoke)" + unchokedMe);
             requestPiece(unchokedMe, requestIndex);
         }
@@ -288,7 +292,13 @@ public class peerProcess implements Runnable {
               toRequest.and(peerPieces.get(message.getFrom())); //only want to request if they have it (I need and they have it)
               toRequest.andNot(requested);
               if (!toRequest.isEmpty()) {
-                  int requestIndex = toRequest.nextSetBit(0); //get the next needed but not yet requested bit (piece that don't have)
+                  int numNeeded = toRequest.length();
+                  int requestIndex = new Random().nextInt(numNeeded);
+                  if (!toRequest.get(requestIndex)) {
+                      requestIndex = toRequest.nextSetBit(0);
+                      System.out.println("Generated a requested index that I don't really need? " + requestIndex);
+                  }
+//                  int requestIndex = toRequest.nextSetBit(0); //get the next needed but not yet requested bit (piece that don't have)
                   requestPiece(message.getFrom(), requestIndex);
               }
             } else {
@@ -496,6 +506,12 @@ public class peerProcess implements Runnable {
 
         while (!peersHaveFile || !haveFile) {
             dispatch();
+        }
+
+        try {
+            logger.logAllDone();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
         System.out.println("All done. Bye!");
